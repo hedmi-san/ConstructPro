@@ -3,6 +3,7 @@ package constructpro.UI;
 import javax.swing.*;
 import java.sql.SQLException;
 import constructpro.DAO.UserDAO;
+import java.sql.Connection;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -16,7 +17,7 @@ public class UserLogPage extends JPanel{
     private JButton refreshButton;
     private JTextField searchText;
     
-    public UserLogPage() {
+    public UserLogPage(Connection connection) {
         initComponents();
         loadDataSet();
     }

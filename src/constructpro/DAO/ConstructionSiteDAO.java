@@ -1,22 +1,17 @@
 package constructpro.DAO;
 
 import constructpro.DTO.ConstructionSite;
-import constructpro.Database.ConnectionEstablish;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConstructionSiteDAO {
-    Connection connection;
+
+    final Connection connection;
     Statement st;
-    
-    public ConstructionSiteDAO() {
-        try {
-            connection = new ConnectionEstablish().getConn();
-            st = connection.createStatement();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }        
+    public ConstructionSiteDAO(Connection con) throws SQLException {
+        this.connection = con;
+        st = connection.createStatement();
     }
     
     // CREATE - Insert a new construction site

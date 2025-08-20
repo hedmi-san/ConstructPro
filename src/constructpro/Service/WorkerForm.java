@@ -4,6 +4,7 @@ import constructpro.DTO.Worker;
 import constructpro.DAO.ConstructionSiteDAO;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
+import java.sql.Connection;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,10 +29,10 @@ public class WorkerForm extends JDialog {
     private ConstructionSiteDAO siteDAO;
     private Map<String, Integer> siteNameToId = new HashMap<>();
 
-    public WorkerForm(JFrame parent, String title, Worker worker) {
+    public WorkerForm(JFrame parent, String title, Worker worker,Connection connection) throws SQLException {
         super(parent, title, true);
         this.existingWorker = worker;
-        this.siteDAO = new ConstructionSiteDAO();
+        this.siteDAO = new ConstructionSiteDAO(connection);
         initComponents();
         setupLayout();
         setupActions();

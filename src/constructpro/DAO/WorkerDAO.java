@@ -1,7 +1,6 @@
 package constructpro.DAO;
 
 import constructpro.DTO.Worker;
-import constructpro.Database.ConnectionEstablish;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -11,18 +10,12 @@ import javax.swing.table.DefaultTableModel;
 
 public class WorkerDAO {
     
-    Connection connection;
+    private Connection connection;
     Statement st;
-    PreparedStatement ps;
     ResultSet rs;
-    
-    public WorkerDAO() {
-        try {
-            connection = new ConnectionEstablish().getConn();
-            st = connection.createStatement();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    public WorkerDAO(Connection connection) throws SQLException {
+        this.connection = connection;
+        st = connection.createStatement();
     }
     
     public void insertWorker(Worker worker) throws SQLException {

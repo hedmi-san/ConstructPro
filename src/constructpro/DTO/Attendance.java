@@ -7,7 +7,6 @@ public class Attendance {
     private int workerId;
     private LocalDate attendanceDate;
     private boolean isPresent;
-    private double hoursWorked; // For overtime or partial days
     private String Notes;
     // Constructors
     public Attendance() {}
@@ -16,7 +15,6 @@ public class Attendance {
         this.workerId = workerId;
         this.attendanceDate = attendanceDate;
         this.isPresent = isPresent;
-        this.hoursWorked = isPresent ? 8.0 : 0.0; // Default 8 hours if present
     }
     
     // Getters and Setters
@@ -31,9 +29,6 @@ public class Attendance {
     
     public boolean isPresent() { return isPresent; }
     public void setPresent(boolean present) { isPresent = present; }
-    
-    public double getHoursWorked() { return hoursWorked; }
-    public void setHoursWorked(double hoursWorked) { this.hoursWorked = hoursWorked; }
 
     public String getNotes() {return Notes;}
     public void setNotes(String Notes) {this.Notes = Notes;} 

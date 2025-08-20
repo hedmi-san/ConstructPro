@@ -27,6 +27,7 @@ public class Salary {
         this.totalEarned = daysWorked * dailyRate;
         this.amountPaid = totalEarned * (paymentPercentage / 100.0);
         this.retainedAmount = totalEarned - amountPaid;
+        this.paymentDate = LocalDate.now();
         this.isPaid = false;
     }
     

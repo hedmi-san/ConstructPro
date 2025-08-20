@@ -1,24 +1,16 @@
 package constructpro.DAO;
 
 import constructpro.DTO.Insurance;
-import constructpro.Database.ConnectionEstablish;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class InsuranceDAO {
-    Connection connection;
-    Statement st;
-    
-    public InsuranceDAO(){
-    try {
-            connection = new ConnectionEstablish().getConn();
-            st = connection.createStatement();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }  
-    
+    final Connection connection;
+
+    public InsuranceDAO(Connection connection) throws SQLException {
+        this.connection = connection;
     }
     
     // CREATE - Add new insurance record

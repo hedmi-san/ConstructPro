@@ -6,7 +6,7 @@ import constructpro.DTO.Worker;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.InsuranceDAO;
 import constructpro.DTO.Insurance;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class WorkerDetailDialog extends JDialog {
@@ -42,7 +42,6 @@ public class WorkerDetailDialog extends JDialog {
     private JLabel fatherNameValue, motherNameValue, birthDateValue, birthPlaceValue;
     private JLabel familySituationValue, identityCardNumberValue, phoneNumberValue;
     private JLabel roleValue, chantierValue, startDateValue, accountNumberValue, idCardDateValue;
-    
     private static final String[] REQUIRED_DOCUMENTS = {
     "Acte de Naissance",
     "Fiche familiale de l'état civil", 
@@ -50,12 +49,15 @@ public class WorkerDetailDialog extends JDialog {
     "Photocopie de chèque"
     };
 
-    public WorkerDetailDialog(JFrame parent, Worker worker) throws SQLException {
+    private Connection conn;
+    
+    public WorkerDetailDialog(JFrame parent, Worker worker,Connection connection) throws SQLException {
         super(parent, "Worker Details", true);
         this.currentWorker = worker;
-        this.siteDAO = new ConstructionSiteDAO();
+        this.siteDAO = new ConstructionSiteDAO(connection);
         this.insurance = new Insurance();
-        this.insuranceDAO = new InsuranceDAO();
+        this.conn = connection;
+        this.insuranceDAO = new InsuranceDAO(connection);
         initializeComponents();
         setupLayout();
         setupStyling();
@@ -465,7 +467,7 @@ public class WorkerDetailDialog extends JDialog {
     private void populateInsuranceData(Insurance insurance) {
         
     try {
-        InsuranceDAO insuranceDAO = new InsuranceDAO();
+        InsuranceDAO insuranceDAO = new InsuranceDAO(conn);
         insurance = insuranceDAO.getInsuranceByWorkerId(currentWorker.getId());
     } catch (SQLException e) {
         e.printStackTrace();

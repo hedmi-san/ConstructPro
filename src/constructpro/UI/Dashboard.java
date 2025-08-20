@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import javax.swing.*;
 
@@ -38,14 +39,14 @@ public class Dashboard extends JFrame {
     private JButton ToolsButton;
     private JButton usersButton;
     private JButton logsButton;
-
+    Connection connection;
     CardLayout layout;
     String username;
     String userSelect;
     User userDTO;
     LocalDateTime outTime;
     
-    public Dashboard(String username, String usertype, User userDTO) {
+    public Dashboard(Connection con,String username, String usertype, User userDTO) {
         initComponents();
         navPanel.setVisible(true);
         menuPanel.setVisible(true);
@@ -53,6 +54,7 @@ public class Dashboard extends JFrame {
         userSelect = usertype;
         this.username = username;
         this.userDTO = userDTO;
+        this.connection = con;
         if("Employee".equalsIgnoreCase(usertype)){
             notForEmployee();
         }
@@ -61,16 +63,16 @@ public class Dashboard extends JFrame {
         // Panel Layout set to Card Layout to allow switching between different sections
         displayPanel.setLayout(layout);
         displayPanel.add("Home", new HomePage(username));
-        displayPanel.add("Workers", new WorkersPage());
-        displayPanel.add("Salary", new SalaryPage());
-        displayPanel.add("Construction Sites", new ConstructionSitePage());
-        displayPanel.add("Suppliers", new SupplierPage());
-        displayPanel.add("Trucks", new TrucksMachinesPage());
-        displayPanel.add("Accounting office", new AccountingOffice());
-        displayPanel.add("Material", new MaterialPage());
-        displayPanel.add("Tools", new ToolsPage());
-        displayPanel.add("Users", new UsersPage());
-        displayPanel.add("Logs", new UserLogPage());
+        displayPanel.add("Workers", new WorkersPage(connection));
+        displayPanel.add("Salary", new SalaryPage(connection));
+        displayPanel.add("Construction Sites", new ConstructionSitePage(connection));
+        displayPanel.add("Suppliers", new SupplierPage(connection));
+        displayPanel.add("Trucks", new TrucksMachinesPage(connection));
+        displayPanel.add("Accounting office", new AccountingOffice(connection));
+        displayPanel.add("Material", new MaterialPage(connection));
+        displayPanel.add("Tools", new ToolsPage(connection));
+        displayPanel.add("Users", new UsersPage(connection));
+        displayPanel.add("Logs", new UserLogPage(connection));
         
         this.addWindowListener(new WindowAdapter() {
             @Override

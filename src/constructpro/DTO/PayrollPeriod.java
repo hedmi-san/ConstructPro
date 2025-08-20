@@ -6,14 +6,18 @@ public class PayrollPeriod {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate paymentDate;
-    private String periodType; // "FIRST_HALF" or "SECOND_HALF"
+    private PeriodType periodType;
     private boolean isProcessed;
     private boolean isPaid;
+    
+    public enum PeriodType {
+        FIRST_HALF, SECOND_HALF
+    }
     
     // Constructors
     public PayrollPeriod() {}
     
-    public PayrollPeriod(LocalDate startDate, LocalDate endDate, String periodType) {
+    public PayrollPeriod(LocalDate startDate, LocalDate endDate, PeriodType periodType) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.periodType = periodType;
@@ -37,8 +41,8 @@ public class PayrollPeriod {
     public LocalDate getPaymentDate() { return paymentDate; }
     public void setPaymentDate(LocalDate paymentDate) { this.paymentDate = paymentDate; }
     
-    public String getPeriodType() { return periodType; }
-    public void setPeriodType(String periodType) { this.periodType = periodType; }
+    public PeriodType getPeriodType() { return periodType; }
+    public void setPeriodType(PeriodType periodType) { this.periodType = periodType; }
     
     public boolean isProcessed() { return isProcessed; }
     public void setProcessed(boolean processed) { isProcessed = processed; }

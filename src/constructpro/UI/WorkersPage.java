@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 import constructpro.Service.WorkerDetailDialog;
+import java.sql.Connection;
 
 public class WorkersPage extends JPanel {
 
@@ -22,11 +23,11 @@ public class WorkersPage extends JPanel {
     private JLabel jLabel2;
     private JTable workerstTable;
     private JScrollPane jScrollPane1;
-    
     private WorkerDAO workerDAO;
     private JFrame parentFrame;
-    
-    public WorkersPage() {
+    public Connection conn;
+    public WorkersPage(Connection connection) {
+        this.conn = connection;
         initDAO();
         initComponents();
         loadDataSet();
@@ -41,7 +42,7 @@ public class WorkersPage extends JPanel {
     
     private void initDAO() {
         try {
-            workerDAO = new WorkerDAO();
+            workerDAO = new WorkerDAO(conn);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données: " + e.getMessage());
@@ -110,7 +111,7 @@ public class WorkersPage extends JPanel {
         // Add button action
         addButton.addActionListener(e -> {
             try {
-                WorkerForm dialog = new WorkerForm(parentFrame, "Ajouter un Ouvrier", null);
+                WorkerForm dialog = new WorkerForm(parentFrame, "Ajouter un Ouvrier", null,conn);
                 dialog.setVisible(true);
         
                 if (dialog.isConfirmed()) {
@@ -135,7 +136,7 @@ public class WorkersPage extends JPanel {
                     
                     Worker existingWorker = workerDAO.getWorkerById(workerId);
                     if (existingWorker != null) {
-                        WorkerForm dialog = new WorkerForm(parentFrame, "Modifier l'Ouvrier", existingWorker);
+                        WorkerForm dialog = new WorkerForm(parentFrame, "Modifier l'Ouvrier", existingWorker,conn);
                         dialog.setVisible(true);
                         
                         if (dialog.isConfirmed()) {
@@ -229,7 +230,7 @@ public class WorkersPage extends JPanel {
                 
                 Worker worker = workerDAO.getWorkerById(workerId);
                 if (worker != null) {
-                    WorkerDetailDialog detailDialog = new WorkerDetailDialog(parentFrame, worker);
+                    WorkerDetailDialog detailDialog = new WorkerDetailDialog(parentFrame, worker,conn);
                     detailDialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Worker not found!", "Error", JOptionPane.ERROR_MESSAGE);

@@ -9,6 +9,9 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 
 public class LoginPage extends JFrame {
@@ -23,10 +26,18 @@ public class LoginPage extends JFrame {
     private javax.swing.JButton loginButton;
     private javax.swing.JPasswordField passText;
     private javax.swing.JTextField userText;
-
+    public Connection connection;
+    public Statement st;
     public LoginPage() {
+        
         initComponents();
         user = new User();
+        try {
+            connection = new ConnectionEstablish().getConn();
+            st = connection.createStatement();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -137,7 +148,7 @@ public class LoginPage extends JFrame {
             user.setInTime(String.valueOf(inTime));
             System.out.println("Login successful for: " + username + " as " + userType);
             dispose();
-            new Dashboard(username, userType, user);
+            new Dashboard(connection,username, userType, user);
         } else {
             JOptionPane.showMessageDialog(null,"Invalid username or password.");
         }

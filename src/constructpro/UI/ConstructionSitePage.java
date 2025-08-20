@@ -5,12 +5,12 @@
 package constructpro.UI;
 
 import javax.swing.*;
-
+import java.sql.Connection;
 /**
  *
  * @author LAPTOP SPIRIT
  */
 public class ConstructionSitePage extends JPanel{
     
-    public ConstructionSitePage(){}
+    public ConstructionSitePage(Connection connection){}
 }

@@ -3,7 +3,6 @@ package constructpro.DAO;
 import constructpro.DTO.User;
 import constructpro.Database.ConnectionEstablish;
 import constructpro.UI.UsersPage;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
@@ -90,7 +89,7 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        new UsersPage().loadDataSet();
+        new UsersPage(conn).loadDataSet();
     }
 
     public ResultSet getQueryResult() {

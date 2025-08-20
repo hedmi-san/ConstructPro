@@ -32,7 +32,7 @@ public class UsersPage extends JPanel{
     String userType;;
     
     
-    public UsersPage() {
+    public UsersPage(Connection connection) {
         initComponents();
         loadDataSet();
     }
