@@ -273,8 +273,7 @@ public class WorkersPage extends JPanel {
         e.printStackTrace();
     }
 }
-
-    
+   
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }

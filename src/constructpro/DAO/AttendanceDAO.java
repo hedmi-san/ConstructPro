@@ -61,7 +61,7 @@ public class AttendanceDAO {
         return null;
     }
 
-    public List<Attendance> getByWorkerId(int workerId) throws SQLException {
+    public List<Attendance> getAttendanceByWorker(int workerId) throws SQLException {
         List<Attendance> list = new ArrayList<>();
         String sql = "SELECT * FROM attendance WHERE worker_id=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

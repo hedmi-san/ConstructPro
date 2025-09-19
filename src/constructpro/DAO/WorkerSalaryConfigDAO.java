@@ -83,4 +83,29 @@ public class WorkerSalaryConfigDAO {
         }
         return list;
     }
+     public WorkerSalaryConfig getActiveConfig(int workerId) {
+        WorkerSalaryConfig config = null;
+        String sql = "SELECT * FROM worker_salary_config " +
+                     "WHERE worker_id = ? " +
+                     "ORDER BY effective_date DESC LIMIT 1";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, workerId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                config = new WorkerSalaryConfig();
+                config.setId(rs.getInt("id"));
+                config.setWorkerId(rs.getInt("worker_id"));
+                config.setDailyRate(rs.getDouble("daily_rate"));
+                config.setPaymentPercentage(rs.getDouble("payment_percentage"));
+                config.setEffectiveDate(rs.getDate("effective_date").toLocalDate());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return config;
+    }
 }
