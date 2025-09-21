@@ -16,7 +16,7 @@ public class ConstructionSiteDAO {
     
     // CREATE - Insert a new construction site
     public void insertConstructionSite(ConstructionSite site) throws SQLException {
-        String sql = "INSERT INTO ConstructionSite (name, location, start_date, end_date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO ConstructionSite (name, location,start_date, end_date) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, site.getName());
             ps.setString(2, site.getLocation());

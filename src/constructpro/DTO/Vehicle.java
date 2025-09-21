@@ -8,8 +8,16 @@ public class Vehicle {
     /*parking, working in our sites, rented to another company/person (duration of rent, person name, phone number, location)
     our company rent a machine (duration, phone number, cost) تحسب في مصاريف الشونطي الاجمالية  */
     private ConstructionSite site;
-    private Worker driver;
+    private int driverID;//worker
 
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int Id) {
+        this.Id = Id;
+    }
+    
     public String getType() {
         return type;
     }
@@ -42,12 +50,12 @@ public class Vehicle {
         this.site = site;
     }
 
-    public Worker getDriver() {
-        return driver;
+    public int getDriverID() {
+        return driverID;
     }
 
-    public void setDriver(Worker driver) {
-        this.driver = driver;
+    public void setDriverID(int driverID) {
+        this.driverID = driverID;
     }
     
 }

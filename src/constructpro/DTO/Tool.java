@@ -1,19 +1,27 @@
 package constructpro.DTO;
 
+import java.time.LocalDate;
+
 
 public class Tool {
     private int Id;
-    private ConstructionSite site;
+    private String siteName;
     private String name;
-    private String type;
-    private String status;
-
-    public ConstructionSite getSite() {
-        return site;
+    private LocalDate purshaceDate;
+    public int getId() {
+        return Id;
     }
 
-    public void setSite(ConstructionSite site) {
-        this.site = site;
+    public void setId(int Id) {
+        this.Id = Id;
+    }
+    
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
     }
 
     public String getName() {
@@ -24,21 +32,12 @@ public class Tool {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public LocalDate getPurshaceDate() {
+        return purshaceDate;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPurshaceDate(LocalDate purshaceDate) {
+        this.purshaceDate = purshaceDate;
     }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    
+  
 }

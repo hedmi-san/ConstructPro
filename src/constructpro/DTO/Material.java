@@ -8,7 +8,24 @@ public class Material {
     private String materialType; // "soil", "concrete", "equipment"
     private double quantity;
     private double unitPrice;
-    private LocalDate date;
+    private LocalDate purchasedate;
+    private int transportFee;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int Id) {
+        this.Id = Id;
+    }
+
+    public int getTransportFee() {
+        return transportFee;
+    }
+
+    public void setTransportFee(int transportFee) {
+        this.transportFee = transportFee;
+    }
 
     public int getSupplierId() {
         return supplierId;
@@ -42,12 +59,12 @@ public class Material {
         this.unitPrice = unitPrice;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getPurchaseDate() {
+        return purchasedate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setPurchaseDate(LocalDate date) {
+        this.purchasedate = date;
     }
     
     
