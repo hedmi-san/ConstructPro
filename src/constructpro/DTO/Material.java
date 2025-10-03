@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Material {
      private int Id;
     private int supplierId;
-    private String materialType; // "soil", "concrete", "equipment"
+    private String materialType; // "soil", "concrete", "brick", "sima"
     private double quantity;
     private double unitPrice;
     private LocalDate purchasedate;

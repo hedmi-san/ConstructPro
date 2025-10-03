@@ -2,12 +2,12 @@ package constructpro.DTO;
 
 public class Vehicle {
     private int Id;
-    private String type;
+    private String name;
     private String plateNumber;
-    private String status;
+    private String status; //working, parkin , rented
     /*parking, working in our sites, rented to another company/person (duration of rent, person name, phone number, location)
     our company rent a machine (duration, phone number, cost) تحسب في مصاريف الشونطي الاجمالية  */
-    private ConstructionSite site;
+    private int siteID;
     private int driverID;//worker
 
     public int getId() {
@@ -18,12 +18,12 @@ public class Vehicle {
         this.Id = Id;
     }
     
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPlateNumber() {
@@ -42,12 +42,12 @@ public class Vehicle {
         this.status = status;
     }
 
-    public ConstructionSite getSite() {
-        return site;
+    public int getSiteID() {
+        return siteID;
     }
 
-    public void setSite(ConstructionSite site) {
-        this.site = site;
+    public void setSiteID(int id) {
+        this.siteID = id;
     }
 
     public int getDriverID() {

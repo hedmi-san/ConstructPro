@@ -8,7 +8,15 @@ public class Fournisseur {
     private String address;
     private String phone;
     private String type;
-    private List<Bill> bills;
+    private List<Integer> billsID;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int Id) {
+        this.Id = Id;
+    }
 
     public String getName() {
         return name;
@@ -42,12 +50,12 @@ public class Fournisseur {
         this.type = type;
     }
 
-    public List<Bill> getBills() {
-        return bills;
+    public List<Integer> getBillsID() {
+        return billsID;
     }
 
-    public void setBills(List<Bill> bills) {
-        this.bills = bills;
+    public void setBillsID(List<Integer> billsID) {
+        this.billsID = billsID;
     }
     
     

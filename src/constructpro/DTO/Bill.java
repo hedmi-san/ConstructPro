@@ -5,13 +5,22 @@ import java.util.List;
 
 public class Bill {
     private int Id;
-    private Fournisseur supplier;
-    private LocalDate date;
+    private int supplierID;
+    private int siteID;
+    private LocalDate billDate;
+    private String billType;//there are two types (Tool, Material)
     private double amount;
-    private double transportationFee;
     private boolean paid;//ch7al mdina ll fournisour (شحال سلكناه)
     private String description;
     private List<Tool> equipment;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int Id) {
+        this.Id = Id;
+    }
 
     public List<Tool> getEquipment() {
         return equipment;
@@ -22,39 +31,48 @@ public class Bill {
     }
     
     public double getTotalCost() {
-        return amount + transportationFee;
+        return amount;
     }
 
-    public Fournisseur getSupplier() {
-        return supplier;
+    public int getSupplierID() {
+        return supplierID;
     }
 
-    public void setSupplier(Fournisseur supplier) {
-        this.supplier = supplier;
+    public void setSupplierID(int supplierID) {
+        this.supplierID = supplierID;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public int getSiteID() {
+        return siteID;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setSiteID(int siteID) {
+        this.siteID = siteID;
     }
 
+    public LocalDate getBillDate() {
+        return billDate;
+    }
+
+    public void setBillDate(LocalDate billDate) {
+        this.billDate = billDate;
+    }
+
+    public String getBillType() {
+        return billType;
+    }
+
+    public void setBillType(String billType) {
+        this.billType = billType;
+    }
+
+    
     public double getAmount() {
         return amount;
     }
 
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public double getTransportationFee() {
-        return transportationFee;
-    }
-
-    public void setTransportationFee(double transportationFee) {
-        this.transportationFee = transportationFee;
     }
 
     public boolean isPaid() {
