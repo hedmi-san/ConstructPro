@@ -9,7 +9,7 @@ public class ConstructionSiteDAO {
 
     final Connection connection;
     Statement st;
-    
+    ResultSet rs;
     public ConstructionSiteDAO(Connection con) throws SQLException {
         this.connection = con;
         st = connection.createStatement();
@@ -107,6 +107,27 @@ public class ConstructionSiteDAO {
         return null;
     }
     
+    public ResultSet getConstructionSiteInfo(){
+        try {
+            String query = """ 
+                           SELECT 
+                               s.id,
+                               s.name,
+                               s.location,
+                               s.status,
+                               s.start_date,
+                               s.end_date,
+                               s.total_cost
+                           FROM 
+                               ConstructionSite s
+                           """;
+            rs = st.executeQuery(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rs;
+    }
+    
     // UPDATE - Update an existing construction site
     public void updateConstructionSite(ConstructionSite site) throws SQLException {
         String sql = "UPDATE ConstructionSite SET name=?, status=?, location=?, start_date=?, end_date=? WHERE id=?";
@@ -178,12 +199,10 @@ public class ConstructionSiteDAO {
         }
     }
     
-    // UTILITY METHODS
-    
     // Get site ID by name
     public int getSiteIdByName(String siteName) throws SQLException {
         if (siteName == null || siteName.equals("Select Site")) {
-            return 0; // Return 0 or throw exception for invalid selection
+            return 0;
         }
         
         String sql = "SELECT id FROM ConstructionSite WHERE name = ?";
@@ -194,7 +213,7 @@ public class ConstructionSiteDAO {
                 return rs.getInt("id");
             }
         }
-        return 0; // Return 0 if site not found
+        return 0;
     }
     
     // Get site name by ID
@@ -202,6 +221,18 @@ public class ConstructionSiteDAO {
         String sql = "SELECT name FROM ConstructionSite WHERE id = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, siteId);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                return rs.getString("name");
+            }
+        }
+        return null;
+    }
+    
+    public String getSiteNameByStatus(String status) throws SQLException {
+        String sql = "SELECT name FROM ConstructionSite WHERE status = ?";
+        try(PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
             ResultSet rs = ps.executeQuery();
             if(rs.next()) {
                 return rs.getString("name");
@@ -276,27 +307,5 @@ public class ConstructionSiteDAO {
                            cs.start_date DESC
                        """;
         return st.executeQuery(query);
-    }
-    
-    // Search construction sites by name or location
-    public List<ConstructionSite> searchConstructionSites(String searchTerm) throws SQLException {
-        List<ConstructionSite> list = new ArrayList<>();
-        String sql = "SELECT * FROM ConstructionSite WHERE name LIKE ? OR location LIKE ? ORDER BY name";
-        try(PreparedStatement ps = connection.prepareStatement(sql)) {
-            String searchPattern = "%" + searchTerm + "%";
-            ps.setString(1, searchPattern);
-            ps.setString(2, searchPattern);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                ConstructionSite site = new ConstructionSite();
-                site.setId(rs.getInt("id"));
-                site.setName(rs.getString("name"));
-                site.setLocation(rs.getString("location"));
-                site.setStartDate(rs.getDate("start_date").toLocalDate());
-                site.setEndDate(rs.getDate("end_date").toLocalDate());
-                list.add(site);
-            }
-        }
-        return list;
     }
 }
