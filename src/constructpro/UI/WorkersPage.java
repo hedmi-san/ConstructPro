@@ -185,7 +185,7 @@ public class WorkersPage extends JPanel {
         });
     }
 
-    public void loadDataSet() {
+    private void loadDataSet() {
         try {
             ResultSet rs = workerDAO.getWorkersInfo();
             DefaultTableModel model = new DefaultTableModel(

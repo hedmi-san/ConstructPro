@@ -9,6 +9,7 @@ public class ConstructionSiteDAO {
 
     final Connection connection;
     Statement st;
+    
     public ConstructionSiteDAO(Connection con) throws SQLException {
         this.connection = con;
         st = connection.createStatement();
@@ -16,12 +17,13 @@ public class ConstructionSiteDAO {
     
     // CREATE - Insert a new construction site
     public void insertConstructionSite(ConstructionSite site) throws SQLException {
-        String sql = "INSERT INTO ConstructionSite (name, location,start_date, end_date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO ConstructionSite (name, location,status,start_date, end_date) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, site.getName());
             ps.setString(2, site.getLocation());
-            ps.setDate(3, Date.valueOf(site.getStartDate()));
-            ps.setDate(4, Date.valueOf(site.getEndDate()));
+            ps.setString(3, site.getStatus());
+            ps.setDate(4, Date.valueOf(site.getStartDate()));
+            ps.setDate(5, Date.valueOf(site.getEndDate()));
             
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
@@ -107,13 +109,14 @@ public class ConstructionSiteDAO {
     
     // UPDATE - Update an existing construction site
     public void updateConstructionSite(ConstructionSite site) throws SQLException {
-        String sql = "UPDATE ConstructionSite SET name=?, location=?, start_date=?, end_date=? WHERE id=?";
+        String sql = "UPDATE ConstructionSite SET name=?, status=?, location=?, start_date=?, end_date=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, site.getName());
             ps.setString(2, site.getLocation());
-            ps.setDate(3, Date.valueOf(site.getStartDate()));
-            ps.setDate(4, Date.valueOf(site.getEndDate()));
-            ps.setInt(5, site.getId());
+            ps.setString(3, site.getStatus());
+            ps.setDate(4, Date.valueOf(site.getStartDate()));
+            ps.setDate(5, Date.valueOf(site.getEndDate()));
+            ps.setInt(6, site.getId());
             
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected == 0) {
