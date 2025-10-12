@@ -31,6 +31,7 @@ public class Dashboard extends JFrame {
     private JButton menuButton;
     private JButton WorkersButton;
     private JButton SalaryButton;
+    private JButton BillButton;
     private JButton ConstructionSiteButton;
     private JButton SuppliersButton;
     private JButton truckButton;
@@ -64,7 +65,8 @@ public class Dashboard extends JFrame {
         displayPanel.setLayout(layout);
         displayPanel.add("Home", new HomePage(username));
         displayPanel.add("Workers", new WorkersPage(connection));
-        displayPanel.add("Salary", new SalaryPage(connection));
+        displayPanel.add("Salaire", new SalaryPage(connection));
+        displayPanel.add("Facture", new BillPage(connection));
         displayPanel.add("Construction Sites", new ConstructionSitePage(connection));
         displayPanel.add("Suppliers", new SupplierPage(connection));
         displayPanel.add("Trucks", new TrucksMachinesPage(connection));
@@ -96,7 +98,10 @@ public class Dashboard extends JFrame {
         layout.show(displayPanel, "Workers");
     }
     public void addSalairePage(){
-        layout.show(displayPanel, "Salary");
+        layout.show(displayPanel, "Salaire");
+    }
+    public void addBillPage(){
+        layout.show(displayPanel, "Facture");
     }
     public void addSitesPage(){
         layout.show(displayPanel, "Construction Sites");
@@ -140,6 +145,7 @@ public class Dashboard extends JFrame {
         menuButton = new JButton();
         WorkersButton = new JButton();
         SalaryButton = new JButton();
+        BillButton = new JButton();
         ConstructionSiteButton = new JButton();
         SuppliersButton = new JButton();
         truckButton = new JButton();
@@ -198,12 +204,21 @@ public class Dashboard extends JFrame {
             }
         });
         
-        SalaryButton.setText("Salary");
+        SalaryButton.setText("Salaire");
         SalaryButton.setForeground(Color.white);
         SalaryButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SalaireButtonActionPerformed(e);
+            }
+        });
+        
+        BillButton.setText("Facture");
+        BillButton.setForeground(Color.white);
+        BillButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                BillButtonActionPerformed(e);
             }
         });
         
@@ -289,6 +304,7 @@ public class Dashboard extends JFrame {
                     .addComponent(homeButton, GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(WorkersButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(SalaryButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(BillButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(ConstructionSiteButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(SuppliersButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(truckButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -309,6 +325,8 @@ public class Dashboard extends JFrame {
                 .addComponent(WorkersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(SalaryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(BillButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(ConstructionSiteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -442,6 +460,9 @@ public class Dashboard extends JFrame {
     }
     private void SalaireButtonActionPerformed(ActionEvent evt) {
         addSalairePage();
+    }
+    private void BillButtonActionPerformed(ActionEvent evt){
+        addBillPage();
     }
     private void SitesButtonActionPerformed(ActionEvent evt) {
         addSitesPage();

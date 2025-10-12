@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
+import constructpro.Service.ShowSitesDetails;
 import constructpro.Service.SiteForm;
 import java.awt.*;
 import java.awt.event.*;
@@ -73,12 +74,11 @@ public class ConstructionSitePage extends JPanel{
         // Table setup
         sitesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sitesTable.setDefaultEditor(Object.class, null);
-
         sitesTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
-                    //TODO 
-                    //showSitesDetails();
+                    //TODO:
+                    showSiteDetails();
                 }
             }
         });
@@ -217,7 +217,24 @@ public class ConstructionSitePage extends JPanel{
     }
     
     private void showSiteDetails() {
-        
+        int selectedRow = sitesTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
+                int siteID = (Integer) model.getValueAt(selectedRow, 0); // Get worker ID from hidden column
+                
+                ConstructionSite site = SiteDAO.getConstructionSiteById(siteID);
+                if (site != null) {
+                    ShowSitesDetails detailDialog = new ShowSitesDetails(parentFrame, site,conn);
+                    detailDialog.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Worker not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading worker details: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     
     private void loadDataSet() {
