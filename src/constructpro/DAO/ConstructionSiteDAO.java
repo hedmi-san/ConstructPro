@@ -130,7 +130,7 @@ public class ConstructionSiteDAO {
     
     // UPDATE - Update an existing construction site
     public void updateConstructionSite(ConstructionSite site) throws SQLException {
-        String sql = "UPDATE ConstructionSite SET name=?, status=?, location=?, start_date=?, end_date=? WHERE id=?";
+        String sql = "UPDATE ConstructionSite SET name=?, location=?, status=?, start_date=?, end_date=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, site.getName());
             ps.setString(2, site.getLocation());
@@ -214,6 +214,33 @@ public class ConstructionSiteDAO {
             }
         }
         return 0;
+    }
+    
+    public ResultSet searchsitesByName(String searchTerm) {
+    try {
+        String query = """
+            SELECT 
+                s.id,
+                s.name,
+                s.location,
+                s.status,
+                s.start_date,
+                s.end_date,
+                s.total_cost
+                FROM 
+                ConstructionSite s
+            WHERE 
+                s.name LIKE ? OR s.location LIKE ?
+        """;
+        PreparedStatement ps = connection.prepareStatement(query);
+        String likeTerm = "%" + searchTerm + "%";
+        ps.setString(1, likeTerm);
+        ps.setString(2, likeTerm);
+        return ps.executeQuery();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
     }
     
     // Get site name by ID
