@@ -75,6 +75,7 @@ public class ConstructionSitePage extends JPanel{
         sitesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sitesTable.setDefaultEditor(Object.class, null);
         sitesTable.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     //TODO:
@@ -131,7 +132,7 @@ public class ConstructionSitePage extends JPanel{
             if (selectedRow >= 0) {
                 try {
                     DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
-                    int siteId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
+                    int siteId = (Integer) model.getValueAt(selectedRow, 0);
                     
                     ConstructionSite existingSite = SiteDAO.getConstructionSiteById(siteId);
                     if (existingSite != null) {
