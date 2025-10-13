@@ -50,13 +50,13 @@ public class WorkersPage extends JPanel {
     }
 
     private void initComponents() {
-        addButton = new JButton("Add");
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
-        refreshButton = new JButton("Refresh");
+        addButton = new JButton("Ajouter");
+        editButton = new JButton("Modifier");
+        deleteButton = new JButton("Supprimer");
+        refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
         jLabel1 = new JLabel("Workers");
-        jLabel2 = new JLabel("Search");
+        jLabel2 = new JLabel("Rechercher");
         workerstTable = new JTable();
         jScrollPane1 = new JScrollPane(workerstTable);
 
@@ -84,7 +84,9 @@ public class WorkersPage extends JPanel {
         });
 
         // Buttons panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10)); // 10px horizontal and vertical gap
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // top, left, bottom, right padding
+        buttonPanel.setPreferredSize(new Dimension(0, 60));
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
