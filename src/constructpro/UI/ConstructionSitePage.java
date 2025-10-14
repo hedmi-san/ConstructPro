@@ -146,7 +146,7 @@ public class ConstructionSitePage extends JPanel{
                             updatedSite.setId(siteId);
                             SiteDAO.updateConstructionSite(updatedSite);
                             loadDataSet();
-                            JOptionPane.showMessageDialog(this, "Ouvrier modifié avec succès!");
+                            JOptionPane.showMessageDialog(this, "Chantier modifié avec succès!");
                         }
                     }
                 } catch (Exception ex) {
@@ -154,7 +154,7 @@ public class ConstructionSitePage extends JPanel{
                     JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un ouvrier à modifier.");
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à modifier.");
             }
         });
         
