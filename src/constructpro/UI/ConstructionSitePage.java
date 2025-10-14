@@ -24,7 +24,7 @@ public class ConstructionSitePage extends JPanel{
     private JLabel jLabel2;
     private JTable sitesTable;
     private JScrollPane jScrollPane1;
-    private ConstructionSiteDAO SiteDAO;
+    private ConstructionSiteDAO siteDAO;
     private JFrame parentFrame;
     public Connection conn;
     public ConstructionSitePage(Connection connection) {
@@ -43,7 +43,7 @@ public class ConstructionSitePage extends JPanel{
     
     private void initDAO() {
         try {
-            SiteDAO = new ConstructionSiteDAO(conn);
+            siteDAO = new ConstructionSiteDAO(conn);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données: " + e.getMessage());
         }
@@ -118,7 +118,7 @@ public class ConstructionSitePage extends JPanel{
         
                 if (dialog.isConfirmed()) {
                     ConstructionSite newSite = dialog.getSiteFromForm();
-                    SiteDAO.insertConstructionSite(newSite);
+                    siteDAO.insertConstructionSite(newSite);
                     loadDataSet();
                     JOptionPane.showMessageDialog(this, "Chantier ajouté avec succès!");
                 }
@@ -136,7 +136,7 @@ public class ConstructionSitePage extends JPanel{
                     DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
                     int siteId = (Integer) model.getValueAt(selectedRow, 0);
                     
-                    ConstructionSite existingSite = SiteDAO.getConstructionSiteById(siteId);
+                    ConstructionSite existingSite = siteDAO.getConstructionSiteById(siteId);
                     if (existingSite != null) {
                         SiteForm dialog = new SiteForm(parentFrame, "Modifier le chantier", existingSite,conn);
                         dialog.setVisible(true);
@@ -144,13 +144,12 @@ public class ConstructionSitePage extends JPanel{
                         if (dialog.isConfirmed()) {
                             ConstructionSite updatedSite = dialog.getSiteFromForm();
                             updatedSite.setId(siteId);
-                            SiteDAO.updateConstructionSite(updatedSite);
+                            siteDAO.updateConstructionSite(updatedSite);
                             loadDataSet();
                             JOptionPane.showMessageDialog(this, "Chantier modifié avec succès!");
                         }
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (HeadlessException | SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
@@ -173,10 +172,10 @@ public class ConstructionSitePage extends JPanel{
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         int siteId = (Integer) model.getValueAt(selectedRow, 0); 
-                        SiteDAO.deleteConstructionSite(siteId);
+                        siteDAO.deleteConstructionSite(siteId);
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Chantier supprimé avec succès!");
-                    } catch (Exception ex) {
+                    } catch (HeadlessException | SQLException ex) {
                         JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -188,7 +187,7 @@ public class ConstructionSitePage extends JPanel{
     
     private void loadSearchResults(String searchTerm){
         try {
-        ResultSet rs = SiteDAO.searchsitesByName(searchTerm);
+        ResultSet rs = siteDAO.searchsitesByName(searchTerm);
         DefaultTableModel model = new DefaultTableModel(
             new Object[]{"ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total"}, 0
         ) {
@@ -226,15 +225,14 @@ public class ConstructionSitePage extends JPanel{
                 DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
                 int siteID = (Integer) model.getValueAt(selectedRow, 0);
                 
-                ConstructionSite site = SiteDAO.getConstructionSiteById(siteID);
+                ConstructionSite site = siteDAO.getConstructionSiteById(siteID);
                 if (site != null) {
                     ShowSitesDetails detailDialog = new ShowSitesDetails(parentFrame, site,conn);
                     detailDialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Worker not found!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (HeadlessException | SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error loading worker details: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -242,7 +240,7 @@ public class ConstructionSitePage extends JPanel{
     
     private void loadDataSet() {
         try {
-            ResultSet rs = SiteDAO.getConstructionSiteInfo();
+            ResultSet rs = siteDAO.getConstructionSiteInfo();
             DefaultTableModel model = new DefaultTableModel(
                     new Object[]{"ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total"}, 0
             ) {
