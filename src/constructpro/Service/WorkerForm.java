@@ -78,7 +78,24 @@ public class WorkerForm extends JDialog {
         });
         // Role combo box
         roleComboBox = new JComboBox<>(new String[]{
-            "Mason", "Soudeur", "Electrician", "Plombier", "Menuisier", "Chef Chantier", "Chauffeur", "Comptable","Peinteur"
+            "Chauffeur",
+            "Chef Chantier",
+            "Comptable",
+            "Electrician",
+            "Garde",
+            "Grutier",
+            "Manoeuvre",
+            "Mason",
+            "Mason Brick",
+            "Mason Chemini",
+            "Mason Dalle de Sol",
+            "Mason Fasade",
+            "Mason Placoplatre",
+            "Mason Telbas",
+            "Menuisier",
+            "Peinteur",
+            "Plombier",
+            "Soudeur"
         });
         // Site combo box
         siteComboBox = new JComboBox<>();
@@ -113,98 +130,98 @@ public class WorkerForm extends JDialog {
         
         // First Name
         gbc.gridx = 0; gbc.gridy = row; gbc.anchor = GridBagConstraints.WEST;
-        formPanel.add(new JLabel("First Name:"), gbc);
+        formPanel.add(new JLabel("Prénom:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(firstNameField, gbc);
         
         row++;
         // Last Name
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Last Name:"), gbc);
+        formPanel.add(new JLabel("Nom:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(lastNameField, gbc);
         
         row++;
         // Birth Place
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Birth Place:"), gbc);
+        formPanel.add(new JLabel("Lieux de Naissance:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(birthPlaceField, gbc);
         
         row++;
         // Birth Date
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Birth Date:"), gbc);
+        formPanel.add(new JLabel("Date de Naissance:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(birthDateChooser, gbc);
         
         row++;
         // Father Name
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Father Name:"), gbc);
+        formPanel.add(new JLabel("Nom du père:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(fatherNameField, gbc);
         
         row++;
         // Mother Name
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Mother Name:"), gbc);
+        formPanel.add(new JLabel("Nom du mère:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(motherNameField, gbc);
         
         row++;
         // Start Date
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Start Date:"), gbc);
+        formPanel.add(new JLabel("Date de Début:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(startDateChooser, gbc);
         
         row++;
         // Identity Card Number
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Identity Card Number:"), gbc);
+        formPanel.add(new JLabel("Numéro de carte d'identité:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(identityCardNumberField, gbc);
         
         row++;
         // Identity Card Date
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Identity Card Date:"), gbc);
+        formPanel.add(new JLabel("Date de la carte d'identité:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(identityCardDateChooser, gbc);
         
         row++;
         // Family Situation
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Family Situation:"), gbc);
+        formPanel.add(new JLabel("Situation familiale:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(familySituationComboBox, gbc);
         
         row++;
         // Account Number
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Account Number:"), gbc);
+        formPanel.add(new JLabel("Numéro de compte:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(accountNumberField, gbc);
         
         row++;
         // Phone Number
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Phone Number:"), gbc);
+        formPanel.add(new JLabel("Numéro de téléphone:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(phoneNumberField, gbc);
         
         row++;
-        // Role
+        // Job
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Role:"), gbc);
+        formPanel.add(new JLabel("Poste:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(roleComboBox, gbc);
         
         row++;
         // Site
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Construction Site:"), gbc);
+        formPanel.add(new JLabel("Chantier :"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(siteComboBox, gbc);
         
@@ -251,8 +268,7 @@ public class WorkerForm extends JDialog {
                 if (siteName != null) {
                     siteComboBox.setSelectedItem(siteName);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (SQLException e) {
             }
         } 
     }
@@ -278,59 +294,59 @@ public class WorkerForm extends JDialog {
     }
 
     private boolean validateFields() {
-        
+    
         if (firstNameField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "First name is required!");
+            JOptionPane.showMessageDialog(this, "Le prénom est obligatoire !");
             firstNameField.requestFocus();
             return false;
         }
         if (lastNameField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Last name is required!");
+            JOptionPane.showMessageDialog(this, "Le nom est obligatoire !");
             lastNameField.requestFocus();
             return false;
         }
-        
-        
+
+
         if (birthDateChooser.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Birth date is required!");
+            JOptionPane.showMessageDialog(this, "La date de naissance est obligatoire !");
             return false;
         }
-        
+
         if (startDateChooser.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Start date is required!");
+            JOptionPane.showMessageDialog(this, "La date de début est obligatoire !");
             return false;
         }
-        
+
         if (identityCardDateChooser.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Identity card date is required!");
+            JOptionPane.showMessageDialog(this, "La date de délivrance de la carte d'identité est obligatoire !");
             return false;
         }
-        
-        
+
+
         if (birthDateChooser.getDate().after(new Date())) {
-            JOptionPane.showMessageDialog(this, "Birth date cannot be in the future!");
+            JOptionPane.showMessageDialog(this, "La date de naissance ne peut pas être dans le futur !");
             return false;
         }
-        
-        
+
+
         if (startDateChooser.getDate().before(birthDateChooser.getDate())) {
-            JOptionPane.showMessageDialog(this, "Start date cannot be before birth date!");
+            JOptionPane.showMessageDialog(this, "La date de début ne peut pas être antérieure à la date de naissance !");
             return false;
         }
-        
+
         if (siteComboBox.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(this, "Please select a construction site!");
+            JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier !");
             return false;
         }
-        
-        
+
+
         String phone = phoneNumberField.getText().trim();
         if (!phone.isEmpty() && !phone.matches("\\d{10}")) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid 10-digit phone number!");
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un numéro de téléphone valide à 10 chiffres !");
             phoneNumberField.requestFocus();
             return false;
         }
-        
+
         return true;
     }
 
@@ -361,11 +377,10 @@ public class WorkerForm extends JDialog {
                 int siteId = siteDAO.getSiteIdByName(selectedSiteName);
                 worker.setAssignedSiteID(siteId);
             } else {
-                worker.setAssignedSiteID(0); // No site assigned
+                worker.setAssignedSiteID(1);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            worker.setAssignedSiteID(0); // Default to 0 if error occurs
+        } catch (SQLException e) {
+            worker.setAssignedSiteID(1); // Default to 0 if error occurs
         }
         return worker;
     }

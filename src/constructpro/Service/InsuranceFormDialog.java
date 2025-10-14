@@ -31,7 +31,7 @@ public class InsuranceFormDialog extends JDialog {
     };
 
      public InsuranceFormDialog(Window owner, Insurance insurance, int workerId) {
-        super(owner, "Insurance Form", ModalityType.APPLICATION_MODAL);
+        super(owner, "Formulaire d'assurance", ModalityType.APPLICATION_MODAL);
         this.insurance = insurance;
         this.workerId = workerId;
 
@@ -57,16 +57,16 @@ public class InsuranceFormDialog extends JDialog {
 
         insuranceNumberField = new JTextField();
         agencyNameField = new JTextField();
-        statusComboBox = new JComboBox<>(new String[]{"Active", "Non Active", "Pending"});
+        statusComboBox = new JComboBox<>(new String[]{"Active", "Non Active", "Bureau"});
         startDateChooser = new JDateChooser();
         endDateChooser = new JDateChooser();
 
         int row = 0;
-        addField(fieldsPanel, gbc, row++, "Insurance Number:", insuranceNumberField);
-        addField(fieldsPanel, gbc, row++, "Agency Name:", agencyNameField);
-        addField(fieldsPanel, gbc, row++, "Status:", statusComboBox);
-        addField(fieldsPanel, gbc, row++, "Start Date:", startDateChooser);
-        addField(fieldsPanel, gbc, row++, "End Date:", endDateChooser);
+        addField(fieldsPanel, gbc, row++, "Numéro d'assurance:", insuranceNumberField);
+        addField(fieldsPanel, gbc, row++, "Nom de l'agence:", agencyNameField);
+            addField(fieldsPanel, gbc, row++, "Statut:", statusComboBox);
+        addField(fieldsPanel, gbc, row++, "Date de début:", startDateChooser);
+        addField(fieldsPanel, gbc, row++, "Date de fin:", endDateChooser);
 
         // === Documents Panel ===
         documentListModel = new DefaultListModel<>();
@@ -78,8 +78,8 @@ public class InsuranceFormDialog extends JDialog {
         JComboBox<String> documentComboBox = new JComboBox<>(DOCUMENT_OPTIONS);
 
         // Add / Remove buttons
-        JButton addDocButton = new JButton("Add Document");
-        JButton removeDocButton = new JButton("Remove Selected");
+        JButton addDocButton = new JButton("Ajouter Document");
+        JButton removeDocButton = new JButton("Supprimer sélectionné");
 
         addDocButton.addActionListener(e -> {
             String selectedDoc = (String) documentComboBox.getSelectedItem();
@@ -87,7 +87,7 @@ public class InsuranceFormDialog extends JDialog {
                 documentListModel.addElement(selectedDoc);
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "Document already added or not selected.",
+                    "Document déjà ajouté ou non sélectionné",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
             }
@@ -111,14 +111,14 @@ public class InsuranceFormDialog extends JDialog {
 
         // Final document panel
         JPanel docPanel = new JPanel(new BorderLayout(5, 5));
-        docPanel.setBorder(BorderFactory.createTitledBorder("Insurance Documents"));
+        docPanel.setBorder(BorderFactory.createTitledBorder("Documents d'assurance"));
         docPanel.add(documentScroll, BorderLayout.CENTER);
         docPanel.add(addPanel, BorderLayout.NORTH);
         docPanel.add(removePanel, BorderLayout.SOUTH);
 
         // === Bottom Buttons ===
-        JButton saveButton = new JButton("Save");
-        JButton cancelButton = new JButton("Cancel");
+        JButton saveButton = new JButton("Enregistrer");
+        JButton cancelButton = new JButton("Annuler");
 
         saveButton.addActionListener(this::saveInsurance);
         cancelButton.addActionListener(e -> dispose());
