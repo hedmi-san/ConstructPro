@@ -16,10 +16,11 @@ public class SalaryPage extends JPanel{
     private JTextField searchText;
     private JLabel jLabel1;
     private JLabel jLabel2;
-    private JTable sitesTable;
+    private JTable activeSitesTable;
     private JScrollPane jScrollPane1;
     private ConstructionSiteDAO siteDAO;
     private WorkerDAO workerDAO;
+    private SalaryDAO salaryDAO;
     private JFrame parentFrame;
     public Connection conn;
     
@@ -41,6 +42,7 @@ public class SalaryPage extends JPanel{
         try {
             siteDAO = new ConstructionSiteDAO(conn);
             workerDAO = new WorkerDAO(conn);
+            salaryDAO = new SalaryDAO(conn);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données: " + e.getMessage());
         }
@@ -49,10 +51,10 @@ public class SalaryPage extends JPanel{
     private void initComponents() {
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
-        jLabel1 = new JLabel("Chantier");
+        jLabel1 = new JLabel("Salaire");
         jLabel2 = new JLabel("Rechercher");
-        sitesTable = new JTable();
-        jScrollPane1 = new JScrollPane(sitesTable);
+        activeSitesTable = new JTable();
+        jScrollPane1 = new JScrollPane(activeSitesTable);
         
         setLayout(new BorderLayout());
 
@@ -66,9 +68,9 @@ public class SalaryPage extends JPanel{
         headerPanel.add(refreshButton);
         
         // Table setup
-        sitesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        sitesTable.setDefaultEditor(Object.class, null);
-        sitesTable.addMouseListener(new MouseAdapter() {
+        activeSitesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        activeSitesTable.setDefaultEditor(Object.class, null);
+        activeSitesTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
@@ -93,7 +95,36 @@ public class SalaryPage extends JPanel{
     }
 
     private void loadDataSet() {
-        
+        try {
+            ResultSet rs = siteDAO.getActiveConstructionSiteInfo();
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"ID", "Nom", "Lieu","Date de début", "Date de fin"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make table non-editable
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                        rs.getInt("Id"),
+                        rs.getString("Name"),
+                        rs.getString("Location"),
+                        rs.getDate("Start_Date"),
+                        rs.getDate("End_date")
+                });
+            }
+            activeSitesTable.setModel(model);
+            
+            // Hide ID column if desired
+            activeSitesTable.getColumnModel().getColumn(0).setMinWidth(0);
+            activeSitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            activeSitesTable.getColumnModel().getColumn(0).setWidth(0);
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     private void loadSearchResults(String searchterm){

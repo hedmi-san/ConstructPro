@@ -120,6 +120,29 @@ public class ConstructionSiteDAO {
                                s.total_cost
                            FROM 
                                ConstructionSite s
+                           WHERE
+                               s.status is not null
+                           """;
+            rs = st.executeQuery(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return rs;
+    }
+    
+    public ResultSet getActiveConstructionSiteInfo(){
+        try {
+            String query = """ 
+                           SELECT 
+                               s.id,
+                               s.name,
+                               s.location,
+                               s.start_date,
+                               s.end_date
+                           FROM 
+                               ConstructionSite s
+                           WHERE 
+                               s.status = 'Active'
                            """;
             rs = st.executeQuery(query);
         } catch (SQLException throwables) {

@@ -26,20 +26,21 @@ public class WorkersPage extends JPanel {
     private WorkerDAO workerDAO;
     private JFrame parentFrame;
     public Connection conn;
+
     public WorkersPage(Connection connection) {
         this.conn = connection;
         initDAO();
         initComponents();
         loadDataSet();
     }
-    
+
     public WorkersPage(JFrame parent) {
         this.parentFrame = parent;
         initDAO();
         initComponents();
         loadDataSet();
     }
-    
+
     private void initDAO() {
         try {
             workerDAO = new WorkerDAO(conn);
@@ -55,27 +56,37 @@ public class WorkersPage extends JPanel {
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
-        jLabel1 = new JLabel("Workers");
+        jLabel1 = new JLabel("Chantier");
         jLabel2 = new JLabel("Rechercher");
         workerstTable = new JTable();
         jScrollPane1 = new JScrollPane(workerstTable);
 
         setLayout(new BorderLayout());
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // Header panel with BorderLayout to separate left and right sections
+        JPanel headerPanel = new JPanel(new BorderLayout());
+
+        // Left section with "Chantier" label
+        JPanel leftHeaderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         jLabel1.setFont(new Font("SansSerif", Font.BOLD, 24));
-        headerPanel.add(jLabel1);
-        headerPanel.add(Box.createHorizontalStrut(50));
+        leftHeaderPanel.add(jLabel1);
+
+        // Right section with search components
+        JPanel rightHeaderPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         jLabel2.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        headerPanel.add(jLabel2);
-        headerPanel.add(searchText);
-        headerPanel.add(refreshButton);
+        rightHeaderPanel.add(jLabel2);
+        rightHeaderPanel.add(searchText);
+        rightHeaderPanel.add(refreshButton);
+
+        // Add both sections to header panel
+        headerPanel.add(leftHeaderPanel, BorderLayout.WEST);
+        headerPanel.add(rightHeaderPanel, BorderLayout.EAST);
 
         // Table setup
         workerstTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workerstTable.setDefaultEditor(Object.class, null);
-
         workerstTable.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     showWorkerDetails();
@@ -83,10 +94,16 @@ public class WorkersPage extends JPanel {
             }
         });
 
-        // Buttons panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10)); // 10px horizontal and vertical gap
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // top, left, bottom, right padding
+        // Buttons panel with white text
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         buttonPanel.setPreferredSize(new Dimension(0, 60));
+
+        // Set white foreground color for buttons
+        deleteButton.setForeground(Color.WHITE);
+        editButton.setForeground(Color.WHITE);
+        addButton.setForeground(Color.WHITE);
+
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
@@ -95,27 +112,26 @@ public class WorkersPage extends JPanel {
         refreshButton.addActionListener(e -> {
             String searchTerm = searchText.getText().trim();
             if (searchTerm.isEmpty()) {
-                loadDataSet(); 
+                loadDataSet();
             } else {
                 loadSearchResults(searchTerm);
             }
         });
-        
+
         add(headerPanel, BorderLayout.NORTH);
         add(jScrollPane1, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-        
+
         setupButtonActions();
     }
-    
-    
+
     private void setupButtonActions() {
         // Add button action
         addButton.addActionListener(e -> {
             try {
-                WorkerForm dialog = new WorkerForm(parentFrame, "Ajouter un Ouvrier", null,conn);
+                WorkerForm dialog = new WorkerForm(parentFrame, "Ajouter un Ouvrier", null, conn);
                 dialog.setVisible(true);
-        
+
                 if (dialog.isConfirmed()) {
                     Worker newWorker = dialog.getWorkerFromForm();
                     workerDAO.insertWorker(newWorker);
@@ -127,7 +143,7 @@ public class WorkersPage extends JPanel {
                 JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
-        
+
         // Edit button action
         editButton.addActionListener(e -> {
             int selectedRow = workerstTable.getSelectedRow();
@@ -135,12 +151,12 @@ public class WorkersPage extends JPanel {
                 try {
                     DefaultTableModel model = (DefaultTableModel) workerstTable.getModel();
                     int workerId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
-                    
+
                     Worker existingWorker = workerDAO.getWorkerById(workerId);
                     if (existingWorker != null) {
-                        WorkerForm dialog = new WorkerForm(parentFrame, "Modifier l'Ouvrier", existingWorker,conn);
+                        WorkerForm dialog = new WorkerForm(parentFrame, "Modifier l'Ouvrier", existingWorker, conn);
                         dialog.setVisible(true);
-                        
+
                         if (dialog.isConfirmed()) {
                             Worker updatedWorker = dialog.getWorkerFromForm();
                             updatedWorker.setId(workerId);
@@ -157,19 +173,19 @@ public class WorkersPage extends JPanel {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner un ouvrier à modifier.");
             }
         });
-        
+
         // Delete button action
         deleteButton.addActionListener(e -> {
             int selectedRow = workerstTable.getSelectedRow();
             if (selectedRow >= 0) {
                 DefaultTableModel model = (DefaultTableModel) workerstTable.getModel();
                 String workerName = model.getValueAt(selectedRow, 1) + " " + model.getValueAt(selectedRow, 2);
-                
-                int confirm = JOptionPane.showConfirmDialog(this, 
-                    "Êtes-vous sûr de vouloir supprimer l'ouvrier " + workerName + "?",
-                    "Confirmer la suppression", 
-                    JOptionPane.YES_NO_OPTION);
-                
+
+                int confirm = JOptionPane.showConfirmDialog(this,
+                        "Êtes-vous sûr de vouloir supprimer l'ouvrier " + workerName + "?",
+                        "Confirmer la suppression",
+                        JOptionPane.YES_NO_OPTION);
+
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         int workerId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
@@ -201,22 +217,22 @@ public class WorkersPage extends JPanel {
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getInt("age"),
-                        rs.getString("job"),
-                        rs.getString("phone_number"),
-                        rs.getString("site_name")
+                    rs.getInt("id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getInt("age"),
+                    rs.getString("job"),
+                    rs.getString("phone_number"),
+                    rs.getString("site_name")
                 });
             }
             workerstTable.setModel(model);
-            
+
             // Hide ID column if desired
             workerstTable.getColumnModel().getColumn(0).setMinWidth(0);
             workerstTable.getColumnModel().getColumn(0).setMaxWidth(0);
             workerstTable.getColumnModel().getColumn(0).setWidth(0);
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -229,10 +245,10 @@ public class WorkersPage extends JPanel {
             try {
                 DefaultTableModel model = (DefaultTableModel) workerstTable.getModel();
                 int workerId = (Integer) model.getValueAt(selectedRow, 0); // Get worker ID from hidden column
-                
+
                 Worker worker = workerDAO.getWorkerById(workerId);
                 if (worker != null) {
-                    WorkerDetailDialog detailDialog = new WorkerDetailDialog(parentFrame, worker,conn);
+                    WorkerDetailDialog detailDialog = new WorkerDetailDialog(parentFrame, worker, conn);
                     detailDialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Worker not found!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -243,39 +259,40 @@ public class WorkersPage extends JPanel {
             }
         }
     }
+
     private void loadSearchResults(String searchTerm) {
-    try {
-        ResultSet rs = workerDAO.searchWorkersByName(searchTerm);
-        DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone", "Chantier"}, 0
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
+        try {
+            ResultSet rs = workerDAO.searchWorkersByName(searchTerm);
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone", "Chantier"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getInt("age"),
+                    rs.getString("job"),
+                    rs.getString("phone_number"),
+                    rs.getString("site_name")
+                });
             }
-        };
+            workerstTable.setModel(model);
+            workerstTable.getColumnModel().getColumn(0).setMinWidth(0);
+            workerstTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            workerstTable.getColumnModel().getColumn(0).setWidth(0);
 
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getInt("age"),
-                rs.getString("job"),
-                rs.getString("phone_number"),
-                rs.getString("site_name")
-            });
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        workerstTable.setModel(model);
-        workerstTable.getColumnModel().getColumn(0).setMinWidth(0);
-        workerstTable.getColumnModel().getColumn(0).setMaxWidth(0);
-        workerstTable.getColumnModel().getColumn(0).setWidth(0);
-
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-}
-   
+
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }
