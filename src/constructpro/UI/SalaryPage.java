@@ -5,6 +5,8 @@ import java.sql.Connection;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DAO.SalaryDAO;
+import constructpro.DTO.ConstructionSite;
+import constructpro.Service.WorkerList;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
@@ -147,7 +149,23 @@ public class SalaryPage extends JPanel{
     }
     
     private void showSiteAssignedWorkersList(){
-        
+        int selectedRow = activeSitesTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                DefaultTableModel model = (DefaultTableModel) activeSitesTable.getModel();
+                int siteID = (Integer) model.getValueAt(selectedRow, 0); // Get worker ID from hidden column
+
+                ConstructionSite site = siteDAO.getConstructionSiteById(siteID);
+                if (site != null) {
+                    WorkerList workerListDialog = new WorkerList(parentFrame, site, conn);
+                    workerListDialog.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "La liste des travailleurs est introuvable.!", "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erreur lors du chargement la liste des travailleursé : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     
 }

@@ -117,7 +117,7 @@ public class WorkerDetailDialog extends JDialog {
     documentsPanel.setBackground(DARK_BACKGROUND);
     documentsPanel.setBorder(BorderFactory.createTitledBorder(
         BorderFactory.createLineBorder(LABEL_COLOR), 
-        "Required Documents", 
+        "Documents requis", 
         0, 0, 
         new Font("Segoe UI", Font.BOLD, 14), 
         TEXT_COLOR
@@ -158,7 +158,7 @@ public class WorkerDetailDialog extends JDialog {
         infoPanel.setBackground(DARK_BACKGROUND);
         infoPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(LABEL_COLOR), 
-            "Insurance Information", 
+            "Informations sur l'assurance", 
             0, 0, 
             new Font("Segoe UI", Font.BOLD, 14), 
             TEXT_COLOR
@@ -169,11 +169,11 @@ public class WorkerDetailDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
 
         // Add insurance fields
-        addInsuranceField(infoPanel, gbc, 0, 0, "Insurance Number:", insuranceNumberValue);
-        addInsuranceField(infoPanel, gbc, 0, 1, "Agency:", agencyNameValue);
-        addInsuranceField(infoPanel, gbc, 0, 2, "Status:", statusValue);
-        addInsuranceField(infoPanel, gbc, 0, 3, "Start Date:", insuranceStartDateValue);
-        addInsuranceField(infoPanel, gbc, 0, 4, "End Date:", endDateValue);
+        addInsuranceField(infoPanel, gbc, 0, 0, "Numéro d'assurance :", insuranceNumberValue);
+        addInsuranceField(infoPanel, gbc, 0, 1, "Agence:", agencyNameValue);
+        addInsuranceField(infoPanel, gbc, 0, 2, "Etat:", statusValue);
+        addInsuranceField(infoPanel, gbc, 0, 3, "Date de début :", insuranceStartDateValue);
+        addInsuranceField(infoPanel, gbc, 0, 4, "Date de fin :", endDateValue);
 
         // Documents section
         JPanel documentsSection = new JPanel(new BorderLayout(0, 10));
@@ -182,7 +182,7 @@ public class WorkerDetailDialog extends JDialog {
         // Progress bar
         JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         progressPanel.setBackground(DARK_BACKGROUND);
-        JLabel docLabel = new JLabel("Document Progress:");
+        JLabel docLabel = new JLabel("Avancement du document :");
         docLabel.setForeground(LABEL_COLOR);
         progressPanel.add(docLabel);
         progressPanel.add(documentProgressBar);
@@ -194,8 +194,8 @@ public class WorkerDetailDialog extends JDialog {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonsPanel.setBackground(DARK_BACKGROUND);
 
-        JButton addInsuranceBtn = new JButton("Add");
-        JButton editInsuranceBtn = new JButton("Edit");
+        JButton addInsuranceBtn = new JButton("Ajouter");
+        JButton editInsuranceBtn = new JButton("Modifier");
 
         // Style buttons if needed
         addInsuranceBtn.setBackground(new Color(0, 123, 255));
@@ -227,8 +227,8 @@ public class WorkerDetailDialog extends JDialog {
 
                 if (existingInsurance == null) {
                     JOptionPane.showMessageDialog(insurancePanel, 
-                        "No insurance record found for this worker.", 
-                        "No Insurance", 
+                        "Aucun dossier d'assurance trouvé pour ce travailleur.", 
+                        "Pas d'assurance", 
                         JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
@@ -249,8 +249,8 @@ public class WorkerDetailDialog extends JDialog {
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(insurancePanel, 
-                    "Error fetching insurance: " + ex.getMessage(), 
-                    "Database Error", 
+                    "Erreur lors de la récupération de l'assurance : " + ex.getMessage(), 
+                    "Erreur de base de données", 
                     JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -309,7 +309,7 @@ public class WorkerDetailDialog extends JDialog {
     tabbedPane.addTab("Profile", profileScroll);
     
     // Add insurance tab
-    tabbedPane.addTab("Insurance", insurancePanel);
+    tabbedPane.addTab("Assurance", insurancePanel);
     
     add(tabbedPane, BorderLayout.CENTER);
 }
@@ -361,7 +361,7 @@ public class WorkerDetailDialog extends JDialog {
     nameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
     
     // Status indicator
-    JLabel statusLabel = new JLabel(isSubmitted ? "✓ Submitted" : "✗ Missing");
+    JLabel statusLabel = new JLabel(isSubmitted ? "Déposé" : "Absent");
     statusLabel.setForeground(isSubmitted ? DOCUMENT_SUBMITTED : DOCUMENT_MISSING);
     statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
     
@@ -394,25 +394,25 @@ public class WorkerDetailDialog extends JDialog {
         int row = 0;
         
         // Two-column layout
-        addFieldToPanel(gbc, 0, row, "Father Name :", fatherNameValue, "Chantier :", chantierValue);
+        addFieldToPanel(gbc, 0, row, "Nom du père:", fatherNameValue, "Chantier :", chantierValue);
         row++;
-        addFieldToPanel(gbc, 0, row, "Mother Name :", motherNameValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Nom du mère:", motherNameValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "Birth Date :", birthDateValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Date de Naissance:", birthDateValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "Birth Place :", birthPlaceValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Lieux de Naissance:", birthPlaceValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "Start Date :", startDateValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Date de Début:", startDateValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "Family Situation :", familySituationValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Situation familiale:", familySituationValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "Identity Card Number :", identityCardNumberValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Numéro de carte d'identité:", identityCardNumberValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "ID Card Date :", idCardDateValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Date de la carte d'identité:", idCardDateValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "Phone Number :", phoneNumberValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Numéro de téléphone:", phoneNumberValue, "", null);
         row++;
-        addFieldToPanel(gbc, 0, row, "Fonction :", roleValue, "", null);
+        addFieldToPanel(gbc, 0, row, "Poste:", roleValue, "", null);
     }
     
     private void addFieldToPanel(GridBagConstraints gbc, int startX, int y, String label1, JLabel value1, String label2, JLabel value2) {
@@ -483,7 +483,7 @@ public class WorkerDetailDialog extends JDialog {
         insurance.getAgencyName() : "N/A");
     
     // Set status with color coding
-    String status = insurance.getStatus() != null ? insurance.getStatus() : "Unknown";
+    String status = insurance.getStatus() != null ? insurance.getStatus() : "Inconnu";
     statusValue.setText(status);
     statusValue.setForeground(getStatusColor(status));
     

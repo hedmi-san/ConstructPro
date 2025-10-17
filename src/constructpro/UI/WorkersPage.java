@@ -44,8 +44,7 @@ public class WorkersPage extends JPanel {
     private void initDAO() {
         try {
             workerDAO = new WorkerDAO(conn);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données: " + e.getMessage());
         }
     }
@@ -138,8 +137,7 @@ public class WorkersPage extends JPanel {
                     loadDataSet();
                     JOptionPane.showMessageDialog(this, "Ouvrier ajouté avec succès!");
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (HeadlessException | SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -165,8 +163,7 @@ public class WorkersPage extends JPanel {
                             JOptionPane.showMessageDialog(this, "Ouvrier modifié avec succès!");
                         }
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (HeadlessException | SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
@@ -192,8 +189,7 @@ public class WorkersPage extends JPanel {
                         workerDAO.deleteWorker(workerId);
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Ouvrier supprimé avec succès!");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    } catch (HeadlessException | SQLException ex) {
                         JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -234,7 +230,6 @@ public class WorkersPage extends JPanel {
             workerstTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -251,11 +246,10 @@ public class WorkersPage extends JPanel {
                     WorkerDetailDialog detailDialog = new WorkerDetailDialog(parentFrame, worker, conn);
                     detailDialog.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Worker not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Employé non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error loading worker details: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erreur lors du chargement des détails de l'employé : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -289,7 +283,6 @@ public class WorkersPage extends JPanel {
             workerstTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
