@@ -161,6 +161,29 @@ public class WorkerDAO {
         return rs;
     }
     
+    public ResultSet getWorkersBySiteId(int siteId) {
+    ResultSet rs = null;
+    String sql = """
+                SELECT 
+                    id,
+                    first_name,
+                    last_name,
+                    TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age,
+                    job,
+                    phone_number
+                FROM worker WHERE site_id = ?
+                 """;
+    try {
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setInt(1, siteId);
+        rs = stmt.executeQuery();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return rs;
+}
+    
     public ResultSet searchWorkersByName(String searchTerm) {
     try {
         String query = """
