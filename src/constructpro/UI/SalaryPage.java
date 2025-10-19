@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.sql.Connection;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerDAO;
-import constructpro.DAO.SalaryDAO;
+import constructpro.DAO.SalaryRecordDAO;
 import constructpro.DTO.ConstructionSite;
 import constructpro.Service.WorkerList;
 import java.awt.*;
@@ -22,7 +22,7 @@ public class SalaryPage extends JPanel{
     private JScrollPane jScrollPane1;
     private ConstructionSiteDAO siteDAO;
     private WorkerDAO workerDAO;
-    private SalaryDAO salaryDAO;
+    private SalaryRecordDAO salaryDAO;
     private JFrame parentFrame;
     public Connection conn;
     
@@ -44,7 +44,7 @@ public class SalaryPage extends JPanel{
         try {
             siteDAO = new ConstructionSiteDAO(conn);
             workerDAO = new WorkerDAO(conn);
-            salaryDAO = new SalaryDAO(conn);
+            salaryDAO = new SalaryRecordDAO(conn);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données: " + e.getMessage());
         }
