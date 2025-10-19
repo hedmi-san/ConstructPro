@@ -96,8 +96,8 @@ public class WorkerList extends JDialog{
 
                 Worker worker = workerDAO.getWorkerById(workerID);
                 if (worker != null) {
-                    ShowSitesDetails detailDialog = new ShowSitesDetails(parentFrame, site, conn);
-                    detailDialog.setVisible(true);
+                    salaryOption options = new salaryOption(parentFrame, worker, conn);
+                    options.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Chantier non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
