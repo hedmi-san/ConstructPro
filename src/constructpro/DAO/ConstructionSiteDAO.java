@@ -151,6 +151,35 @@ public class ConstructionSiteDAO {
         return rs;
     }
     
+    public ResultSet getSpecificActiveConstructionSiteInfo(String searchTerm) {
+        ResultSet rs = null;
+        try {
+            String query = """
+                       SELECT 
+                           s.id,
+                           s.name,
+                           s.location,
+                           s.start_date,
+                           s.end_date
+                       FROM 
+                           ConstructionSite s
+                       WHERE 
+                           s.status = 'Active' 
+                           AND (s.name LIKE ? OR s.location LIKE ?)
+                       """;
+
+            PreparedStatement ps = connection.prepareStatement(query);
+            String term = "%" + searchTerm + "%";
+            ps.setString(1, term);
+            ps.setString(2, term);
+
+            rs = ps.executeQuery();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+    }
+    return rs;
+}
+    
     // UPDATE - Update an existing construction site
     public void updateConstructionSite(ConstructionSite site) throws SQLException {
         String sql = "UPDATE ConstructionSite SET name=?, location=?, status=?, start_date=?, end_date=? WHERE id=?";

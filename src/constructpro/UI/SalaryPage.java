@@ -145,7 +145,34 @@ public class SalaryPage extends JPanel{
     }
     
     private void loadSearchResults(String searchterm){
-        
+        try {
+            ResultSet rs = siteDAO.getSpecificActiveConstructionSiteInfo(searchterm);
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"ID", "Nom", "Lieu","Date de début", "Date de fin"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("Id"),
+                    rs.getString("Name"),
+                    rs.getString("Location"),
+                    rs.getDate("Start_Date"),
+                    rs.getDate("End_date")
+                });
+            }
+            activeSitesTable.setModel(model);
+            activeSitesTable.getColumnModel().getColumn(0).setMinWidth(0);
+            activeSitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            activeSitesTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     private void showSiteAssignedWorkersList(){

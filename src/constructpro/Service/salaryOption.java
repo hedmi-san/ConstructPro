@@ -22,7 +22,6 @@ public class salaryOption extends JDialog{
         setSize(455, 200);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        getContentPane().setBackground(Color.BLACK);
     }
     
     private void initializeComponents(){
@@ -54,7 +53,7 @@ public class salaryOption extends JDialog{
         button.setFocusPainted(false);
         button.setBorderPainted(true);
         button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
-        button.setFont(new Font("Arial", Font.PLAIN, 14));
+        button.setFont(new Font("Segeo UI", Font.PLAIN, 14));
         
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -74,7 +73,7 @@ public class salaryOption extends JDialog{
         // Title label
         JLabel titleLabel = new JLabel("Choisissez une action");
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        titleLabel.setFont(new Font("Segeo UI", Font.PLAIN, 18));
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -85,13 +84,13 @@ public class salaryOption extends JDialog{
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 1;
-        gbc.insets = new Insets(0, 20, 20, 10);
+        gbc.insets = new Insets(0, 20, 20, 30);
         add(histoireBtn, gbc);
         
         // Salaire button
         gbc.gridx = 1;
         gbc.gridy = 1;
-        gbc.insets = new Insets(0, 10, 20, 20);
+        gbc.insets = new Insets(0, 30, 20, 20);
         add(salaireBtn, gbc);
     }
 }
