@@ -12,23 +12,28 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-        
+
 public class PaymentPanel extends JDialog {
+
     private WorkerDAO workerDAO;
     private PaymentCheckDAO paymentCheckDAO;
     private SalaryRecordDAO salaryRecordDAO;
     private JTextField dailySalaryField, workDaysField, paymentAmountField, paidAmountField;
+    private JComboBox<String> paymentTypeCombo;
     private JButton saveButton, calculateButton;
     private JLabel titleLabel;
-    
-    public PaymentPanel(JFrame parent,Worker worker,Connection connection) throws SQLException {
-        super(parent, "Histoire", true);
+    private double dailySalary, paymentAmount, paidAmount;
+
+    public PaymentPanel(JFrame parent, Worker worker, Connection connection) throws SQLException {
+        super(parent, "Paiement - " + worker.getLastName() + " " + worker.getFirstName(), true);
         this.workerDAO = new WorkerDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
-        initComponents(worker.getLastName()+" "+ worker.getFirstName());
+
+        initComponents(worker.getLastName() + " " + worker.getFirstName());
         setupLayout();
         setupActions();
+
         pack();
         setSize(600, 600);
         setLocationRelativeTo(parent);
@@ -38,8 +43,14 @@ public class PaymentPanel extends JDialog {
     private void initComponents(String workerFullName) {
         // Title
         titleLabel = new JLabel(workerFullName, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);
+
+        // Payment type combo
+        paymentTypeCombo = new JComboBox<>(new String[]{"Par Jour", "Par Tâche"});
+        paymentTypeCombo.setBackground(Color.BLACK);
+        paymentTypeCombo.setForeground(Color.WHITE);
+        paymentTypeCombo.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
         // Text fields
         dailySalaryField = createTextField();
@@ -67,7 +78,7 @@ public class PaymentPanel extends JDialog {
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        button.setPreferredSize(new Dimension(120, 28));
+        button.setPreferredSize(new Dimension(120, 30));
         return button;
     }
 
@@ -88,33 +99,44 @@ public class PaymentPanel extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
 
         int row = 0;
-
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(titleLabel, gbc);
         gbc.gridwidth = 1;
         row++;
 
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(createLabel("Type de Paiement"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(paymentTypeCombo, gbc);
+        row++;
+
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(createLabel("Salaire Quotidien"), gbc);
         gbc.gridx = 1;
         formPanel.add(dailySalaryField, gbc);
         row++;
 
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(createLabel("Jours de travail"), gbc);
         gbc.gridx = 1;
         formPanel.add(workDaysField, gbc);
         row++;
 
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(createLabel("Montant du Paiement"), gbc);
         gbc.gridx = 1;
         formPanel.add(paymentAmountField, gbc);
         row++;
 
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(createLabel("Le montant payé"), gbc);
         gbc.gridx = 1;
         formPanel.add(paidAmountField, gbc);
@@ -130,6 +152,8 @@ public class PaymentPanel extends JDialog {
     }
 
     private void setupActions() {
+        paymentTypeCombo.addActionListener(e -> updateFieldAvailability());
+
         calculateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -138,35 +162,63 @@ public class PaymentPanel extends JDialog {
         });
 
         saveButton.addActionListener(e -> {
-            //TODO:
+            // TODO: save logic connection with PayrollService
             dispose();
         });
     }
 
+    private void updateFieldAvailability() {
+        String type = (String) paymentTypeCombo.getSelectedItem();
+
+        boolean isDaily = type.equals("Par Jour");
+        boolean isTask = type.equals("Par Tâche");
+
+        dailySalaryField.setEnabled(isDaily);
+        workDaysField.setEnabled(isDaily);
+        paymentAmountField.setEnabled(isTask);
+    }
+
     private void calculatePayment() {
+        String type = (String) paymentTypeCombo.getSelectedItem();
         try {
-            double daily = Double.parseDouble(dailySalaryField.getText().trim());
-            int days = Integer.parseInt(workDaysField.getText().trim());
-            double total = daily * days;
-            paymentAmountField.setText(String.format("%.2f", total));
+            if (type.equals("Par Jour")) {
+                double daily = Double.parseDouble(dailySalaryField.getText().trim());
+                int days = Integer.parseInt(workDaysField.getText().trim());
+                paymentAmount = daily * days;
+                paymentAmountField.setText(String.format("%.2f", paymentAmount));
+
+            } else if (type.equals("Par Tâche")) {
+                // TODO:
+            }
+
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Veuillez entrer des valeurs valides !");
+            JOptionPane.showMessageDialog(this, "Veuillez entrer des valeurs valides !", "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+// Accessor methods
     public double getDailySalary() {
-        return Double.parseDouble(dailySalaryField.getText().trim());
+        return parseField(dailySalaryField);
     }
 
     public int getWorkDays() {
-        return Integer.parseInt(workDaysField.getText().trim());
+        return (int) parseField(workDaysField);
     }
 
     public double getPaymentAmount() {
-        return Double.parseDouble(paymentAmountField.getText().trim());
+        return parseField(paymentAmountField);
     }
 
     public double getPaidAmount() {
-        return Double.parseDouble(paidAmountField.getText().trim());
+        return parseField(paidAmountField);
     }
+
+    private double parseField(JTextField field) {
+        try {
+            return Double.parseDouble(field.getText().trim());
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
 }
