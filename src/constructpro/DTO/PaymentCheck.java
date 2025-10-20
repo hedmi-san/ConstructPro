@@ -5,9 +5,9 @@ import java.time.LocalDate;
 public class PaymentCheck {
     private int id;
     private int salaryrecordId;
-    private LocalDate payementDay;
+    private LocalDate paymentDate;
     private double paidAmount;
-    private double salary;
+    private double baseSalary;
 
     public int getId() {
         return id;
@@ -25,12 +25,12 @@ public class PaymentCheck {
         this.salaryrecordId = salaryrecordId;
     }
 
-    public LocalDate getPayementDay() {
-        return payementDay;
+    public LocalDate getPaymentDay() {
+        return paymentDate;
     }
 
-    public void setPayementDay(LocalDate payementDay) {
-        this.payementDay = payementDay;
+    public void setPaymentDay(LocalDate paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
     public double getPaidAmount() {
@@ -41,12 +41,15 @@ public class PaymentCheck {
         this.paidAmount = paidAmount;
     }
 
-    public double getSalary() {
-        return salary;
+    public double getBaseSalary() {
+        return baseSalary;
     }
 
-    public void setSalary(double salary) {
-        this.salary = salary;
+    public void setBaseSalary(double baseSalary) {
+        this.baseSalary = baseSalary;
     }
     
+    public double getRetainedThisPayment() {
+        return baseSalary - paidAmount;
+    }
 }

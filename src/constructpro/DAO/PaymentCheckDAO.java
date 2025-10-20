@@ -1,5 +1,6 @@
 package constructpro.DAO;
 
+import constructpro.DTO.PaymentCheck;
 import java.sql.*;
 
 public class PaymentCheckDAO {
