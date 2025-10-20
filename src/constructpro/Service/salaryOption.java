@@ -4,6 +4,8 @@ import java.awt.*;
 import java.sql.*;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class salaryOption extends JDialog{
     private Connection conn;
@@ -11,6 +13,7 @@ public class salaryOption extends JDialog{
     private Worker worker;
     private JButton histoireBtn;
     private JButton salaireBtn;
+    private JFrame parentFrame;
     
     public salaryOption(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "Choisissez une action", true);
@@ -35,14 +38,22 @@ public class salaryOption extends JDialog{
         // Add action listeners
         histoireBtn.addActionListener(e -> {
             dispose();
-            // Open Histoire window
-            // new HistoireDialog(parent, worker, conn).setVisible(true);
+            try {
+                // Open Histoire window
+                new HistoireDialog(parentFrame, worker, conn).setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(salaryOption.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
         salaireBtn.addActionListener(e -> {
             dispose();
-            // Open Salaire window
-            // new SalaireDialog(parent, worker, conn).setVisible(true);
+            try {
+                // Open Salaire window
+                new PaymentPanel(parentFrame, worker, conn).setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(salaryOption.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
     
@@ -92,5 +103,9 @@ public class salaryOption extends JDialog{
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 30, 20, 20);
         add(salaireBtn, gbc);
+    }
+    
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 }

@@ -2,7 +2,6 @@ package constructpro.Service;
 
 import javax.swing.*;
 import java.sql.*;
-import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
@@ -12,7 +11,6 @@ import javax.swing.table.DefaultTableModel;
 
 public class WorkerList extends JDialog{
     private Connection conn;
-    private final ConstructionSiteDAO siteDAO;
     private final ConstructionSite site;
     private JTable workerstTable;
     private JScrollPane jScrollPane1;
@@ -20,7 +18,6 @@ public class WorkerList extends JDialog{
     private JFrame parentFrame;
     public WorkerList(JFrame parent, ConstructionSite site,Connection connection) throws SQLException {
         super(parent, "Workers List", true);
-        this.siteDAO = new ConstructionSiteDAO(connection);
         this.site= site;
         this.workerDAO = new WorkerDAO(connection);
         this.conn = connection;
