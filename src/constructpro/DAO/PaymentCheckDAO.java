@@ -72,7 +72,7 @@ public class PaymentCheckDAO {
     /**
      * Insert a new payment check
      */
-    public PaymentCheck insert(PaymentCheck check) throws SQLException {
+    public PaymentCheck insertPaymentCheck(PaymentCheck check) throws SQLException {
         String sql = "INSERT INTO payment_check (salary_record_id, payment_date, base_salary, paid_amount) " +
                      "VALUES (?, ?, ?, ?)";
         
@@ -102,7 +102,7 @@ public class PaymentCheckDAO {
     /**
      * Update an existing payment check
      */
-    public void update(PaymentCheck check) throws SQLException {
+    public void updatePaymentCheck(PaymentCheck check) throws SQLException {
         String sql = "UPDATE payment_check SET payment_date = ?, base_salary = ?, paid_amount = ? " +
                      "WHERE id = ?";
         
