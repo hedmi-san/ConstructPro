@@ -3,7 +3,6 @@ package constructpro.Service;
 import javax.swing.*;
 import java.sql.*;
 import constructpro.DTO.SalaryRecord;
-import constructpro.DTO.PaymentCheck;
 import constructpro.DAO.PaymentCheckDAO;
 import constructpro.DAO.SalaryRecordDAO;
 import constructpro.DAO.WorkerDAO;
@@ -12,6 +11,7 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 
 public class PaymentPanel extends JDialog {
 
@@ -22,18 +22,18 @@ public class PaymentPanel extends JDialog {
     private JComboBox<String> paymentTypeCombo;
     private JButton saveButton, calculateButton;
     private JLabel titleLabel;
-    private double dailySalary, paymentAmount, paidAmount;
+    private double paymentAmount;
+    private LocalDate paymentDate;
+    private boolean isDaily;
 
     public PaymentPanel(JFrame parent, Worker worker, Connection connection) throws SQLException {
-        super(parent, "Paiement - " + worker.getLastName() + " " + worker.getFirstName(), true);
+        super(parent, "Paiement", true);
         this.workerDAO = new WorkerDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
-
         initComponents(worker.getLastName() + " " + worker.getFirstName());
         setupLayout();
-        setupActions();
-
+        setupActions(worker.getId());
         pack();
         setSize(600, 600);
         setLocationRelativeTo(parent);
@@ -61,6 +61,9 @@ public class PaymentPanel extends JDialog {
         // Buttons
         saveButton = createButton("Enregistrer");
         calculateButton = createButton("Calculer");
+        
+        // Initialize isDaily based on default selection
+        isDaily = true; // "Par Jour" is default
     }
 
     private JTextField createTextField() {
@@ -133,6 +136,7 @@ public class PaymentPanel extends JDialog {
         formPanel.add(createLabel("Montant du Paiement"), gbc);
         gbc.gridx = 1;
         formPanel.add(paymentAmountField, gbc);
+        paymentAmountField.setEditable(false);
         row++;
 
         gbc.gridx = 0;
@@ -151,31 +155,107 @@ public class PaymentPanel extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void setupActions() {
-        paymentTypeCombo.addActionListener(e -> updateFieldAvailability());
-
+    private void setupActions(int workerId) {
+        
+        // Fix: Update isDaily when combo box selection changes
+        paymentTypeCombo.addActionListener(e -> {
+            String type = (String) paymentTypeCombo.getSelectedItem();
+            isDaily = type.equals("Par Jour");
+            updateFieldAvailability();
+            // Clear payment amount when switching types
+            paymentAmountField.setText("");
+            paymentDate = null; // Reset payment date when changing type
+        });
+        
         calculateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 calculatePayment();
+                paymentDate = LocalDate.now();
             }
         });
 
         saveButton.addActionListener(e -> {
-            // TODO: save logic connection with PayrollService
-            dispose();
+            try {
+                // CRITICAL: Check if paidAmountField is empty first
+                if (paidAmountField.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Veuillez saisir le montant payé !");
+                    return;
+                }
+                
+                // Validation based on payment type
+                if (isDaily) {
+                    if (dailySalaryField.getText().trim().isEmpty() || 
+                        workDaysField.getText().trim().isEmpty() ||
+                        paymentAmountField.getText().trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs pour le paiement par jour !");
+                        return;
+                    }
+                    
+                    // Ensure calculate was clicked for daily payment
+                    if (paymentDate == null) {
+                        JOptionPane.showMessageDialog(this, "Veuillez cliquer sur 'Calculer' avant d'enregistrer !");
+                        return;
+                    }
+                }
+                
+                // Validate numeric values
+                double paidAmt = getPaidAmount();
+                if (paidAmt <= 0) {
+                    JOptionPane.showMessageDialog(this, "Le montant payé doit être supérieur à zéro !");
+                    return;
+                }
+                
+                // Set payment date if not already set (for task-based payment)
+                if (paymentDate == null) {
+                    paymentDate = LocalDate.now();
+                }
+
+                // Get or create salary record
+                SalaryRecord record = salaryRecordDAO.getOrCreateSalaryRecord(workerId);
+
+                // Prepare PaymentCheck
+                double paymentAmt;
+                if (isDaily) {
+                    paymentAmt = getPaymentAmount();
+                    if (paymentAmt <= 0) {
+                        JOptionPane.showMessageDialog(this, "Le montant du paiement calculé doit être supérieur à zéro !");
+                        return;
+                    }
+                } else {
+                    // For task-based payment, payment amount equals paid amount
+                    paymentAmt = paidAmt;
+                }
+
+                // Insert PaymentCheck
+                paymentCheckDAO.insertPaymentCheck(record.getId(), paymentDate,paymentAmt,paidAmt);
+
+                // Update totals in salary record
+                record.setTotalEarned(record.getTotalEarned() + paymentAmt);
+                record.setAmountPaid(record.getAmountPaid() + paidAmt);
+                salaryRecordDAO.updateSalaryRecord(record);
+
+                JOptionPane.showMessageDialog(this, "Paiement enregistré avec succès !");
+                dispose();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Veuillez entrer des valeurs numériques valides !");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'enregistrement : " + ex.getMessage());
+            }
         });
     }
 
     private void updateFieldAvailability() {
-        String type = (String) paymentTypeCombo.getSelectedItem();
-
-        boolean isDaily = type.equals("Par Jour");
-        boolean isTask = type.equals("Par Tâche");
-
         dailySalaryField.setEnabled(isDaily);
         workDaysField.setEnabled(isDaily);
-        paymentAmountField.setEnabled(isTask);
+        
+        // Clear fields when disabling them
+        if (!isDaily) {
+            dailySalaryField.setText("");
+            workDaysField.setText("");
+        }
     }
 
     private void calculatePayment() {
@@ -184,19 +264,21 @@ public class PaymentPanel extends JDialog {
             if (type.equals("Par Jour")) {
                 double daily = Double.parseDouble(dailySalaryField.getText().trim());
                 int days = Integer.parseInt(workDaysField.getText().trim());
+                
+                if (daily <= 0 || days <= 0) {
+                    JOptionPane.showMessageDialog(this, "Le salaire et les jours doivent être supérieurs à zéro !");
+                    return;
+                }
+                
                 paymentAmount = daily * days;
                 paymentAmountField.setText(String.format("%.2f", paymentAmount));
-
-            } else if (type.equals("Par Tâche")) {
-                // TODO:
             }
-
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Veuillez entrer des valeurs valides !", "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-// Accessor methods
+    // Accessor methods
     public double getDailySalary() {
         return parseField(dailySalaryField);
     }
@@ -220,5 +302,4 @@ public class PaymentPanel extends JDialog {
             return 0.0;
         }
     }
-
 }
