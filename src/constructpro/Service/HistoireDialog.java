@@ -5,13 +5,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DAO.SalaryRecordDAO;
 import constructpro.DAO.PaymentCheckDAO;
 import constructpro.DTO.Worker;
 import constructpro.DTO.SalaryRecord;
+import constructpro.DTO.PaymentCheck;
 
 public class HistoireDialog extends JDialog {
     private Connection conn;
@@ -191,17 +191,17 @@ public class HistoireDialog extends JDialog {
         try {
             tableModel.setRowCount(0); // Clear existing data
             
-            List<PaymentCheck> checks = getAllWorkerPaymentChecks(salaryRecord.getId());
+            List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
             
             double runningRemaining ;
             
             for (PaymentCheck check : checks) {
-                runningRemaining = check.baseSalary - check.paidAmount;
+                runningRemaining = check.getBaseSalary() - check.getPaidAmount();
                 
                 Object[] row = {
-                    check.paymentDate,
-                    String.format("%.0f", check.baseSalary),
-                    String.format("%.0f", check.paidAmount),
+                    check.getPaymentDay(),
+                    String.format("%.0f", check.getBaseSalary()),
+                    String.format("%.0f", check.getPaidAmount()),
                     String.format("%.0f", runningRemaining)
                 };
                 tableModel.addRow(row);
@@ -222,25 +222,7 @@ public class HistoireDialog extends JDialog {
         }
     }
     
-    private List<PaymentCheck> getAllWorkerPaymentChecks(int salaryRecordId) throws SQLException {
-        List<PaymentCheck> checks = new ArrayList<>();
-        String sql = "SELECT id, payment_date, base_salary, paid_amount FROM payment_check WHERE salary_record_id = ? ORDER BY payment_date";
-        
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, salaryRecordId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    PaymentCheck check = new PaymentCheck();
-                    check.id = rs.getInt("id");
-                    check.paymentDate = rs.getDate("payment_date").toLocalDate().toString();
-                    check.baseSalary = rs.getDouble("base_salary");
-                    check.paidAmount = rs.getDouble("paid_amount");
-                    checks.add(check);
-                }
-            }
-        }
-        return checks;
-    }
+    
     
     private void deleteSelectedPayment() {
         int selectedRow = historyTable.getSelectedRow();
@@ -259,16 +241,16 @@ public class HistoireDialog extends JDialog {
             
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                List<PaymentCheck> checks = getAllWorkerPaymentChecks(salaryRecord.getId());
+                List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
                 PaymentCheck checkToDelete = checks.get(selectedRow);
                 
-                // Delete from database
-                paymentCheckDAO.deletePaymentCheck(checkToDelete.id);
-                
                 // Update salary record
-                salaryRecord.setAmountPaid(salaryRecord.getAmountPaid() - checkToDelete.paidAmount);
+                salaryRecord.setAmountPaid(salaryRecord.getAmountPaid() - checkToDelete.getPaidAmount());
+                salaryRecord.setTotalEarned(salaryRecord.getTotalEarned() - checkToDelete.getBaseSalary());
                 salaryRecordDAO.updateSalaryRecord(salaryRecord);
                 
+                //Delete the PC from database
+                paymentCheckDAO.deletePaymentCheck(checkToDelete.getId());
                 // Reload table
                 loadPaymentHistory();
                 
@@ -301,13 +283,5 @@ public class HistoireDialog extends JDialog {
             "Fonctionnalité de modification à implémenter",
             "Information",
             JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    // Inner class to hold payment check data
-    private static class PaymentCheck {
-        int id;
-        String paymentDate;
-        double baseSalary;
-        double paidAmount;
-    }
+    } 
 }
