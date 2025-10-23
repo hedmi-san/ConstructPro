@@ -21,4 +21,20 @@ public class PaymentCheckDAO {
             stmt.executeUpdate();
         }
     }
+    
+    public void getAllWorkerPaymentChecks(int salary_record_id) throws SQLException{
+        String sql ="SELECT payment_date,base_salary,paid_amount FROM payment_check WHERE salary_record_id = ? ";
+        try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1,salary_record_id);
+            stmt.executeQuery();
+        }
+    }
+    
+    public void deletePaymentCheck(int id)throws SQLException {
+        String sql = "DELETE FROM payment_check WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
 }
