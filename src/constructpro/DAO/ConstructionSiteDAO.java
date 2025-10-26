@@ -80,6 +80,7 @@ public class ConstructionSiteDAO {
                 site.setId(rs.getInt("id"));
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
+                site.setStatus(rs.getString("status"));
                 site.setStartDate(rs.getDate("start_date").toLocalDate());
                 site.setEndDate(rs.getDate("end_date").toLocalDate());
                 return site;
