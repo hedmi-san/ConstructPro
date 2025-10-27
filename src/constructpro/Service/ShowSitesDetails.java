@@ -1,17 +1,23 @@
 package constructpro.Service;
 
 import constructpro.DAO.ConstructionSiteDAO;
+import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.ConstructionSite;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.ResultSet;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.table.DefaultTableModel;
 
 public class ShowSitesDetails extends JDialog {
     
     private Connection conn;
     private ConstructionSiteDAO siteDao;
+    private WorkerDAO workerDao;
     private ConstructionSite site;
     
     //Colors
@@ -20,17 +26,19 @@ public class ShowSitesDetails extends JDialog {
     private JLabel siteNameLabel, locationLabel, statusLabel, startDateLabel, endDateLabel;
     
     // Panels
-    private JPanel mainPanel, headerPanel, tabPanel, contentPanel;
+    private JPanel mainPanel, headerPanel, tabPanel, contentPanel, bottomPanel;
     private JPanel infoPanel, workersPanel, costPanel, billsPanel;
     
     // Tab buttons
-    private JButton infoTab, workersTab, costTab, billsTab;
+    private JButton infoTab, workersTab, costTab, billsTab,supprimerBtn,ajouterBtn;
+    private JTable workersTable;
     private CardLayout cardLayout;
     
     public ShowSitesDetails(JFrame parent, ConstructionSite site, Connection connection) throws SQLException {
         super(parent, "Détails du chantier", true);
         this.site = site;
         this.siteDao = new ConstructionSiteDAO(connection);
+        this.workerDao = new WorkerDAO(connection);
         this.conn = connection;
         
         initializeComponents();
@@ -56,6 +64,13 @@ public class ShowSitesDetails extends JDialog {
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
         
+        //Initialize the table
+        workersTable = new JTable();
+        
+        //Create Buttons
+        supprimerBtn = new JButton("Supprimer");
+        ajouterBtn = new JButton("Affecter");
+        
         // Create tab panels
         infoPanel = createInfoPanel();
         workersPanel = createWorkersPanel();
@@ -67,12 +82,17 @@ public class ShowSitesDetails extends JDialog {
         workersTab = createTabButton("workers");
         costTab = createTabButton("Cost");
         billsTab = createTabButton("Bills");
-        
+
         // Add action listeners to tabs
         infoTab.addActionListener(e -> switchTab("Info", infoTab));
         workersTab.addActionListener(e -> switchTab("workers", workersTab));
         costTab.addActionListener(e -> switchTab("Cost", costTab));
         billsTab.addActionListener(e -> switchTab("Bills", billsTab));
+        
+        //Add action listeners to buttons
+        supprimerBtn.addActionListener(e-> unassignWorkers());
+        ajouterBtn.addActionListener(e -> assignWorkers());
+      
     }
     
     private JButton createTabButton(String text) {
@@ -97,6 +117,9 @@ public class ShowSitesDetails extends JDialog {
         // Highlight selected tab
         selectedButton.setForeground(Color.ORANGE);
     }
+    
+    private void unassignWorkers(){}
+    private void assignWorkers(){}
     
     private JPanel createInfoPanel() {
         JPanel panel = new JPanel();
@@ -137,11 +160,16 @@ public class ShowSitesDetails extends JDialog {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        
-        JLabel label = new JLabel("Workers information will be displayed here");
-        label.setForeground(Color.WHITE);
-        panel.add(label, BorderLayout.NORTH);
-        
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
+        bottomPanel.setBackground(DARK_BACKGROUND);
+        workersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        workersTable.setDefaultEditor(Object.class, null);
+        JScrollPane scrollPane = new JScrollPane(workersTable);
+        scrollPane.setBackground(DARK_BACKGROUND);
+        bottomPanel.add(supprimerBtn);
+        bottomPanel.add(ajouterBtn);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
         return panel;
     }
     
@@ -234,6 +262,38 @@ public class ShowSitesDetails extends JDialog {
     private void populateWorkersData() {
         // TODO: Fetch and display workers data from database
         // Example: Create a JTable with worker information
+        try {
+            ResultSet rs = workerDao.getWorkersBySiteId(site.getId());
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getInt("age"),
+                    rs.getString("job"),
+                    rs.getString("phone_number")
+                });
+            }
+            workersTable.setModel(model);
+
+            // Hide ID column if desired
+            workersTable.getColumnModel().getColumn(0).setMinWidth(0);
+            workersTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            workersTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+        
     }
     
     private void populateCostData() {

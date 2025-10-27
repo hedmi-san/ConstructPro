@@ -26,6 +26,7 @@ public class HistoireDialog extends JDialog {
     private JButton supprimerBtn;
     private JButton modifierBtn;
     private JPanel totalsPanel;
+    private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     
     public HistoireDialog(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "History", true);
@@ -45,7 +46,7 @@ public class HistoireDialog extends JDialog {
         setSize(1000, 600);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        getContentPane().setBackground(Color.BLACK);
+        getContentPane().setBackground(DARK_BACKGROUND);
     }
     
     private void initializeComponents() {
@@ -78,7 +79,7 @@ public class HistoireDialog extends JDialog {
     
     private JPanel createTotalsPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 4));
-        panel.setBackground(Color.BLACK);
+        panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(BorderFactory.createMatteBorder(2, 1, 1, 1, Color.WHITE));
         panel.setPreferredSize(new Dimension(0, 40));
         
@@ -113,7 +114,7 @@ public class HistoireDialog extends JDialog {
     }
     
     private void styleTable() {
-        historyTable.setBackground(Color.BLACK);
+        historyTable.setBackground(DARK_BACKGROUND);
         historyTable.setForeground(Color.WHITE);
         historyTable.setGridColor(Color.WHITE);
         historyTable.setSelectionBackground(Color.DARK_GRAY);
@@ -159,7 +160,7 @@ public class HistoireDialog extends JDialog {
         
         // Top panel with title
         JPanel topPanel = new JPanel();
-        topPanel.setBackground(Color.BLACK);
+        topPanel.setBackground(DARK_BACKGROUND);
         JLabel titleLabel = new JLabel("Salaire");
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -178,7 +179,7 @@ public class HistoireDialog extends JDialog {
         
         // Bottom panel with buttons
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
-        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.setBackground(DARK_BACKGROUND);
         bottomPanel.add(supprimerBtn);
         bottomPanel.add(modifierBtn);
         
