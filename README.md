@@ -1,5 +1,3 @@
----
-
 ````{"variant":"standard","title":"README for ConstructPro Payment Management Module","id":"58940"}
 # ConstructPro ERP — Payment Management Module
 
@@ -58,3 +56,4 @@ Focused on intelligent automation and robust system design for real-world enterp
 
 ---
 ```
+````
