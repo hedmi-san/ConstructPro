@@ -1,15 +1,15 @@
-🏗️ ConstructPro ERP
+## 🏗️ ConstructPro ERP
 
 Comprehensive Construction Company Management System
 
-📘 Overview
+## 📘 Overview
 
 ConstructPro is a full-featured ERP (Enterprise Resource Planning) desktop application designed to streamline the operations of construction companies.
 Built with Java Swing, MySQL, and a clean modular architecture, it manages all key business aspects — from workers and attendance to equipment, materials, sites, suppliers, insurance, and payroll.
 
 The system is developed to provide data consistency, easy scalability, and real-time operational visibility across departments.
 
-🧭 Core Objectives
+## 🧭 Core Objectives
 
 Automate worker management, attendance, and salary tracking.
 
@@ -21,7 +21,7 @@ Centralize all company operations into one database-backed system.
 
 Enable clear financial reporting (salaries, rentals, site budgets, etc.).
 
-🏗️ System Modules
+## 🏗️ System Modules
 Module Description
 Authentication Secure login system for authorized users.
 Dashboard Central control panel summarizing key stats and navigation.
