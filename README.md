@@ -69,21 +69,6 @@ Each layer has a **single responsibility**:
 
 ---
 
-## 👨‍💻 Author
+## Made by
 
-**Mister Abdo**
-Network Engineer & Computer Science Student
-Focused on intelligent automation and robust system design for real-world enterprise software.
-
----
-
-> _“Precision in logic, clarity in design — that’s how great software is built.”_
-
-```
-
----
-```
-
-```
-
-```
+** Abdelmoumen Djerdi**
