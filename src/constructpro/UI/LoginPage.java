@@ -80,6 +80,7 @@ public class LoginPage extends JFrame {
 
         this.add(loginButton);
         loginButton.setText("LOGIN");
+        loginButton.setForeground(Color.WHITE);
         loginButton.setHorizontalAlignment(SwingConstants.CENTER);
         loginButton.addActionListener(new ActionListener() {
             @Override

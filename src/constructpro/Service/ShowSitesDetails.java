@@ -23,14 +23,13 @@ public class ShowSitesDetails extends JDialog {
     //Colors
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     // Labels for site info
-    private JLabel siteNameLabel, locationLabel, statusLabel, startDateLabel, endDateLabel;
     
     // Panels
-    private JPanel mainPanel, headerPanel, tabPanel, contentPanel, bottomPanel;
-    private JPanel infoPanel, workersPanel, costPanel, billsPanel;
+    private JPanel mainPanel, headerPanel, tabPanel, contentPanel;
+    private JPanel workersPanel, costPanel, billsPanel;
     
     // Tab buttons
-    private JButton infoTab, workersTab, costTab, billsTab,supprimerBtn,ajouterBtn;
+    private JButton workersTab, costTab, billsTab,supprimerBtn,ajouterBtn;
     private JTable workersTable;
     private CardLayout cardLayout;
     
@@ -44,7 +43,6 @@ public class ShowSitesDetails extends JDialog {
         initializeComponents();
         setupLayout();
         setupStyling();
-        populateData();
         populateWorkersData();
         populateCostData();
         populateBillsData();
@@ -69,22 +67,20 @@ public class ShowSitesDetails extends JDialog {
         
         //Create Buttons
         supprimerBtn = new JButton("Supprimer");
+        supprimerBtn.setForeground(Color.WHITE);
         ajouterBtn = new JButton("Affecter");
-        
+        ajouterBtn.setForeground(Color.WHITE);
         // Create tab panels
-        infoPanel = createInfoPanel();
         workersPanel = createWorkersPanel();
         costPanel = createCostPanel();
         billsPanel = createBillsPanel();
         
         // Create tab buttons
-        infoTab = createTabButton("Info");
         workersTab = createTabButton("workers");
         costTab = createTabButton("Cost");
         billsTab = createTabButton("Bills");
 
         // Add action listeners to tabs
-        infoTab.addActionListener(e -> switchTab("Info", infoTab));
         workersTab.addActionListener(e -> switchTab("workers", workersTab));
         costTab.addActionListener(e -> switchTab("Cost", costTab));
         billsTab.addActionListener(e -> switchTab("Bills", billsTab));
@@ -109,7 +105,6 @@ public class ShowSitesDetails extends JDialog {
         cardLayout.show(contentPanel, tabName);
         
         // Reset all tab button styles
-        infoTab.setForeground(Color.GRAY);
         workersTab.setForeground(Color.GRAY);
         costTab.setForeground(Color.GRAY);
         billsTab.setForeground(Color.GRAY);
@@ -120,41 +115,7 @@ public class ShowSitesDetails extends JDialog {
     
     private void unassignWorkers(){}
     private void assignWorkers(){}
-    
-    private JPanel createInfoPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(DARK_BACKGROUND);
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        
-        // Create labels
-        siteNameLabel = createInfoLabel("Name :");
-        locationLabel = createInfoLabel("Location :");
-        statusLabel = createInfoLabel("Status :");
-        startDateLabel = createInfoLabel("Start Date :");
-        endDateLabel = createInfoLabel("End Date :");
-        
-        panel.add(siteNameLabel);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(locationLabel);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(statusLabel);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(startDateLabel);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(endDateLabel);
-        panel.add(Box.createVerticalGlue());
-        
-        return panel;
-    }
-    
-    private JLabel createInfoLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setForeground(Color.WHITE);
-        label.setFont(new Font("Arial", Font.PLAIN, 14));
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        return label;
-    }
+   
     
     private JPanel createWorkersPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -211,13 +172,11 @@ public class ShowSitesDetails extends JDialog {
         // Tab panel
         tabPanel.setBackground(DARK_BACKGROUND);
         tabPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
-        tabPanel.add(infoTab);
         tabPanel.add(workersTab);
         tabPanel.add(costTab);
         tabPanel.add(billsTab);
         
         // Add panels to card layout
-        contentPanel.add(infoPanel, "Info");
         contentPanel.add(workersPanel, "workers");
         contentPanel.add(costPanel, "Cost");
         contentPanel.add(billsPanel, "Bills");
@@ -240,23 +199,12 @@ public class ShowSitesDetails extends JDialog {
     
     private void setupStyling() {
         // Set default selected tab
-        infoTab.setForeground(Color.WHITE);
-        workersTab.setForeground(Color.GRAY);
+        workersTab.setForeground(Color.WHITE);
         costTab.setForeground(Color.GRAY);
         billsTab.setForeground(Color.GRAY);
         
         // Set background
         getContentPane().setBackground(Color.BLACK);
-    }
-    
-    private void populateData() {
-        if (site != null) {
-            siteNameLabel.setText("Name : " + site.getName());
-            locationLabel.setText("Location : " + site.getLocation());
-            statusLabel.setText("Status : " + site.getStatus());
-            startDateLabel.setText("Start Date : " + (site.getStartDate() != null ? site.getStartDate().toString() : "N/A"));
-            endDateLabel.setText("End Date : " + (site.getEndDate() != null ? site.getEndDate().toString() : "N/A"));
-        }
     }
     
     private void populateWorkersData() {
