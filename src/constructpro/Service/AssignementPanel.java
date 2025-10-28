@@ -23,7 +23,7 @@ public class AssignementPanel extends JDialog {
         initializeComponents();
         setupLayout();
         populateData();
-        setSize(800, 600);
+        setSize(300, 90);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }

@@ -195,7 +195,7 @@ public class Dashboard extends JFrame {
             }
         });
         
-        WorkersButton.setText("Workers");
+        WorkersButton.setText("Travailleurs");
         WorkersButton.setForeground(Color.white);
         WorkersButton.addActionListener(new ActionListener() {
             @Override
@@ -240,7 +240,7 @@ public class Dashboard extends JFrame {
             }
         });
         
-        truckButton.setText("Camion");
+        truckButton.setText("Véhicules");
         truckButton.setForeground(Color.white);
         truckButton.addActionListener(new ActionListener() {
             @Override

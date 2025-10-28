@@ -24,10 +24,10 @@ public class ShowSitesDetails extends JDialog {
     
     // Panels
     private JPanel mainPanel, headerPanel, tabPanel, contentPanel;
-    private JPanel workersPanel, costPanel, billsPanel;
+    private JPanel workersPanel, costPanel, billsPanel,vehiclesPanel;
     
     // Tab buttons
-    private JButton workersTab, costTab, billsTab,supprimerBtn,ajouterBtn;
+    private JButton workersTab, costTab, billsTab,vehiclesTab,supprimerBtn,ajouterBtn;
     private JTable workersTable;
     private CardLayout cardLayout;
     
@@ -72,20 +72,33 @@ public class ShowSitesDetails extends JDialog {
         workersPanel = createWorkersPanel();
         costPanel = createCostPanel();
         billsPanel = createBillsPanel();
+        vehiclesPanel = createVehiclesPanel();
         
         // Create tab buttons
-        workersTab = createTabButton("workers");
-        costTab = createTabButton("Cost");
-        billsTab = createTabButton("Bills");
+        workersTab = createTabButton("Travailleurs");
+        costTab = createTabButton("Coût");
+        billsTab = createTabButton("Factures");
+        vehiclesTab = createTabButton("Véhicules");
 
         // Add action listeners to tabs
-        workersTab.addActionListener(e -> switchTab("workers", workersTab));
-        costTab.addActionListener(e -> switchTab("Cost", costTab));
-        billsTab.addActionListener(e -> switchTab("Bills", billsTab));
+        workersTab.addActionListener(e -> switchTab("Travailleurs", workersTab));
+        costTab.addActionListener(e -> switchTab("Coût", costTab));
+        billsTab.addActionListener(e -> switchTab("Factures", billsTab));
+        vehiclesTab.addActionListener(e -> switchTab("Véhicules",vehiclesTab ));
         
         //Add action listeners to buttons
-        supprimerBtn.addActionListener(e-> unassignWorkers());
-        ajouterBtn.addActionListener(e -> assignWorkers());
+        supprimerBtn.addActionListener(e-> {
+            try {
+                unassignWorkers();
+            } catch (SQLException ex) {
+            }
+        });
+        ajouterBtn.addActionListener(e -> {
+            try {
+                assignWorkers();
+            } catch (SQLException ex) {
+            }
+        });
       
     }
     
@@ -106,16 +119,17 @@ public class ShowSitesDetails extends JDialog {
         workersTab.setForeground(Color.GRAY);
         costTab.setForeground(Color.GRAY);
         billsTab.setForeground(Color.GRAY);
+        vehiclesTab.setForeground(Color.GRAY);
         
         // Highlight selected tab
         selectedButton.setForeground(Color.ORANGE);
     }
     
-    private void unassignWorkers(){
-        
+    private void unassignWorkers() throws SQLException{
+        UnAssignementPanel assign = new UnAssignementPanel(parentFrame,site,conn);
     }
-    private void assignWorkers(){
-        
+    private void assignWorkers() throws SQLException{
+        AssignementPanel unAssign = new AssignementPanel(parentFrame,site,conn);
     }
    
     
@@ -160,10 +174,22 @@ public class ShowSitesDetails extends JDialog {
         return panel;
     }
     
+    private JPanel createVehiclesPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(DARK_BACKGROUND);
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        
+        JLabel label = new JLabel("Véhicules information will be displayed here");
+        label.setForeground(Color.WHITE);
+        panel.add(label, BorderLayout.NORTH);
+        
+        return panel;
+    }
+    
     private void setupLayout() {
         // Header with title and close button
-        JLabel titleLabel = new JLabel("Chantier name");
-        titleLabel.setForeground(DARK_BACKGROUND);
+        JLabel titleLabel = new JLabel(site.getName());
+        titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setBorder(new EmptyBorder(10, 20, 10, 10));
         
@@ -177,11 +203,13 @@ public class ShowSitesDetails extends JDialog {
         tabPanel.add(workersTab);
         tabPanel.add(costTab);
         tabPanel.add(billsTab);
+        tabPanel.add(vehiclesTab);
         
         // Add panels to card layout
-        contentPanel.add(workersPanel, "workers");
-        contentPanel.add(costPanel, "Cost");
-        contentPanel.add(billsPanel, "Bills");
+        contentPanel.add(workersPanel, "Travailleurs");
+        contentPanel.add(costPanel, "Coût");
+        contentPanel.add(billsPanel, "Factures");
+        contentPanel.add(vehiclesPanel,"Véhicules");
         
         // Add border to content panel
         contentPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
