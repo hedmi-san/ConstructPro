@@ -6,8 +6,6 @@ import constructpro.DTO.ConstructionSite;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -19,7 +17,7 @@ public class ShowSitesDetails extends JDialog {
     private ConstructionSiteDAO siteDao;
     private WorkerDAO workerDao;
     private ConstructionSite site;
-    
+    private JFrame parentFrame;
     //Colors
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     // Labels for site info
@@ -113,8 +111,12 @@ public class ShowSitesDetails extends JDialog {
         selectedButton.setForeground(Color.ORANGE);
     }
     
-    private void unassignWorkers(){}
-    private void assignWorkers(){}
+    private void unassignWorkers(){
+        
+    }
+    private void assignWorkers(){
+        
+    }
    
     
     private JPanel createWorkersPanel() {
@@ -250,5 +252,9 @@ public class ShowSitesDetails extends JDialog {
     
     private void populateBillsData() {
         // TODO: Fetch and display bills data from database
+    }
+    
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 }
