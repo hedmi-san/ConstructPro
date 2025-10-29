@@ -47,7 +47,7 @@ public class SalaryPage extends JPanel{
     private void initComponents() {
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
-        jLabel1 = new JLabel("Chantier");
+        jLabel1 = new JLabel("Salaire");
         jLabel2 = new JLabel("Rechercher");
         activeSitesTable = new JTable();
         jScrollPane1 = new JScrollPane(activeSitesTable);

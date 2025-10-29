@@ -44,7 +44,7 @@ public class ShowSitesDetails extends JDialog {
         populateWorkersData();
         populateCostData();
         populateBillsData();
-        
+        populateVehiclesData();
         setSize(800, 600);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -126,10 +126,9 @@ public class ShowSitesDetails extends JDialog {
     }
     
     private void unassignWorkers() throws SQLException{
-        UnAssignementPanel assign = new UnAssignementPanel(parentFrame,site,conn);
     }
     private void assignWorkers() throws SQLException{
-        AssignementPanel unAssign = new AssignementPanel(parentFrame,site,conn);
+        AssignementPanel assignementPanel = new AssignementPanel(parentFrame,site,conn,this);
     }
    
     
@@ -238,8 +237,6 @@ public class ShowSitesDetails extends JDialog {
     }
     
     private void populateWorkersData() {
-        // TODO: Fetch and display workers data from database
-        // Example: Create a JTable with worker information
         try {
             ResultSet rs = workerDao.getWorkersBySiteId(site.getId());
             DefaultTableModel model = new DefaultTableModel(
@@ -282,7 +279,16 @@ public class ShowSitesDetails extends JDialog {
         // TODO: Fetch and display bills data from database
     }
     
+    private void populateVehiclesData(){
+        // TODO: Fetch and display vehicles data from database
+    }
+    
+    
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
+    }
+    
+    public void refreshWorkersTable() {
+        populateWorkersData();
     }
 }

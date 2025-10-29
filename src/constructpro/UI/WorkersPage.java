@@ -55,7 +55,7 @@ public class WorkersPage extends JPanel {
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
-        jLabel1 = new JLabel("Chantier");
+        jLabel1 = new JLabel("Travailleurs");
         jLabel2 = new JLabel("Rechercher");
         workerstTable = new JTable();
         jScrollPane1 = new JScrollPane(workerstTable);

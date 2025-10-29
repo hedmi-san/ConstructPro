@@ -150,6 +150,21 @@ public class WorkerDAO {
         return rs;
     }
     
+        public ResultSet getUnassignedWorkers() throws SQLException {
+        String sql = "SELECT first_name,last_name,job,phone_number FROM worker WHERE site_id = 1";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        return ps.executeQuery();
+    }
+
+    public void assignWorkerToSite(int workerId, int siteId) throws SQLException {
+        String sql = "UPDATE worker SET site_id = ? WHERE id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setInt(2, workerId);
+        ps.executeUpdate();
+    }
+
+    
     public ResultSet getWorkerRecords(int id){
         String query = "SELECT * FROM worker WHERE id = ?";
         try(PreparedStatement ps = connection.prepareStatement(query)) {
@@ -160,6 +175,15 @@ public class WorkerDAO {
         }
         return rs;
     }
+    
+    public void unassignWorker(int workerId) throws SQLException {
+    String sql = "UPDATE worker SET site_id = 1 WHERE id = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setInt(1, workerId);
+        stmt.executeUpdate();
+    }
+}
+
     
     public ResultSet getWorkersBySiteId(int siteId) {
     ResultSet rs = null;

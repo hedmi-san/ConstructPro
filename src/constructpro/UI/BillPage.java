@@ -24,6 +24,10 @@ public class BillPage extends JPanel{
     private void initDAO(){
     
     }
-    private void initComponents(){}
-    private void loadDataSet(){}
+    private void initComponents(){
+        
+    }
+    private void loadDataSet(){
+        
+    }
 }
