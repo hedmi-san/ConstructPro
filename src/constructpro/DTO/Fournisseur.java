@@ -7,8 +7,9 @@ public class Fournisseur {
     private String name;
     private String address;
     private String phone;
-    private String type;
-    private List<Integer> billsID;
+    private double totalSpent;
+    private double totalPaid;
+    private double debt;
 
     public int getId() {
         return Id;
@@ -42,21 +43,28 @@ public class Fournisseur {
         this.phone = phone;
     }
 
-    public String getType() {
-        return type;
+    public double getTotalSpent() {
+        return totalSpent;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTotalSpent(double totalSpent) {
+        this.totalSpent = totalSpent;
     }
 
-    public List<Integer> getBillsID() {
-        return billsID;
+    public double getTotalPaid() {
+        return totalPaid;
     }
 
-    public void setBillsID(List<Integer> billsID) {
-        this.billsID = billsID;
+    public void setTotalPaid(double totalPaid) {
+        this.totalPaid = totalPaid;
     }
-    
+
+    public double getDebt() {
+        return debt;
+    }
+
+    public void setDebt(double debt) {
+        this.debt = debt;
+    }
     
 }

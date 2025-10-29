@@ -1,7 +1,6 @@
 package constructpro.DTO;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class Bill {
     private int Id;
@@ -9,10 +8,9 @@ public class Bill {
     private int siteID;
     private LocalDate billDate;
     private String billType;//there are two types (Tool, Material)
-    private double amount;
-    private boolean paid;//ch7al mdina ll fournisour (شحال سلكناه)
-    private String description;
-    private List<Tool> equipment;
+    private double transferFee;
+    private double cost;
+    
 
     public int getId() {
         return Id;
@@ -20,18 +18,6 @@ public class Bill {
 
     public void setId(int Id) {
         this.Id = Id;
-    }
-
-    public List<Tool> getEquipment() {
-        return equipment;
-    }
-
-    public void setEquipment(List<Tool> equipment) {
-        this.equipment = equipment;
-    }
-    
-    public double getTotalCost() {
-        return amount;
     }
 
     public int getSupplierID() {
@@ -66,29 +52,20 @@ public class Bill {
         this.billType = billType;
     }
 
-    
-    public double getAmount() {
-        return amount;
+    public double getTransferFee() {
+        return transferFee;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setTransferFee(double transferFee) {
+        this.transferFee = transferFee;
     }
 
-    public boolean isPaid() {
-        return paid;
+    public double getCost() {
+        return cost;
     }
 
-    public void setPaid(boolean paid) {
-        this.paid = paid;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCost(double cost) {
+        this.cost = cost;
     }
     
 }
