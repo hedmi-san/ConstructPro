@@ -258,7 +258,7 @@ public class Dashboard extends JFrame {
             }
         });
         
-        MaterialButton.setText("Materials");
+        MaterialButton.setText("Matériel");
         MaterialButton.setForeground(Color.white);
         MaterialButton.addActionListener(new ActionListener() {
             @Override
@@ -267,7 +267,7 @@ public class Dashboard extends JFrame {
             }
         });
         
-        ToolsButton.setText("Tools");
+        ToolsButton.setText("Outils");
         ToolsButton.setForeground(Color.white);
         ToolsButton.addActionListener(new ActionListener() {
             @Override

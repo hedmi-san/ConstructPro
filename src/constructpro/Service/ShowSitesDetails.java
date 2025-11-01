@@ -126,6 +126,7 @@ public class ShowSitesDetails extends JDialog {
     }
     
     private void unassignWorkers() throws SQLException{
+        UnAssignementPanel unAssignementPanel = new UnAssignementPanel(parentFrame, site, conn, this);
     }
     private void assignWorkers() throws SQLException{
         AssignementPanel assignementPanel = new AssignementPanel(parentFrame,site,conn,this);

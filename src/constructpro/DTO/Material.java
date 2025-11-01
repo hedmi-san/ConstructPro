@@ -3,13 +3,14 @@ package constructpro.DTO;
 import java.time.LocalDate;
 
 public class Material {
-     private int Id;
+    private int Id;
+    private int siteId; 
     private int supplierId;
-    private String materialType; // "soil", "concrete", "brick", "sima"
+    private String name; // "soil", "concrete", "brick", "sima","beton"
     private double quantity;
     private double unitPrice;
-    private LocalDate purchasedate;
-    private int transportFee;
+    private LocalDate purchaseDate;
+    
 
     public int getId() {
         return Id;
@@ -17,14 +18,6 @@ public class Material {
 
     public void setId(int Id) {
         this.Id = Id;
-    }
-
-    public int getTransportFee() {
-        return transportFee;
-    }
-
-    public void setTransportFee(int transportFee) {
-        this.transportFee = transportFee;
     }
 
     public int getSupplierId() {
@@ -35,13 +28,22 @@ public class Material {
         this.supplierId = supplierId;
     }
 
-    public String getMaterialType() {
-        return materialType;
+    public int getSiteId() {
+        return siteId;
     }
 
-    public void setMaterialType(String materialType) {
-        this.materialType = materialType;
+    public void setSiteId(int siteId) {
+        this.siteId = siteId;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
 
     public double getQuantity() {
         return quantity;
@@ -60,12 +62,11 @@ public class Material {
     }
 
     public LocalDate getPurchaseDate() {
-        return purchasedate;
+        return purchaseDate;
     }
 
     public void setPurchaseDate(LocalDate date) {
-        this.purchasedate = date;
+        this.purchaseDate = date;
     }
-    
     
 }

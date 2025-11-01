@@ -222,36 +222,6 @@ public class ConstructionSiteDAO {
         }
     }
     
-    // DELETE - Force delete construction site (removes workers first)
-    public void forceDeleteConstructionSite(int id) throws SQLException {
-        connection.setAutoCommit(false); // Start transaction
-        try {
-            // First, unassign workers from this site (set their site_id to NULL)
-            String updateWorkersSQL = "UPDATE worker SET site_id = NULL WHERE site_id = ?";
-            try (PreparedStatement updatePs = connection.prepareStatement(updateWorkersSQL)) {
-                updatePs.setInt(1, id);
-                updatePs.executeUpdate();
-            }
-            
-            // Then delete the construction site
-            String deleteSiteSQL = "DELETE FROM ConstructionSite WHERE id=?";
-            try (PreparedStatement deletePs = connection.prepareStatement(deleteSiteSQL)) {
-                deletePs.setInt(1, id);
-                int rowsAffected = deletePs.executeUpdate();
-                if (rowsAffected == 0) {
-                    throw new SQLException("No construction site found with ID: " + id);
-                }
-            }
-            
-            connection.commit(); // Commit transaction
-        } catch (SQLException e) {
-            connection.rollback(); // Rollback on error
-            throw e;
-        } finally {
-            connection.setAutoCommit(true); // Reset auto-commit
-        }
-    }
-    
     // Get site ID by name
     public int getSiteIdByName(String siteName) throws SQLException {
         if (siteName == null || siteName.equals("Select Site")) {

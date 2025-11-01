@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class Tool {
     private int Id;
-    private String siteName;
+    private int siteId;
     private String name;
     private LocalDate purshaceDate;
     private double quantity;
@@ -19,12 +19,12 @@ public class Tool {
         this.Id = Id;
     }
     
-    public String getSiteName() {
-        return siteName;
+    public int getSiteId() {
+        return siteId;
     }
 
-    public void setSiteName(String siteName) {
-        this.siteName = siteName;
+    public void setSiteName(int siteName) {
+        this.siteId = siteName;
     }
 
     public String getName() {
