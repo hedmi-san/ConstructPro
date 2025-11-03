@@ -203,7 +203,7 @@ public class HistoireDialog extends JDialog {
                     check.getPaymentDay(),
                     String.format("%.0f", check.getBaseSalary()),
                     String.format("%.0f", check.getPaidAmount()),
-                    String.format("%.0f", runningRemaining)
+                    String.format("%.0f", Math.abs(runningRemaining))
                 };
                 tableModel.addRow(row);
             }

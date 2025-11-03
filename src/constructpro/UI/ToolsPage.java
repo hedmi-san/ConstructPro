@@ -119,11 +119,11 @@ public class ToolsPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("id"),
+                    rs.getInt("tool_id"),
                     rs.getString("tool_name"),
                     rs.getString("quantity"),
                     rs.getInt("unit_price"),
-                    rs.getString("assigned_site_id"),
+                    rs.getString("name"),
                     rs.getString("date_acquired")
                 });
             }

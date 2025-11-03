@@ -224,7 +224,7 @@ public class PaymentPanel extends JDialog {
                     }
                 } else {
                     // For task-based payment, payment amount equals paid amount
-                    paymentAmt = paidAmt;
+                    paymentAmt = 0;
                 }
 
                 // Insert PaymentCheck
