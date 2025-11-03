@@ -31,5 +31,14 @@ public class ToolDAO {
         return st.executeQuery(sql);
     }
     
-    
+    public ResultSet searchToolByName(String searchTerm) throws SQLException{
+        String sql = "SELECT t.tool_id, t.tool_name, t.quantity, t.unit_price, c.name, t.date_acquired " +
+                     "FROM tools t " +
+                     "INNER JOIN constructionSite c ON t.assigned_site_id = c.id "+
+                     "WHERE t.tool_name LIKE ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        String likeTerm = "%" + searchTerm + "%";
+        ps.setString(1, likeTerm);
+        return ps.executeQuery();
+    }
 }

@@ -9,6 +9,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
 
 public class MaterialPage  extends JPanel{
     
@@ -18,7 +21,7 @@ public class MaterialPage  extends JPanel{
     private JTextField searchText;
     private JLabel jLabel1;
     private JLabel jLabel2;
-    private JTable workerstTable;
+    private JTable materialTable;
     private JScrollPane jScrollPane1;
     private MaterialDAO materialDAO;
     private JFrame parentFrame;
@@ -41,8 +44,8 @@ public class MaterialPage  extends JPanel{
         searchText = new JTextField(15);
         jLabel1 = new JLabel("Matériel");
         jLabel2 = new JLabel("Rechercher");
-        workerstTable = new JTable();
-        jScrollPane1 = new JScrollPane(workerstTable);
+        materialTable = new JTable();
+        jScrollPane1 = new JScrollPane(materialTable);
 
         setLayout(new BorderLayout());
         
@@ -66,9 +69,9 @@ public class MaterialPage  extends JPanel{
         headerPanel.add(rightHeaderPanel, BorderLayout.EAST);
 
         // Table setup
-        workerstTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        workerstTable.setDefaultEditor(Object.class, null);
-        workerstTable.addMouseListener(new MouseAdapter() {
+        materialTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        materialTable.setDefaultEditor(Object.class, null);
+        materialTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
@@ -104,9 +107,72 @@ public class MaterialPage  extends JPanel{
         add(buttonPanel, BorderLayout.SOUTH);
     }
     
-    private void loadDataSet(){}
+    private void loadDataSet(){
+        try {
+            ResultSet rs = materialDAO.getToolsInfo();
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Chantier", "Date"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make table non-editable
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("material_id"),
+                    rs.getString("material_name"),
+                    rs.getString("quantity"),
+                    rs.getInt("unit_price"),
+                    rs.getString("name"),
+                    rs.getString("date_acquired")
+                });
+            }
+            materialTable.setModel(model);
+
+            // Hide ID column if desired
+            materialTable.getColumnModel().getColumn(0).setMinWidth(0);
+            materialTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            materialTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+       
+    }
     
     private void loadSearchResults(String searchTerm) {
-        
+        try {
+            ResultSet rs = materialDAO.searchMaterialByName(searchTerm);
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Chantier", "Date"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make table non-editable
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("material_id"),
+                    rs.getString("material_name"),
+                    rs.getString("quantity"),
+                    rs.getInt("unit_price"),
+                    rs.getString("name"),
+                    rs.getString("date_acquired")
+                });
+            }
+            materialTable.setModel(model);
+
+            // Hide ID column if desired
+            materialTable.getColumnModel().getColumn(0).setMinWidth(0);
+            materialTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            materialTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

@@ -141,6 +141,36 @@ public class ToolsPage extends JPanel{
     }
 
     private void loadSearchResults(String searchTerm) {
-        
+        try {
+            ResultSet rs = toolDAO.searchToolByName(searchTerm);
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Chantier", "Date"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make table non-editable
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("tool_id"),
+                    rs.getString("tool_name"),
+                    rs.getString("quantity"),
+                    rs.getInt("unit_price"),
+                    rs.getString("name"),
+                    rs.getString("date_acquired")
+                });
+            }
+            toolsTable.setModel(model);
+
+            // Hide ID column if desired
+            toolsTable.getColumnModel().getColumn(0).setMinWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
