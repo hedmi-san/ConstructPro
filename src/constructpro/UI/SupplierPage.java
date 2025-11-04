@@ -1,11 +1,14 @@
 package constructpro.UI;
 
 import constructpro.DAO.SupplierDAO;
+import constructpro.DTO.Fournisseur;
+import constructpro.Service.SupplierForm;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
@@ -16,6 +19,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class SupplierPage extends JPanel{
     
+    private JButton addButton;
     private JButton deleteButton;
     private JButton editButton;
     private JButton refreshButton;
@@ -38,6 +42,7 @@ public class SupplierPage extends JPanel{
         supplierDAO = new SupplierDAO(conn);
     }
     private void initComponents(){
+        addButton =  new JButton("Ajouter");
         editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
@@ -85,9 +90,11 @@ public class SupplierPage extends JPanel{
         buttonPanel.setPreferredSize(new Dimension(0, 60));
 
         // Set white foreground color for buttons
+        addButton.setForeground(Color.WHITE);
         deleteButton.setForeground(Color.WHITE);
         editButton.setForeground(Color.WHITE);
-
+        
+        buttonPanel.add(addButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
 
@@ -104,7 +111,85 @@ public class SupplierPage extends JPanel{
         add(headerPanel, BorderLayout.NORTH);
         add(jScrollPane1, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+        
+        setupButtonActions();
     }
+    
+    private void setupButtonActions() {
+        // Add button action
+        addButton.addActionListener(e -> {
+            try {
+                SupplierForm dialog = new SupplierForm(parentFrame, "Ajouter un Fournisseur", null, conn);
+                dialog.setVisible(true);
+
+                if (dialog.isConfirmed()) {
+                    Fournisseur newSupplier = dialog.getSupplierFromForm();
+                    supplierDAO.insertSupplier(newSupplier);
+                    loadDataSet();
+                    JOptionPane.showMessageDialog(this, "Fournisseur ajouté avec succès!");
+                }
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // Edit button action
+        editButton.addActionListener(e -> {
+            int selectedRow = suppliersTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                try {
+                    DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
+                    int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
+
+                    Fournisseur existingWorker = supplierDAO.getSupplierById(supplierId);
+                    if (existingWorker != null) {
+                        SupplierForm dialog = new SupplierForm(parentFrame, "Modifier le Fournisseur", existingWorker, conn);
+                        dialog.setVisible(true);
+
+                        if (dialog.isConfirmed()) {
+                            Fournisseur updatedSupplier = dialog.getSupplierFromForm();
+                            updatedSupplier.setId(supplierId);
+                            supplierDAO.updateSupplier(updatedSupplier);
+                            loadDataSet();
+                            JOptionPane.showMessageDialog(this, "Fournisseur modifié avec succès!");
+                        }
+                    }
+                } catch (HeadlessException | SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un fournisseur à modifier.");
+            }
+        });
+
+        // Delete button action
+        deleteButton.addActionListener(e -> {
+            int selectedRow = suppliersTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
+                String supplierName = model.getValueAt(selectedRow, 1).toString();
+
+                int confirm = JOptionPane.showConfirmDialog(this,
+                        "Êtes-vous sûr de vouloir supprimer le fournisseur " + supplierName + "?",
+                        "Confirmer la suppression",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
+                        supplierDAO.deleteWorker(supplierId);
+                        loadDataSet();
+                        JOptionPane.showMessageDialog(this, "Ouvrier supprimé avec succès!");
+                    } catch (HeadlessException | SQLException ex) {
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un ouvrier à supprimer.");
+            }
+        });
+    }
+    
     private void loadDataSet(){
         try {
             ResultSet rs = supplierDAO.getSuppliersInfo();

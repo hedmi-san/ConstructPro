@@ -12,9 +12,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WorkerForm extends JDialog {
     private JTextField firstNameField, lastNameField, birthPlaceField, fatherNameField, motherNameField;
@@ -25,13 +23,10 @@ public class WorkerForm extends JDialog {
     private JComboBox<String> siteComboBox;
     private JButton saveButton, cancelButton;
     private boolean confirmed = false;
-    private Worker existingWorker;
     private ConstructionSiteDAO siteDAO;
-    private Map<String, Integer> siteNameToId = new HashMap<>();
 
     public WorkerForm(JFrame parent, String title, Worker worker,Connection connection) throws SQLException {
         super(parent, title, true);
-        this.existingWorker = worker;
         this.siteDAO = new ConstructionSiteDAO(connection);
         initComponents();
         setupLayout();
@@ -388,20 +383,4 @@ public class WorkerForm extends JDialog {
     public boolean isConfirmed() {
         return confirmed;
     }
-    
-    // Getter methods for backward compatibility if needed
-    public String getFirstName() { return firstNameField.getText().trim(); }
-    public String getLastName() { return lastNameField.getText().trim(); }
-    public String getBirthPlace() { return birthPlaceField.getText().trim(); }
-    public LocalDate getBirthDate() { return convertToLocalDate(birthDateChooser.getDate()); }
-    public String getFatherName() { return fatherNameField.getText().trim(); }
-    public String getMotherName() { return motherNameField.getText().trim(); }
-    public LocalDate getStartDate() { return convertToLocalDate(startDateChooser.getDate()); }
-    public String getIDCardNumber() { return identityCardNumberField.getText().trim(); }
-    public LocalDate getIDCardDate() { return convertToLocalDate(identityCardDateChooser.getDate()); }
-    public String getPhone() { return phoneNumberField.getText().trim(); }
-    public String getJob() { return (String) roleComboBox.getSelectedItem(); }
-    public String getAccountNumber() { return accountNumberField.getText().trim(); }
-    public String getFamilySituation() { return (String) familySituationComboBox.getSelectedItem(); }
-    public String getSiteName() { return (String) siteComboBox.getSelectedItem(); }
 }
