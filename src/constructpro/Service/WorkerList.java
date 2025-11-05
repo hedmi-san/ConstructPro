@@ -40,6 +40,7 @@ public class WorkerList extends JDialog{
 
         workerstTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workerstTable.setDefaultEditor(Object.class, null);
+        workerstTable.getTableHeader().setReorderingAllowed(false);
         workerstTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {

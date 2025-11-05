@@ -75,6 +75,7 @@ public class SupplierPage extends JPanel{
         // Table setup
         suppliersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         suppliersTable.setDefaultEditor(Object.class, null);
+        suppliersTable.getTableHeader().setReorderingAllowed(false);
         suppliersTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
@@ -94,9 +95,9 @@ public class SupplierPage extends JPanel{
         deleteButton.setForeground(Color.WHITE);
         editButton.setForeground(Color.WHITE);
         
-        buttonPanel.add(addButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
+        buttonPanel.add(addButton);
 
         refreshButton.setFont(new Font("SansSerif", Font.BOLD, 12));
         refreshButton.addActionListener(e -> {
@@ -194,7 +195,7 @@ public class SupplierPage extends JPanel{
         try {
             ResultSet rs = supplierDAO.getSuppliersInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Chantier", "Date"}, 0
+                    new Object[]{"supplier_id", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -226,5 +227,9 @@ public class SupplierPage extends JPanel{
     
     private void loadSearchResults(String searchterm){
         
+    }
+    
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 }

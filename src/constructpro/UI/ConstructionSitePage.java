@@ -84,6 +84,7 @@ public class ConstructionSitePage extends JPanel {
         // Table setup
         sitesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sitesTable.setDefaultEditor(Object.class, null);
+        sitesTable.getTableHeader().setReorderingAllowed(false);
         sitesTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {

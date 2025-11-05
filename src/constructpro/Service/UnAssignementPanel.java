@@ -41,6 +41,7 @@ public class UnAssignementPanel extends JDialog {
         assignedWorkersTable = new JTable();
         assignedWorkersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         assignedWorkersTable.setDefaultEditor(Object.class, null);
+        assignedWorkersTable.getTableHeader().setReorderingAllowed(false);
         
         unassignButton = new JButton("Désaffecter");
         unassignButton.setBackground(Color.BLACK);

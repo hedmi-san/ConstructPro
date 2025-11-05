@@ -61,6 +61,7 @@ public class AssignementPanel extends JDialog {
         workersTable.getTableHeader().setBackground(new Color(60, 60, 60));
         workersTable.getTableHeader().setForeground(Color.ORANGE);
         workersTable.setDefaultEditor(Object.class, null);
+        workersTable.getTableHeader().setReorderingAllowed(false);
         
         assignBtn = new JButton("Affecter");
         cancelBtn = new JButton("Annuler");

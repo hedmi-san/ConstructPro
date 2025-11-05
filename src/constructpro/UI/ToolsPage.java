@@ -23,7 +23,6 @@ public class ToolsPage extends JPanel{
     private JTable toolsTable;
     private JScrollPane jScrollPane1;
     private ToolDAO toolDAO;
-    private JFrame parentFrame;
     public Connection conn;
     public ToolsPage(Connection connection) {
         this.conn = connection;
@@ -69,6 +68,7 @@ public class ToolsPage extends JPanel{
         // Table setup
         toolsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         toolsTable.setDefaultEditor(Object.class, null);
+        toolsTable.getTableHeader().setReorderingAllowed(false);
         toolsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {

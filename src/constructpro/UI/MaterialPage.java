@@ -24,7 +24,6 @@ public class MaterialPage  extends JPanel{
     private JTable materialTable;
     private JScrollPane jScrollPane1;
     private MaterialDAO materialDAO;
-    private JFrame parentFrame;
     public Connection conn;
     public MaterialPage(Connection connection){
         this.conn = connection;
@@ -71,6 +70,7 @@ public class MaterialPage  extends JPanel{
         // Table setup
         materialTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         materialTable.setDefaultEditor(Object.class, null);
+        materialTable.getTableHeader().setReorderingAllowed(false);
         materialTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {

@@ -23,7 +23,7 @@ public class SupplierDAO {
     }
     
     public void updateSupplier(Fournisseur supplier) throws SQLException{
-        String sql = "UPDATE suppliers SET supplier_name = ?, phone = ?, address = ?,total_spent = ?,total_paid = ? WHERE  id = ?";
+        String sql = "UPDATE suppliers SET supplier_name = ?, phone = ?, address = ?,total_spent = ?,total_paid = ? WHERE  supplier_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
             stmt.setString(2, supplier.getPhone());
@@ -36,7 +36,7 @@ public class SupplierDAO {
     }
     
     public void deleteWorker(int id) throws SQLException{
-        String sql = "DELETE FROM suppliers WHERE id=?";
+        String sql = "DELETE FROM suppliers WHERE supplier_id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -50,7 +50,7 @@ public class SupplierDAO {
     }
     
     public Fournisseur getSupplierById(int id) throws SQLException{
-        String sql = "SELECT * FROM suppliers WHERE id = ?";
+        String sql = "SELECT * FROM suppliers WHERE supplier_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();

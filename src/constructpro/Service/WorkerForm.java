@@ -319,7 +319,7 @@ public class WorkerForm extends JDialog {
 
 
         if (birthDateChooser.getDate().after(new Date())) {
-            JOptionPane.showMessageDialog(this, "La date de naissance ne peut pas être dans le futur !");
+            JOptionPane.showMessageDialog(this, "La date de naissance ne peut pas être dans le future !");
             return false;
         }
 

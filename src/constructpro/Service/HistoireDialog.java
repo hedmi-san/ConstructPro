@@ -124,6 +124,7 @@ public class HistoireDialog extends JDialog {
         historyTable.getTableHeader().setBackground(Color.BLACK);
         historyTable.getTableHeader().setForeground(Color.WHITE);
         historyTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        historyTable.getTableHeader().setReorderingAllowed(false);
         
         // Center align all cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
