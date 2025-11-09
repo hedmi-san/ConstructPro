@@ -76,6 +76,8 @@ public class SalaryPage extends JPanel{
         // Table setup
         activeSitesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         activeSitesTable.setDefaultEditor(Object.class, null);
+        activeSitesTable.setShowVerticalLines(true);
+        activeSitesTable.setGridColor(Color.WHITE);
         activeSitesTable.getTableHeader().setReorderingAllowed(false);
         activeSitesTable.addMouseListener(new MouseAdapter() {
             @Override

@@ -67,4 +67,17 @@ public class SupplierDAO {
         }
         return null;
     }
+    
+    public ResultSet searchSupplierByName(String searchTerm){
+        try {
+        String query = "SELECT * FROM suppliers WHERE supplier_name LIKE ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        String likeTerm = "%" + searchTerm + "%";
+        ps.setString(1, likeTerm);
+        return ps.executeQuery();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+    }
 }

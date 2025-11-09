@@ -121,6 +121,8 @@ public class HistoireDialog extends JDialog {
         historyTable.setSelectionForeground(Color.WHITE);
         historyTable.setFont(new Font("Arial", Font.PLAIN, 14));
         historyTable.setRowHeight(30);
+        historyTable.setShowVerticalLines(true);
+        historyTable.setGridColor(Color.WHITE);
         historyTable.getTableHeader().setBackground(Color.BLACK);
         historyTable.getTableHeader().setForeground(Color.WHITE);
         historyTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));

@@ -68,6 +68,8 @@ public class ToolsPage extends JPanel{
         // Table setup
         toolsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         toolsTable.setDefaultEditor(Object.class, null);
+        toolsTable.setShowVerticalLines(true);
+        toolsTable.setGridColor(Color.WHITE);
         toolsTable.getTableHeader().setReorderingAllowed(false);
         toolsTable.addMouseListener(new MouseAdapter() {
             @Override

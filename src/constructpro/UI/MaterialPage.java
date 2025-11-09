@@ -70,6 +70,8 @@ public class MaterialPage  extends JPanel{
         // Table setup
         materialTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         materialTable.setDefaultEditor(Object.class, null);
+        materialTable.setShowVerticalLines(true);
+        materialTable.setGridColor(Color.WHITE);
         materialTable.getTableHeader().setReorderingAllowed(false);
         materialTable.addMouseListener(new MouseAdapter() {
             @Override

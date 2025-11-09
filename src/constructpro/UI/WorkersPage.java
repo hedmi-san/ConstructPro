@@ -85,6 +85,8 @@ public class WorkersPage extends JPanel {
         workerstTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workerstTable.setDefaultEditor(Object.class, null);
         workerstTable.getTableHeader().setReorderingAllowed(false);
+        workerstTable.setShowVerticalLines(true);
+        workerstTable.setGridColor(Color.WHITE);
         workerstTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {

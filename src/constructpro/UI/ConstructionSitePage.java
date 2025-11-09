@@ -84,6 +84,8 @@ public class ConstructionSitePage extends JPanel {
         // Table setup
         sitesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sitesTable.setDefaultEditor(Object.class, null);
+        sitesTable.setShowVerticalLines(true);
+        sitesTable.setGridColor(Color.WHITE);
         sitesTable.getTableHeader().setReorderingAllowed(false);
         sitesTable.addMouseListener(new MouseAdapter() {
             @Override

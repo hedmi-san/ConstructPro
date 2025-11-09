@@ -141,6 +141,9 @@ public class ShowSitesDetails extends JDialog {
         bottomPanel.setBackground(DARK_BACKGROUND);
         workersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workersTable.setDefaultEditor(Object.class, null);
+        workersTable.setShowVerticalLines(true);
+        workersTable.setGridColor(Color.WHITE);
+        workersTable.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane = new JScrollPane(workersTable);
         scrollPane.setBackground(DARK_BACKGROUND);
         bottomPanel.add(supprimerBtn);

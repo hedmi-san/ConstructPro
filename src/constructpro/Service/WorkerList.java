@@ -5,6 +5,7 @@ import java.sql.*;
 import constructpro.DTO.ConstructionSite;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
+import java.awt.Color;
 import java.awt.HeadlessException;
 import java.awt.event.*;
 import javax.swing.table.DefaultTableModel;
@@ -40,6 +41,8 @@ public class WorkerList extends JDialog{
 
         workerstTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workerstTable.setDefaultEditor(Object.class, null);
+        workerstTable.setShowVerticalLines(true);
+        workerstTable.setGridColor(Color.WHITE);
         workerstTable.getTableHeader().setReorderingAllowed(false);
         workerstTable.addMouseListener(new MouseAdapter() {
             @Override

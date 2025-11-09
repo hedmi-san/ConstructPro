@@ -76,6 +76,8 @@ public class SupplierPage extends JPanel{
         suppliersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         suppliersTable.setDefaultEditor(Object.class, null);
         suppliersTable.getTableHeader().setReorderingAllowed(false);
+        suppliersTable.setShowVerticalLines(true);
+        suppliersTable.setGridColor(Color.WHITE);
         suppliersTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
@@ -226,7 +228,34 @@ public class SupplierPage extends JPanel{
     }
     
     private void loadSearchResults(String searchterm){
-        
+        try {
+            ResultSet rs = supplierDAO.searchSupplierByName(searchterm);
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"supplier_id", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("supplier_id"),
+                    rs.getString("supplier_name"),
+                    rs.getString("phone"),
+                    rs.getString("address"),
+                    rs.getDouble("total_spent"),
+                    rs.getDouble("total_paid")
+                });
+            }
+            suppliersTable.setModel(model);
+            suppliersTable.getColumnModel().getColumn(0).setMinWidth(0);
+            suppliersTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            suppliersTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+        }
     }
     
     public void setParentFrame(JFrame parent) {
