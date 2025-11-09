@@ -1,10 +1,12 @@
 package constructpro.Service;
 
 import constructpro.DAO.ConstructionSiteDAO;
+import constructpro.DAO.WorkerAssignmentDAO;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.ConstructionSite;
 import java.awt.*;
 import java.sql.*;
+import java.time.LocalDate;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -14,6 +16,7 @@ public class AssignementPanel extends JDialog {
     private ConstructionSite site;
     private ConstructionSiteDAO siteDAO;
     private WorkerDAO workerDAO;
+    private WorkerAssignmentDAO workerAssignmentDAO;
     private Connection conn;
 
     private JTable workersTable;
@@ -133,6 +136,7 @@ public class AssignementPanel extends JDialog {
                 for (int row : selectedRows) {
                     int workerId = (int) model.getValueAt(row, 0);
                     workerDAO.assignWorkerToSite(workerId, site.getId());
+                    workerAssignmentDAO.insertAssignment(workerId, site.getId(), LocalDate.now());
                 }
 
                 JOptionPane.showMessageDialog(this,

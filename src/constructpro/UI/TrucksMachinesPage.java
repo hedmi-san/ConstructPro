@@ -5,5 +5,7 @@ import java.sql.Connection;
 
 public class TrucksMachinesPage extends JPanel {
     
-    public TrucksMachinesPage(Connection connection){}
+    public TrucksMachinesPage(Connection connection){
+        
+    }
 }

@@ -3,6 +3,8 @@ package constructpro.Service;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
+import java.time.LocalDate;
+import constructpro.DAO.WorkerAssignmentDAO;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,6 +17,7 @@ public class UnAssignementPanel extends JDialog {
     private Connection conn;
     private WorkerDAO workerDAO;
     private ConstructionSiteDAO siteDAO;
+    private WorkerAssignmentDAO workerAssignmentDAO;
     private JTable assignedWorkersTable;
     private JButton unassignButton, cancelButton;
     private ShowSitesDetails parentDialog;
@@ -130,13 +133,14 @@ public class UnAssignementPanel extends JDialog {
         try {
             for (int row : selectedRows) {
                 int workerId = (int) assignedWorkersTable.getValueAt(row, 0);
-                workerDAO.unassignWorker(workerId); // We'll add this method next
+                workerDAO.unassignWorker(workerId);
+                workerAssignmentDAO.updateWorkerAssignment(workerId, site.getId(),LocalDate.now());
             }
             
             JOptionPane.showMessageDialog(this, "Travailleurs désaffectés avec succès.",
                                           "Succès", JOptionPane.INFORMATION_MESSAGE);
             
-            // 🔄 Refresh parent dialog
+            // Refresh parent dialog
             if (parentDialog != null) {
                 parentDialog.refreshWorkersTable();
             }
