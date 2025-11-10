@@ -12,14 +12,11 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/Service/VehicleForm.java</file>
             <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/SupplierPage.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/HomePage.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/ConstructionSitePage.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/VehiclesPage.java</file>
             <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/Service/SupplierForm.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/MaterialPage.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/Dashboard.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/DAO/WorkerDAO.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/WorkersPage.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/DAO/VehicleDAO.java</file>
             <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/DAO/SupplierDAO.java</file>
         </group>
     </open-files>

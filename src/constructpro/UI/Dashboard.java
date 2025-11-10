@@ -69,7 +69,7 @@ public class Dashboard extends JFrame {
         displayPanel.add("Facture", new BillPage(connection));
         displayPanel.add("Construction Sites", new ConstructionSitePage(connection));
         displayPanel.add("Suppliers", new SupplierPage(connection));
-        displayPanel.add("Trucks", new TrucksMachinesPage(connection));
+        displayPanel.add("Trucks", new VehiclesPage(connection));
         displayPanel.add("Accounting office", new AccountingOffice(connection));
         displayPanel.add("Material", new MaterialPage(connection));
         displayPanel.add("Tools", new ToolsPage(connection));

@@ -1,0 +1,255 @@
+package constructpro.UI;
+
+import constructpro.DAO.VehicleDAO;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.HeadlessException;
+import javax.swing.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
+
+public class VehiclesPage extends JPanel {
+    
+    private JButton addButton;
+    private JButton deleteButton;
+    private JButton editButton;
+    private JButton refreshButton;
+    private JTextField searchText;
+    private JLabel jLabel1;
+    private JLabel jLabel2;
+    private JTable vehiclesTable;
+    private JScrollPane jScrollPane1;
+    private VehicleDAO vehicleDAO;
+    private JFrame parentFrame;
+    public Connection conn;
+    
+    public VehiclesPage(Connection connection){
+        this.conn = connection;
+        initDAO();
+        initComponents();
+        loadDataSet();
+    }
+    
+    private void initDAO(){
+        vehicleDAO = new VehicleDAO(conn);
+    }
+    private void initComponents(){
+        addButton =  new JButton("Ajouter");
+        editButton = new JButton("Modifier");
+        deleteButton = new JButton("Supprimer");
+        refreshButton = new JButton("Actualiser");
+        searchText = new JTextField(15);
+        jLabel1 = new JLabel("Véhicules");
+        jLabel2 = new JLabel("Rechercher");
+        vehiclesTable = new JTable();
+        jScrollPane1 = new JScrollPane(vehiclesTable);
+        
+        setLayout(new BorderLayout());
+        // Header panel with BorderLayout to separate left and right sections
+        JPanel headerPanel = new JPanel(new BorderLayout());
+
+        // Left section with "Chantier" label
+        JPanel leftHeaderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        jLabel1.setFont(new Font("SansSerif", Font.BOLD, 24));
+        leftHeaderPanel.add(jLabel1);
+
+        // Right section with search components
+        JPanel rightHeaderPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        jLabel2.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        rightHeaderPanel.add(jLabel2);
+        rightHeaderPanel.add(searchText);
+        rightHeaderPanel.add(refreshButton);
+
+        // Add both sections to header panel
+        headerPanel.add(leftHeaderPanel, BorderLayout.WEST);
+        headerPanel.add(rightHeaderPanel, BorderLayout.EAST);
+
+        // Table setup
+        vehiclesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        vehiclesTable.setDefaultEditor(Object.class, null);
+        vehiclesTable.getTableHeader().setReorderingAllowed(false);
+        vehiclesTable.setShowVerticalLines(true);
+        vehiclesTable.setGridColor(Color.WHITE);
+
+        // Buttons panel with white text
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        buttonPanel.setPreferredSize(new Dimension(0, 60));
+
+        // Set white foreground color for buttons
+        addButton.setForeground(Color.WHITE);
+        deleteButton.setForeground(Color.WHITE);
+        editButton.setForeground(Color.WHITE);
+        
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(addButton);
+
+        refreshButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+        refreshButton.addActionListener(e -> {
+            String searchTerm = searchText.getText().trim();
+            if (searchTerm.isEmpty()) {
+                loadDataSet();
+            } else {
+                loadSearchResults(searchTerm);
+            }
+        });
+
+        add(headerPanel, BorderLayout.NORTH);
+        add(jScrollPane1, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+        
+        setupButtonActions();
+    }
+    private void loadDataSet(){
+        try {
+            ResultSet rs = vehicleDAO.getVehiclesInfo();
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make table non-editable
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("vehicle_id"),
+                    rs.getString("vehicle_name"),
+                    rs.getString("plateNumber"),
+                    rs.getString("status"),
+                    rs.getString("site_name"),
+                    rs.getString("driver_name")
+                });
+            }
+            vehiclesTable.setModel(model);
+
+            // Hide ID column if desired
+            vehiclesTable.getColumnModel().getColumn(0).setMinWidth(0);
+            vehiclesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            vehiclesTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void loadSearchResults(String searchTerm){
+        try {
+            ResultSet rs = vehicleDAO.searchVehicle(searchTerm);
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[]{"id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur"}, 0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make table non-editable
+                }
+            };
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("vehicle_id"),
+                    rs.getString("vehicle_name"),
+                    rs.getString("plateNumber"),
+                    rs.getString("status"),
+                    rs.getString("site_name"),
+                    rs.getString("driver_name")
+                });
+            }
+            vehiclesTable.setModel(model);
+
+            // Hide ID column if desired
+            vehiclesTable.getColumnModel().getColumn(0).setMinWidth(0);
+            vehiclesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            vehiclesTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void setupButtonActions(){
+        // Add button action
+        addButton.addActionListener(e -> {
+            try {
+                SupplierForm dialog = new SupplierForm(parentFrame, "Ajouter un Fournisseur", null, conn);
+                dialog.setVisible(true);
+
+                if (dialog.isConfirmed()) {
+                    Fournisseur newSupplier = dialog.getSupplierFromForm();
+                    supplierDAO.insertSupplier(newSupplier);
+                    loadDataSet();
+                    JOptionPane.showMessageDialog(this, "Fournisseur ajouté avec succès!");
+                }
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // Edit button action
+        editButton.addActionListener(e -> {
+            int selectedRow = suppliersTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                try {
+                    DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
+                    int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
+
+                    Fournisseur existingWorker = supplierDAO.getSupplierById(supplierId);
+                    if (existingWorker != null) {
+                        SupplierForm dialog = new SupplierForm(parentFrame, "Modifier le Fournisseur", existingWorker, conn);
+                        dialog.setVisible(true);
+
+                        if (dialog.isConfirmed()) {
+                            Fournisseur updatedSupplier = dialog.getSupplierFromForm();
+                            updatedSupplier.setId(supplierId);
+                            supplierDAO.updateSupplier(updatedSupplier);
+                            loadDataSet();
+                            JOptionPane.showMessageDialog(this, "Fournisseur modifié avec succès!");
+                        }
+                    }
+                } catch (HeadlessException | SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un fournisseur à modifier.");
+            }
+        });
+
+        // Delete button action
+        deleteButton.addActionListener(e -> {
+            int selectedRow = suppliersTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
+                String supplierName = model.getValueAt(selectedRow, 1).toString();
+
+                int confirm = JOptionPane.showConfirmDialog(this,
+                        "Êtes-vous sûr de vouloir supprimer le fournisseur " + supplierName + "?",
+                        "Confirmer la suppression",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
+                        supplierDAO.deleteWorker(supplierId);
+                        loadDataSet();
+                        JOptionPane.showMessageDialog(this, "Ouvrier supprimé avec succès!");
+                    } catch (HeadlessException | SQLException ex) {
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un ouvrier à supprimer.");
+            }
+        });
+    }
+    
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
+    }
+}
