@@ -368,7 +368,7 @@ public class WorkerForm extends JDialog {
         worker.setRole((String) roleComboBox.getSelectedItem());
         try {
             String selectedSiteName = (String) siteComboBox.getSelectedItem();
-            if (selectedSiteName != null && !selectedSiteName.equals("Select Site")) {
+            if (selectedSiteName != null && !selectedSiteName.equals("Sélectionner un chantier")) {
                 int siteId = siteDAO.getSiteIdByName(selectedSiteName);
                 worker.setAssignedSiteID(siteId);
             } else {

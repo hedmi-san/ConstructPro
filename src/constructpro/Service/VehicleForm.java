@@ -104,13 +104,62 @@ public class VehicleForm extends JDialog{
     }
     
     private boolean validateFields(){
+        if (vehicleNameField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Le Nom est obligatoire !");
+            vehicleNameField.requestFocus();
+            return false;
+        }
         
+        if (vehiclePlateNumberField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Le Numéro de plaque est obligatoire !");
+            vehiclePlateNumberField.requestFocus();
+            return false;
+        }
+
+        return true;
     }
     
     private void setupActions(){
-        
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (validateFields()) {
+                    confirmed = true;
+                    dispose();
+                }
+            }
+        });
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                confirmed = false;
+                dispose();
+            }
+        });
     }
-    private void populateFields(Vehicle vehicle){}
+    private void populateFields(Vehicle vehicle){
+        vehicleNameField.setText(vehicle.getName());
+        vehiclePlateNumberField.setText(vehicle.getPlateNumber());
+        statusComboBox.setSelectedItem(vehicle.getStatus());
+        if (vehicle.getSiteID()> 0) {
+            try {
+                String siteName = siteDAO.getSiteNameById(vehicle.getSiteID());
+                if (siteName != null) {
+                    siteComboBox.setSelectedItem(siteName);
+                }
+            } catch (SQLException e) {
+            }
+        }
+        
+        if (vehicle.getSiteID()> 0) {
+            try {
+                String driverName = workerDAO.getDriverNameById(vehicle.getDriverID());
+                if (driverName != null) {
+                    siteComboBox.setSelectedItem(driverName);
+                }
+            } catch (SQLException e) {}
+        } 
+    }
     
     private void loadSites(){
         try {
@@ -138,5 +187,42 @@ public class VehicleForm extends JDialog{
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading construction sites: " + e.getMessage());
         }
+    }
+    
+    public Vehicle getVehicleFromForm(){
+        Vehicle vehicle = new Vehicle();
+        
+        vehicle.setName(vehicleNameField.getText().trim());
+        vehicle.setPlateNumber(vehiclePlateNumberField.getText().trim());
+        vehicle.setStatus((String)statusComboBox.getSelectedItem());
+        try {
+            String selectedSiteName = (String) siteComboBox.getSelectedItem();
+            if (selectedSiteName != null && !selectedSiteName.equals("Sélectionner un chantier")) {
+                int siteId = siteDAO.getSiteIdByName(selectedSiteName);
+                vehicle.setSiteID(siteId);
+            } else {
+                vehicle.setSiteID(1);
+            }
+        } catch (SQLException e) {
+            vehicle.setSiteID(1); // Default to 1 if error occurs
+        }
+        try {
+            String selectedDriverName = (String) driverComboBox.getSelectedItem();
+            if (selectedDriverName != null && !selectedDriverName.equals("Sélectionner un Chauffeur")) {
+                int workerId = workerDAO.getDriverIdByName(selectedDriverName);
+                vehicle.setDriverID(workerId);
+            } else {
+                vehicle.setDriverID(0);
+            }
+        } catch (SQLException e) {
+            vehicle.setDriverID(0); // Default to 0 if error occurs
+        }
+        
+        
+        return vehicle;
+    }
+    
+    public boolean isConfirmed() {
+        return confirmed;
     }
 }

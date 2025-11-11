@@ -201,6 +201,39 @@ public class WorkerDAO {
         return list;
     }
     
+    public int getDriverIdByName(String driverName) throws SQLException {
+        if (driverName == null || driverName.equals("Sélectionner un Chauffeur")) {
+            return 0;
+        }
+        
+        String sql = "SELECT id FROM worker WHERE CONCAT(first_name, ' ', last_name) = ?";
+        try(PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, driverName);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                return rs.getInt("id");
+            }
+        }
+        return 0;
+    }
+    
+    public String getDriverNameById(int workerId) throws SQLException{
+        String sql = """
+                     SELECT
+                        CONCAT(first_name, ' ', last_name) AS driver_name
+                        FROM worker
+                        WHERE job = 'Chauffeur' and driverId = ?
+                     """;
+        try(PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, workerId);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                return rs.getString("driver_name");
+            }
+        }
+        return null;
+    }
+    
     public ResultSet getWorkersBySiteId(int siteId) {
         ResultSet rs = null;
         String sql = """

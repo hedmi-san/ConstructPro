@@ -1,5 +1,6 @@
 package constructpro.DAO;
 
+import constructpro.DTO.Vehicle;
 import java.sql.*;
 
 public class VehicleDAO {
@@ -8,6 +9,20 @@ public class VehicleDAO {
     public VehicleDAO(Connection connection) {
         this.connection = connection;
     }
+    
+    public void insertVehicle(Vehicle vehicle) throws SQLException{
+        String sql ="INSERT INTO vehicle(name,plateNumber,status,assignedSiteId,driverId) VALUES(?,?,?,?,?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, vehicle.getName());
+            stmt.setString(2, vehicle.getPlateNumber());
+            stmt.setString(3, vehicle.getStatus());
+            stmt.setInt(4, vehicle.getSiteID());
+            stmt.setInt(5, vehicle.getDriverID());
+            stmt.executeUpdate();
+        }
+    }
+    
+    public int getVehicleById(){}
     
     public ResultSet getVehiclesInfo() throws SQLException {
         String sql = """

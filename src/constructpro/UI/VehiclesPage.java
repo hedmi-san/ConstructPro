@@ -1,6 +1,8 @@
 package constructpro.UI;
 
 import constructpro.DAO.VehicleDAO;
+import constructpro.DTO.Vehicle;
+import constructpro.Service.VehicleForm;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -178,14 +180,14 @@ public class VehiclesPage extends JPanel {
         // Add button action
         addButton.addActionListener(e -> {
             try {
-                SupplierForm dialog = new SupplierForm(parentFrame, "Ajouter un Fournisseur", null, conn);
+                VehicleForm dialog = new VehicleForm(parentFrame, "Ajouter une véhicule", null, conn);
                 dialog.setVisible(true);
 
                 if (dialog.isConfirmed()) {
-                    Fournisseur newSupplier = dialog.getSupplierFromForm();
-                    supplierDAO.insertSupplier(newSupplier);
+                    Vehicle newVehicle = dialog.getVehicleFromForm();
+                    vehicleDAO.insertVehicle(newVehicle);
                     loadDataSet();
-                    JOptionPane.showMessageDialog(this, "Fournisseur ajouté avec succès!");
+                    JOptionPane.showMessageDialog(this, "Véhicule ajouté avec succès!");
                 }
             } catch (HeadlessException | SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -194,21 +196,21 @@ public class VehiclesPage extends JPanel {
 
         // Edit button action
         editButton.addActionListener(e -> {
-            int selectedRow = suppliersTable.getSelectedRow();
+            int selectedRow = vehiclesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 try {
-                    DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
-                    int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
+                    DefaultTableModel model = (DefaultTableModel) vehiclesTable.getModel();
+                    int vehicleId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
 
-                    Fournisseur existingWorker = supplierDAO.getSupplierById(supplierId);
-                    if (existingWorker != null) {
-                        SupplierForm dialog = new SupplierForm(parentFrame, "Modifier le Fournisseur", existingWorker, conn);
+                    Vehicle existingVehicle = vehicleDAO.getVehicleById(vehicleId);
+                    if (existingVehicle != null) {
+                        VehicleForm dialog = new VehicleForm(parentFrame, "Modifier le Fournisseur", existingVehicle, conn);
                         dialog.setVisible(true);
 
                         if (dialog.isConfirmed()) {
-                            Fournisseur updatedSupplier = dialog.getSupplierFromForm();
-                            updatedSupplier.setId(supplierId);
-                            supplierDAO.updateSupplier(updatedSupplier);
+                            Vehicle updatedSupplier = dialog.getVehicleFromForm();
+                            updatedSupplier.setId(vehicleId);
+                            vehicleDAO.updateSupplier(updatedSupplier);
                             loadDataSet();
                             JOptionPane.showMessageDialog(this, "Fournisseur modifié avec succès!");
                         }
@@ -223,9 +225,9 @@ public class VehiclesPage extends JPanel {
 
         // Delete button action
         deleteButton.addActionListener(e -> {
-            int selectedRow = suppliersTable.getSelectedRow();
+            int selectedRow = vehiclesTable.getSelectedRow();
             if (selectedRow >= 0) {
-                DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
+                DefaultTableModel model = (DefaultTableModel) vehiclesTable.getModel();
                 String supplierName = model.getValueAt(selectedRow, 1).toString();
 
                 int confirm = JOptionPane.showConfirmDialog(this,

@@ -224,7 +224,7 @@ public class ConstructionSiteDAO {
     
     // Get site ID by name
     public int getSiteIdByName(String siteName) throws SQLException {
-        if (siteName == null || siteName.equals("Select Site")) {
+        if (siteName == null || siteName.equals("Sélectionner un chantier")) {
             return 0;
         }
         
