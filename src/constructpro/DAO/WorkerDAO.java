@@ -177,36 +177,52 @@ public class WorkerDAO {
     }
     
     public void unassignWorker(int workerId) throws SQLException {
-    String sql = "UPDATE worker SET site_id = 1 WHERE id = ?";
-    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-        stmt.setInt(1, workerId);
-        stmt.executeUpdate();
+        String sql = "UPDATE worker SET site_id = 1 WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, workerId);
+            stmt.executeUpdate();
+        }
     }
-}
-
+    
+    public List<String> getAllDriversNames() throws SQLException {
+        List<String> list = new ArrayList<>();
+        String sql = """
+                     SELECT
+                     CONCAT(first_name, ' ', last_name) AS driver_name
+                     FROM worker
+                     WHERE job = 'Chauffeur'
+                     """;
+        try(Statement stmt = connection.createStatement()){
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                list.add(rs.getString("name"));
+            }
+        }
+        return list;
+    }
     
     public ResultSet getWorkersBySiteId(int siteId) {
-    ResultSet rs = null;
-    String sql = """
-                SELECT 
-                    id,
-                    first_name,
-                    last_name,
-                    TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age,
-                    job,
-                    phone_number
-                FROM worker WHERE site_id = ?
-                 """;
-    try {
-        PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setInt(1, siteId);
-        rs = stmt.executeQuery();
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
+        ResultSet rs = null;
+        String sql = """
+                    SELECT 
+                        id,
+                        first_name,
+                        last_name,
+                        TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age,
+                        job,
+                        phone_number
+                    FROM worker WHERE site_id = ?
+                     """;
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, siteId);
+            rs = stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-    return rs;
-}
+        return rs;
+    }
     
     public ResultSet searchWorkersByName(String searchTerm) {
     try {

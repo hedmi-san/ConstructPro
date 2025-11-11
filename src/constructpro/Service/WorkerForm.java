@@ -96,21 +96,21 @@ public class WorkerForm extends JDialog {
         siteComboBox = new JComboBox<>();
         loadSites();
         
-        saveButton = new JButton("Save");
-        cancelButton = new JButton("Cancel");
+        saveButton = new JButton("Sauvegarder");
+        cancelButton = new JButton("Annuler");
     }
 
     private void loadSites() {
         try {
             List<String> siteNames = siteDAO.getAllConstructionSitesNames();
             siteComboBox.removeAllItems();
-            siteComboBox.addItem("Select Site");
+            siteComboBox.addItem("Sélectionner un chantier");
             for (String siteName : siteNames) {
                 siteComboBox.addItem(siteName);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading construction sites: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des chantiers : " + e.getMessage());
         }
     }
 
