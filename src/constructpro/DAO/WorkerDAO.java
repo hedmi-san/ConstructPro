@@ -195,7 +195,7 @@ public class WorkerDAO {
         try(Statement stmt = connection.createStatement()){
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                list.add(rs.getString("name"));
+                list.add(rs.getString("driver_name"));
             }
         }
         return list;

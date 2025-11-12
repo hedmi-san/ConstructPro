@@ -4,7 +4,6 @@ import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Vehicle;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -30,7 +29,6 @@ public class VehicleForm extends JDialog{
         initComponents();
         setupLayout();
         setupActions();
-        
         if (vehicle != null) {
             populateFields(vehicle);
         }

@@ -204,22 +204,22 @@ public class VehiclesPage extends JPanel {
 
                     Vehicle existingVehicle = vehicleDAO.getVehicleById(vehicleId);
                     if (existingVehicle != null) {
-                        VehicleForm dialog = new VehicleForm(parentFrame, "Modifier le Fournisseur", existingVehicle, conn);
+                        VehicleForm dialog = new VehicleForm(parentFrame, "Modifier la Véhicule", existingVehicle, conn);
                         dialog.setVisible(true);
 
                         if (dialog.isConfirmed()) {
                             Vehicle updatedSupplier = dialog.getVehicleFromForm();
                             updatedSupplier.setId(vehicleId);
-                            vehicleDAO.updateSupplier(updatedSupplier);
+                            vehicleDAO.updateVehicle(updatedSupplier);
                             loadDataSet();
-                            JOptionPane.showMessageDialog(this, "Fournisseur modifié avec succès!");
+                            JOptionPane.showMessageDialog(this, "Véhicule modifié avec succès!");
                         }
                     }
                 } catch (HeadlessException | SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un fournisseur à modifier.");
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une véhicules à modifier.");
             }
         });
 
@@ -228,19 +228,19 @@ public class VehiclesPage extends JPanel {
             int selectedRow = vehiclesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 DefaultTableModel model = (DefaultTableModel) vehiclesTable.getModel();
-                String supplierName = model.getValueAt(selectedRow, 1).toString();
+                String vehicleName = model.getValueAt(selectedRow, 1).toString();
 
                 int confirm = JOptionPane.showConfirmDialog(this,
-                        "Êtes-vous sûr de vouloir supprimer le fournisseur " + supplierName + "?",
+                        "Êtes-vous sûr de vouloir supprimer l  " + vehicleName + "?",
                         "Confirmer la suppression",
                         JOptionPane.YES_NO_OPTION);
 
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
-                        supplierDAO.deleteWorker(supplierId);
+                        vehicleDAO.deleteVehicle(supplierId);
                         loadDataSet();
-                        JOptionPane.showMessageDialog(this, "Ouvrier supprimé avec succès!");
+                        JOptionPane.showMessageDialog(this, "Véhicules supprimé avec succès!");
                     } catch (HeadlessException | SQLException ex) {
                         JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                     }

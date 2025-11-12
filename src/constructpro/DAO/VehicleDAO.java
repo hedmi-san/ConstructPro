@@ -22,7 +22,45 @@ public class VehicleDAO {
         }
     }
     
-    public int getVehicleById(){}
+    public void updateVehicle(Vehicle vehicle) throws SQLException{
+        String sql = "UPDATE vehicle SET name = ?, plateNumber = ?,status = ?, assignedSiteId = ?, driverId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, vehicle.getName());
+            stmt.setString(2, vehicle.getPlateNumber());
+            stmt.setString(3, vehicle.getStatus());
+            stmt.setInt(4, vehicle.getSiteID());
+            stmt.setInt(5, vehicle.getDriverID());
+            stmt.executeUpdate();
+        }
+    }
+    
+    public void deleteVehicle(int id) throws SQLException{
+        String sql = "DELETE FROM vehicle WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+    
+    public Vehicle  getVehicleById(int id) throws SQLException{
+        String sql = "SELECT * FROM vehicle WHERE supplier_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Vehicle vehicle = new Vehicle();
+                vehicle.setId(rs.getInt("id"));
+                vehicle.setName(rs.getString("name"));
+                vehicle.setPlateNumber(rs.getString("plateNumber"));
+                vehicle.setStatus(rs.getString("status"));
+                vehicle.setSiteID(rs.getInt("assignedSiteId"));
+                vehicle.setDriverID(rs.getInt("driverId"));
+                return vehicle;
+            }
+        }
+        return null;
+    
+    }
     
     public ResultSet getVehiclesInfo() throws SQLException {
         String sql = """
