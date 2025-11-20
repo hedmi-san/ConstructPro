@@ -9,9 +9,9 @@ public class VehicleDAO {
     public VehicleDAO(Connection connection) {
         this.connection = connection;
     }
-    
-    public void insertVehicle(Vehicle vehicle) throws SQLException{
-        String sql ="INSERT INTO vehicle(name,plateNumber,status,assignedSiteId,driverId) VALUES(?,?,?,?,?)";
+
+    public void insertVehicle(Vehicle vehicle) throws SQLException {
+        String sql = "INSERT INTO vehicle(name,plateNumber,status,assignedSiteId,driverId) VALUES(?,?,?,?,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, vehicle.getName());
             stmt.setString(2, vehicle.getPlateNumber());
@@ -21,8 +21,8 @@ public class VehicleDAO {
             stmt.executeUpdate();
         }
     }
-    
-    public void updateVehicle(Vehicle vehicle) throws SQLException{
+
+    public void updateVehicle(Vehicle vehicle) throws SQLException {
         String sql = "UPDATE vehicle SET name = ?, plateNumber = ?,status = ?, assignedSiteId = ?, driverId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, vehicle.getName());
@@ -33,17 +33,17 @@ public class VehicleDAO {
             stmt.executeUpdate();
         }
     }
-    
-    public void deleteVehicle(int id) throws SQLException{
+
+    public void deleteVehicle(int id) throws SQLException {
         String sql = "DELETE FROM vehicle WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
         }
     }
-    
-    public Vehicle  getVehicleById(int id) throws SQLException{
-        String sql = "SELECT * FROM vehicle WHERE supplier_id = ?";
+
+    public Vehicle getVehicleById(int id) throws SQLException {
+        String sql = "SELECT * FROM vehicle WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -59,53 +59,55 @@ public class VehicleDAO {
             }
         }
         return null;
-    
+
     }
-    
+
     public ResultSet getVehiclesInfo() throws SQLException {
         String sql = """
-                     SELECT 
-                         v.id AS vehicle_id,
-                         v.name AS vehicle_name,
-                         v.plateNumber,
-                         v.status,
-                         s.name AS site_name,
-                         CONCAT(w.first_name, ' ', w.last_name) AS driver_name
-                     FROM 
-                         vehicle v
-                     LEFT JOIN 
-                         ConstructionSite s ON v.assignedSiteId = s.id
-                     LEFT JOIN 
-                         worker w ON v.driverId = w.id;
-                     """;
+                SELECT
+                    v.id AS vehicle_id,
+                    v.name AS vehicle_name,
+                    v.plateNumber,
+                    v.status,
+                    s.name AS site_name,
+                    CONCAT(w.first_name, ' ', w.last_name) AS driver_name
+                FROM
+                    vehicle v
+                LEFT JOIN
+                    ConstructionSite s ON v.assignedSiteId = s.id
+                LEFT JOIN
+                    worker w ON v.driverId = w.id;
+                """;
         Statement st = connection.createStatement();
         return st.executeQuery(sql);
     }
-    
-    public ResultSet searchVehicle(String searchTerm){
+
+    public ResultSet searchVehicle(String searchTerm) {
         try {
-            String sql="""
-                   SELECT 
-                        v.id AS vehicle_id,
-                        v.name AS vehicle_name,
-                        v.plateNumber,
-                            v.status,
-                            s.name AS site_name,
-                            CONCAT(w.first_name, ' ', w.last_name) AS driver_name
-                        FROM 
-                            vehicle v
-                        LEFT JOIN 
-                            ConstructionSite s ON v.assignedSiteId = s.id
-                        LEFT JOIN 
-                            worker w ON v.driverId = w.id
-                        WHERE 
-                            vehicle_name LIKE ? OR plateNumber LIKE ?;
-                    """;
+            String sql = """
+                    SELECT
+                         v.id AS vehicle_id,
+                         v.name AS vehicle_name,
+                         v.plateNumber,
+                             v.status,
+                             s.name AS site_name,
+                             CONCAT(w.first_name, ' ', w.last_name) AS driver_name
+                         FROM
+                             vehicle v
+                         LEFT JOIN
+                             ConstructionSite s ON v.assignedSiteId = s.id
+                         LEFT JOIN
+                             worker w ON v.driverId = w.id
+                         WHERE
+                             vehicle_name LIKE ? OR plateNumber LIKE ?;
+                     """;
             PreparedStatement ps = connection.prepareStatement(sql);
             String likeTerm = "%" + searchTerm + "%";
             ps.setString(1, likeTerm);
-        return ps.executeQuery();
-            }catch (SQLException e) {e.printStackTrace();}
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

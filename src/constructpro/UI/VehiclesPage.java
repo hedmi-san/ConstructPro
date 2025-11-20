@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 
 public class VehiclesPage extends JPanel {
-    
+
     private JButton addButton;
     private JButton deleteButton;
     private JButton editButton;
@@ -29,19 +29,20 @@ public class VehiclesPage extends JPanel {
     private VehicleDAO vehicleDAO;
     private JFrame parentFrame;
     public Connection conn;
-    
-    public VehiclesPage(Connection connection){
+
+    public VehiclesPage(Connection connection) {
         this.conn = connection;
         initDAO();
         initComponents();
         loadDataSet();
     }
-    
-    private void initDAO(){
+
+    private void initDAO() {
         vehicleDAO = new VehicleDAO(conn);
     }
-    private void initComponents(){
-        addButton =  new JButton("Ajouter");
+
+    private void initComponents() {
+        addButton = new JButton("Ajouter");
         editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
@@ -50,7 +51,7 @@ public class VehiclesPage extends JPanel {
         jLabel2 = new JLabel("Rechercher");
         vehiclesTable = new JTable();
         jScrollPane1 = new JScrollPane(vehiclesTable);
-        
+
         setLayout(new BorderLayout());
         // Header panel with BorderLayout to separate left and right sections
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -87,7 +88,7 @@ public class VehiclesPage extends JPanel {
         addButton.setForeground(Color.WHITE);
         deleteButton.setForeground(Color.WHITE);
         editButton.setForeground(Color.WHITE);
-        
+
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
@@ -105,15 +106,50 @@ public class VehiclesPage extends JPanel {
         add(headerPanel, BorderLayout.NORTH);
         add(jScrollPane1, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-        
+
+        // Add double-click listener to table
+        vehiclesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    int selectedRow = vehiclesTable.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        try {
+                            DefaultTableModel model = (DefaultTableModel) vehiclesTable.getModel();
+                            int vehicleId = (Integer) model.getValueAt(selectedRow, 0);
+
+                            Vehicle existingVehicle = vehicleDAO.getVehicleById(vehicleId);
+                            if (existingVehicle != null) {
+                                VehicleForm dialog = new VehicleForm(parentFrame, "Modifier la Véhicule",
+                                        existingVehicle, conn);
+                                dialog.setVisible(true);
+
+                                if (dialog.isConfirmed()) {
+                                    Vehicle updatedVehicle = dialog.getVehicleFromForm();
+                                    updatedVehicle.setId(vehicleId);
+                                    vehicleDAO.updateVehicle(updatedVehicle);
+                                    loadDataSet();
+                                    JOptionPane.showMessageDialog(VehiclesPage.this, "Véhicule modifié avec succès!");
+                                }
+                            }
+                        } catch (HeadlessException | SQLException ex) {
+                            JOptionPane.showMessageDialog(VehiclesPage.this,
+                                    "Erreur lors de la modification: " + ex.getMessage(), "Erreur",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+            }
+        });
+
         setupButtonActions();
     }
-    private void loadDataSet(){
+
+    private void loadDataSet() {
         try {
             ResultSet rs = vehicleDAO.getVehiclesInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur"}, 0
-            ) {
+                    new Object[] { "id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Make table non-editable
@@ -121,13 +157,13 @@ public class VehiclesPage extends JPanel {
             };
 
             while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("vehicle_id"),
-                    rs.getString("vehicle_name"),
-                    rs.getString("plateNumber"),
-                    rs.getString("status"),
-                    rs.getString("site_name"),
-                    rs.getString("driver_name")
+                model.addRow(new Object[] {
+                        rs.getInt("vehicle_id"),
+                        rs.getString("vehicle_name"),
+                        rs.getString("plateNumber"),
+                        rs.getString("status"),
+                        rs.getString("site_name"),
+                        rs.getString("driver_name")
                 });
             }
             vehiclesTable.setModel(model);
@@ -138,16 +174,16 @@ public class VehiclesPage extends JPanel {
             vehiclesTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    private void loadSearchResults(String searchTerm){
+
+    private void loadSearchResults(String searchTerm) {
         try {
             ResultSet rs = vehicleDAO.searchVehicle(searchTerm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur"}, 0
-            ) {
+                    new Object[] { "id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Make table non-editable
@@ -155,13 +191,13 @@ public class VehiclesPage extends JPanel {
             };
 
             while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("vehicle_id"),
-                    rs.getString("vehicle_name"),
-                    rs.getString("plateNumber"),
-                    rs.getString("status"),
-                    rs.getString("site_name"),
-                    rs.getString("driver_name")
+                model.addRow(new Object[] {
+                        rs.getInt("vehicle_id"),
+                        rs.getString("vehicle_name"),
+                        rs.getString("plateNumber"),
+                        rs.getString("status"),
+                        rs.getString("site_name"),
+                        rs.getString("driver_name")
                 });
             }
             vehiclesTable.setModel(model);
@@ -172,11 +208,12 @@ public class VehiclesPage extends JPanel {
             vehiclesTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    private void setupButtonActions(){
+
+    private void setupButtonActions() {
         // Add button action
         addButton.addActionListener(e -> {
             try {
@@ -190,7 +227,8 @@ public class VehiclesPage extends JPanel {
                     JOptionPane.showMessageDialog(this, "Véhicule ajouté avec succès!");
                 }
             } catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -204,7 +242,8 @@ public class VehiclesPage extends JPanel {
 
                     Vehicle existingVehicle = vehicleDAO.getVehicleById(vehicleId);
                     if (existingVehicle != null) {
-                        VehicleForm dialog = new VehicleForm(parentFrame, "Modifier la Véhicule", existingVehicle, conn);
+                        VehicleForm dialog = new VehicleForm(parentFrame, "Modifier la Véhicule", existingVehicle,
+                                conn);
                         dialog.setVisible(true);
 
                         if (dialog.isConfirmed()) {
@@ -216,7 +255,8 @@ public class VehiclesPage extends JPanel {
                         }
                     }
                 } catch (HeadlessException | SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner une véhicules à modifier.");
@@ -242,7 +282,8 @@ public class VehiclesPage extends JPanel {
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Véhicules supprimé avec succès!");
                     } catch (HeadlessException | SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(),
+                                "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else {
@@ -250,7 +291,7 @@ public class VehiclesPage extends JPanel {
             }
         });
     }
-    
+
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }
