@@ -113,31 +113,7 @@ public class VehiclesPage extends JPanel {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     int selectedRow = vehiclesTable.getSelectedRow();
-                    if (selectedRow >= 0) {
-                        try {
-                            DefaultTableModel model = (DefaultTableModel) vehiclesTable.getModel();
-                            int vehicleId = (Integer) model.getValueAt(selectedRow, 0);
-
-                            Vehicle existingVehicle = vehicleDAO.getVehicleById(vehicleId);
-                            if (existingVehicle != null) {
-                                VehicleForm dialog = new VehicleForm(parentFrame, "Modifier la Véhicule",
-                                        existingVehicle, conn);
-                                dialog.setVisible(true);
-
-                                if (dialog.isConfirmed()) {
-                                    Vehicle updatedVehicle = dialog.getVehicleFromForm();
-                                    updatedVehicle.setId(vehicleId);
-                                    vehicleDAO.updateVehicle(updatedVehicle);
-                                    loadDataSet();
-                                    JOptionPane.showMessageDialog(VehiclesPage.this, "Véhicule modifié avec succès!");
-                                }
-                            }
-                        } catch (HeadlessException | SQLException ex) {
-                            JOptionPane.showMessageDialog(VehiclesPage.this,
-                                    "Erreur lors de la modification: " + ex.getMessage(), "Erreur",
-                                    JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
+                    // Vehicle info + fuel panel
                 }
             }
         });
