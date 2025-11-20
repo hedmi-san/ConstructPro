@@ -113,7 +113,7 @@ public class VehiclesPage extends JPanel {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     int selectedRow = vehiclesTable.getSelectedRow();
-                    // Vehicle info + fuel panel
+                    // Vehicle info + fuel panel later on
                 }
             }
         });

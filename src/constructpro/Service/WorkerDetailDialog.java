@@ -6,8 +6,14 @@ import constructpro.DTO.Worker;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.InsuranceDAO;
 import constructpro.DTO.Insurance;
+import constructpro.DAO.SalaryRecordDAO;
+import constructpro.DAO.PaymentCheckDAO;
+import constructpro.DTO.SalaryRecord;
+import constructpro.DTO.PaymentCheck;
 import java.sql.*;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class WorkerDetailDialog extends JDialog {
     private final Worker currentWorker;
@@ -48,7 +54,16 @@ public class WorkerDetailDialog extends JDialog {
     "Photocopie de la carte identité",
     "Photocopie de chèque"
     };
-
+    
+    // Payment History Components
+    private JPanel paymentHistoryPanel;
+    private JTable historyTable;
+    private DefaultTableModel tableModel;
+    private SalaryRecordDAO salaryRecordDAO;
+    private PaymentCheckDAO paymentCheckDAO;
+    private SalaryRecord salaryRecord;
+    private JPanel totalsPanel;
+    
     private Connection conn;
     
     public WorkerDetailDialog(JFrame parent, Worker worker,Connection connection) throws SQLException {
@@ -58,12 +73,20 @@ public class WorkerDetailDialog extends JDialog {
         this.insurance = new Insurance();
         this.conn = connection;
         this.insuranceDAO = new InsuranceDAO(connection);
+        this.salaryRecordDAO = new SalaryRecordDAO(connection);
+        this.paymentCheckDAO = new PaymentCheckDAO(connection);
+        
+        // Get or create salary record for this worker
+        this.salaryRecord = salaryRecordDAO.getOrCreateSalaryRecord(worker.getId());
+        
         initializeComponents();
         setupLayout();
         setupStyling();
         populateData();
         populateInsuranceData(insurance);
-        setSize(800, 600);
+        loadPaymentHistory(); // Load payment history data
+        
+        setSize(900, 650);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -96,6 +119,151 @@ public class WorkerDetailDialog extends JDialog {
         accountNumberValue = createValueLabel();
         idCardDateValue = createValueLabel();
         
+        // Initialize payment history components
+        initializePaymentHistoryComponents();
+    }
+    
+    private void initializePaymentHistoryComponents() {
+        // Create table with columns
+        String[] columns = {"Date de Paiement", "Montant du Paiement", "Le montant payé", "Le montant restant"};
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table non-editable
+            }
+        };
+        
+        historyTable = new JTable(tableModel);
+        stylePaymentHistoryTable();
+        
+        // Create totals panel
+        totalsPanel = createTotalsPanel();
+        
+        // Create payment history panel
+        paymentHistoryPanel = new JPanel(new BorderLayout(10, 10));
+        paymentHistoryPanel.setBackground(DARK_BACKGROUND);
+    }
+    
+    private JPanel createTotalsPanel() {
+        JPanel panel = new JPanel(new GridLayout(1, 4));
+        panel.setBackground(Color.BLACK);
+        panel.setBorder(BorderFactory.createMatteBorder(2, 1, 1, 1, Color.WHITE));
+        panel.setPreferredSize(new Dimension(0, 40));
+        
+        return panel;
+    }
+    
+    private void updateTotalsPanel(double totalEarned, double totalPaid, double totalRemaining) {
+        totalsPanel.removeAll();
+        
+        JLabel totalLabel = createTotalLabel("Total");
+        JLabel earnedLabel = createTotalLabel(String.format("%.0f", totalEarned));
+        JLabel paidLabel = createTotalLabel(String.format("%.0f", totalPaid));
+        JLabel remainingLabel = createTotalLabel(String.format("%.0f", totalRemaining));
+        
+        totalsPanel.add(totalLabel);
+        totalsPanel.add(earnedLabel);
+        totalsPanel.add(paidLabel);
+        totalsPanel.add(remainingLabel);
+        
+        totalsPanel.revalidate();
+        totalsPanel.repaint();
+    }
+    
+    private JLabel createTotalLabel(String text) {
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setBackground(Color.BLACK);
+        label.setOpaque(true);
+        label.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.WHITE));
+        return label;
+    }
+    
+    private void stylePaymentHistoryTable() {
+        historyTable.setBackground(Color.BLACK);
+        historyTable.setForeground(Color.WHITE);
+        historyTable.setGridColor(Color.WHITE);
+        historyTable.setSelectionBackground(Color.DARK_GRAY);
+        historyTable.setSelectionForeground(Color.WHITE);
+        historyTable.setFont(new Font("Arial", Font.PLAIN, 12));
+        historyTable.setRowHeight(25);
+        historyTable.setShowVerticalLines(true);
+        historyTable.setGridColor(Color.WHITE);
+        historyTable.getTableHeader().setBackground(Color.BLACK);
+        historyTable.getTableHeader().setForeground(Color.WHITE);
+        historyTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        historyTable.getTableHeader().setReorderingAllowed(false);
+        
+        // Center align all cells
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        centerRenderer.setBackground(Color.BLACK);
+        centerRenderer.setForeground(Color.WHITE);
+        
+        for (int i = 0; i < historyTable.getColumnCount(); i++) {
+            historyTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
+    
+    private void setupPaymentHistoryPanel() {
+        paymentHistoryPanel.removeAll();
+        
+        // Title panel
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        titlePanel.setBackground(DARK_BACKGROUND);
+        JLabel titleLabel = new JLabel("Historique des Paiements (Lecture Seule)");
+        titleLabel.setForeground(TEXT_COLOR);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        titlePanel.add(titleLabel);
+        
+        // Center panel with table and totals
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.setBackground(DARK_BACKGROUND);
+        
+        JScrollPane scrollPane = new JScrollPane(historyTable);
+        scrollPane.getViewport().setBackground(Color.BLACK);
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
+        
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(totalsPanel, BorderLayout.SOUTH);
+        
+        
+        paymentHistoryPanel.add(titlePanel, BorderLayout.NORTH);
+        paymentHistoryPanel.add(centerPanel, BorderLayout.CENTER);
+    }
+    
+    private void loadPaymentHistory() {
+        try {
+            tableModel.setRowCount(0); // Clear existing data
+            
+            List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
+            
+            for (PaymentCheck check : checks) {
+                double runningRemaining = check.getBaseSalary() - check.getPaidAmount();
+                
+                Object[] row = {
+                    check.getPaymentDay(),
+                    String.format("%.0f", check.getBaseSalary()),
+                    String.format("%.0f", check.getPaidAmount()),
+                    String.format("%.0f", Math.abs(runningRemaining))
+                };
+                tableModel.addRow(row);
+            }
+            
+            // Update the fixed totals panel
+            double totalEarned = salaryRecord.getTotalEarned();
+            double totalPaid = salaryRecord.getAmountPaid();
+            double totalRemaining = totalEarned - totalPaid;
+            
+            updateTotalsPanel(totalEarned, totalPaid, totalRemaining);
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                "Erreur lors du chargement de l'historique des paiements: " + e.getMessage(),
+                "Erreur",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     private void initializeInsuranceComponents() {
@@ -203,8 +371,6 @@ public class WorkerDetailDialog extends JDialog {
         editInsuranceBtn.setBackground(new Color(255, 193, 7));
         editInsuranceBtn.setForeground(Color.BLACK);
 
-        // Add listeners (to open dialog later)
-
         addInsuranceBtn.addActionListener(e -> {
             InsuranceFormDialog dialog = new InsuranceFormDialog(
                 SwingUtilities.getWindowAncestor(insurancePanel),
@@ -212,14 +378,14 @@ public class WorkerDetailDialog extends JDialog {
                 currentWorker.getId() // link to current worker
             );
             dialog.setVisible(true);
-
+            Insurance newInsurance = null;
             if (dialog.isSaved()) {
-                Insurance newInsurance = dialog.getInsurance();
+                newInsurance = dialog.getInsurance();
                 try {
                     insuranceDAO.addInsurance(newInsurance);
                 } catch (SQLException ex) {}
-                populateInsuranceData(newInsurance);
             }
+            populateInsuranceData(newInsurance);
         });
         editInsuranceBtn.addActionListener(e -> {
             try {
@@ -302,6 +468,9 @@ public class WorkerDetailDialog extends JDialog {
     initializeInsuranceComponents();
     setupInsurancePanel();
     
+    // Setup payment history panel
+    setupPaymentHistoryPanel();
+    
     // Add tabs
     JScrollPane profileScroll = new JScrollPane(profilePanel);
     profileScroll.setBorder(null);
@@ -310,6 +479,12 @@ public class WorkerDetailDialog extends JDialog {
     
     // Add insurance tab
     tabbedPane.addTab("Assurance", insurancePanel);
+    
+    // Add payment history tab
+    JScrollPane paymentHistoryScroll = new JScrollPane(paymentHistoryPanel);
+    paymentHistoryScroll.setBorder(null);
+    paymentHistoryScroll.getViewport().setBackground(DARK_BACKGROUND);
+    tabbedPane.addTab("Historique des Paiements", paymentHistoryScroll);
     
     add(tabbedPane, BorderLayout.CENTER);
 }
@@ -517,5 +692,4 @@ public class WorkerDetailDialog extends JDialog {
         }
         chantierValue.setText(siteName);
     }
-
 }
