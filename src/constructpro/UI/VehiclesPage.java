@@ -2,6 +2,7 @@ package constructpro.UI;
 
 import constructpro.DAO.VehicleDAO;
 import constructpro.DTO.Vehicle;
+import constructpro.Service.VehicleDetailDialog;
 import constructpro.Service.VehicleForm;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -112,8 +113,8 @@ public class VehiclesPage extends JPanel {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
-                    int selectedRow = vehiclesTable.getSelectedRow();
-                    // Vehicle info + fuel panel later on
+                    // Vehicle info
+                    showVehicleDetails();
                 }
             }
         });
@@ -266,6 +267,26 @@ public class VehiclesPage extends JPanel {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner un ouvrier à supprimer.");
             }
         });
+    }
+    
+    private void showVehicleDetails(){
+        int selectedRow = vehiclesTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                DefaultTableModel model = (DefaultTableModel) vehiclesTable.getModel();
+                int vehicleId = (Integer) model.getValueAt(selectedRow, 0); // Get worker ID from hidden column
+
+                Vehicle vehicle = vehicleDAO.getVehicleById(vehicleId);
+                if (vehicle != null) {
+                    VehicleDetailDialog detailDialog = new VehicleDetailDialog(parentFrame, vehicle, conn);
+                    detailDialog.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Véhicule non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Erreur lors du chargement des détails de le véhicule : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public void setParentFrame(JFrame parent) {
