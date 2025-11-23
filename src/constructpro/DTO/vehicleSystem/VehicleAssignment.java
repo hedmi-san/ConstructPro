@@ -8,6 +8,7 @@ public class VehicleAssignment {
     private int assignedSiteId;
     private LocalDate assignmentDate;
     private LocalDate unAssignmentDate;
+    private double billableDays;
 
     public int getId() {
         return id;
@@ -48,6 +49,13 @@ public class VehicleAssignment {
     public void setUnAssignmentDate(LocalDate unAssignmentDate) {
         this.unAssignmentDate = unAssignmentDate;
     }
-    
-    
+
+    public double getBillableDays() {
+        return billableDays;
+    }
+
+    public void setBillableDays(double billableDays) {
+        this.billableDays = billableDays;
+    }
+
 }
