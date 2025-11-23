@@ -125,7 +125,7 @@ public class VehiclesPage extends JPanel {
         try {
             ResultSet rs = vehicleDAO.getVehiclesInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur" }, 0) {
+                    new Object[] { "id", "Nom", "Numéro de plaque", "Type de Propriété", "Chantier", "Chauffeur" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Make table non-editable
@@ -137,7 +137,7 @@ public class VehiclesPage extends JPanel {
                         rs.getInt("vehicle_id"),
                         rs.getString("vehicle_name"),
                         rs.getString("plateNumber"),
-                        rs.getString("status"),
+                        rs.getString("ownership_type"),
                         rs.getString("site_name"),
                         rs.getString("driver_name")
                 });
@@ -159,7 +159,7 @@ public class VehiclesPage extends JPanel {
         try {
             ResultSet rs = vehicleDAO.searchVehicle(searchTerm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "id", "Nom", "Numéro de plaque", "Status", "Chantier", "Chauffeur" }, 0) {
+                    new Object[] { "id", "Nom", "Numéro de plaque", "Type de Propriété", "Chantier", "Chauffeur" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Make table non-editable
@@ -171,7 +171,7 @@ public class VehiclesPage extends JPanel {
                         rs.getInt("vehicle_id"),
                         rs.getString("vehicle_name"),
                         rs.getString("plateNumber"),
-                        rs.getString("status"),
+                        rs.getString("ownership_type"),
                         rs.getString("site_name"),
                         rs.getString("driver_name")
                 });

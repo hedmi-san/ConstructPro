@@ -18,7 +18,7 @@ import javax.swing.*;
 public class VehicleForm extends JDialog {
     private JTextField vehicleNameField, vehiclePlateNumberField;
     private JButton saveButton, cancelButton;
-    private JComboBox<String> siteComboBox, driverComboBox, statusComboBox;
+    private JComboBox<String> siteComboBox, driverComboBox, ownerShipComboBox;
     private boolean confirmed = false;
     private ConstructionSiteDAO siteDAO;
     private WorkerDAO workerDAO;
@@ -41,8 +41,8 @@ public class VehicleForm extends JDialog {
     private void initComponents() {
         vehicleNameField = new JTextField(20);
         vehiclePlateNumberField = new JTextField(20);
-        statusComboBox = new JComboBox<>(new String[] {
-                "Parking", "Loué", "Travailler"
+        ownerShipComboBox = new JComboBox<>(new String[] {
+                "Possédé", "Loué" 
         });
         siteComboBox = new JComboBox<>();
         loadSites();
@@ -90,7 +90,7 @@ public class VehicleForm extends JDialog {
         formPanel.add(new JLabel("Etat:"), gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(statusComboBox, gbc);
+        formPanel.add(ownerShipComboBox, gbc);
 
         row++;
 
@@ -164,7 +164,7 @@ public class VehicleForm extends JDialog {
     private void populateFields(Vehicle vehicle) {
         vehicleNameField.setText(vehicle.getName());
         vehiclePlateNumberField.setText(vehicle.getPlateNumber());
-        statusComboBox.setSelectedItem(vehicle.getStatus());
+        ownerShipComboBox.setSelectedItem(vehicle.getOwnershipType());
         if (vehicle.getSiteID() > 0) {
             try {
                 String siteName = siteDAO.getSiteNameById(vehicle.getSiteID());
@@ -219,7 +219,7 @@ public class VehicleForm extends JDialog {
 
         vehicle.setName(vehicleNameField.getText().trim());
         vehicle.setPlateNumber(vehiclePlateNumberField.getText().trim());
-        vehicle.setStatus((String) statusComboBox.getSelectedItem());
+        vehicle.setOwnershipType((String) ownerShipComboBox.getSelectedItem());
         try {
             String selectedSiteName = (String) siteComboBox.getSelectedItem();
             if (selectedSiteName != null && !selectedSiteName.equals("Sélectionner un chantier")) {

@@ -4,7 +4,7 @@ public class Vehicle {
     private int Id;
     private String name;
     private String plateNumber;
-    private String status; //working, parkin , rented
+    private String ownershipType; //owned , rented
     /*parking, working in our sites, rented to another company/person (duration of rent, person name, phone number, location)
     our company rent a machine (duration, phone number, cost) تحسب في مصاريف الشونطي الاجمالية  */
     private int siteID;
@@ -34,12 +34,12 @@ public class Vehicle {
         this.plateNumber = plateNumber;
     }
 
-    public String getStatus() {
-        return status;
+    public String getOwnershipType() {
+        return ownershipType;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setOwnershipType(String ownershipType) {
+        this.ownershipType = ownershipType;
     }
 
     public int getSiteID() {
