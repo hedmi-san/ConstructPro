@@ -146,7 +146,7 @@ public class WorkerDetailDialog extends JDialog {
     
     private JPanel createTotalsPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 4));
-        panel.setBackground(Color.BLACK);
+        panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(BorderFactory.createMatteBorder(2, 1, 1, 1, Color.WHITE));
         panel.setPreferredSize(new Dimension(0, 40));
         
@@ -174,14 +174,14 @@ public class WorkerDetailDialog extends JDialog {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setForeground(Color.WHITE);
         label.setFont(new Font("Arial", Font.BOLD, 14));
-        label.setBackground(Color.BLACK);
+        label.setBackground(DARK_BACKGROUND);
         label.setOpaque(true);
         label.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.WHITE));
         return label;
     }
     
     private void stylePaymentHistoryTable() {
-        historyTable.setBackground(Color.BLACK);
+        historyTable.setBackground(DARK_BACKGROUND);
         historyTable.setForeground(Color.WHITE);
         historyTable.setGridColor(Color.WHITE);
         historyTable.setSelectionBackground(Color.DARK_GRAY);
@@ -198,7 +198,7 @@ public class WorkerDetailDialog extends JDialog {
         // Center align all cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        centerRenderer.setBackground(Color.BLACK);
+        centerRenderer.setBackground(DARK_BACKGROUND);
         centerRenderer.setForeground(Color.WHITE);
         
         for (int i = 0; i < historyTable.getColumnCount(); i++) {
@@ -222,7 +222,7 @@ public class WorkerDetailDialog extends JDialog {
         centerPanel.setBackground(DARK_BACKGROUND);
         
         JScrollPane scrollPane = new JScrollPane(historyTable);
-        scrollPane.getViewport().setBackground(Color.BLACK);
+        scrollPane.getViewport().setBackground(DARK_BACKGROUND);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
         
         centerPanel.add(scrollPane, BorderLayout.CENTER);

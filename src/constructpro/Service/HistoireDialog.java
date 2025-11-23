@@ -107,7 +107,7 @@ public class HistoireDialog extends JDialog {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setForeground(Color.WHITE);
         label.setFont(new Font("Arial", Font.BOLD, 14));
-        label.setBackground(Color.BLACK);
+        label.setBackground(DARK_BACKGROUND);
         label.setOpaque(true);
         label.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.WHITE));
         return label;
@@ -131,7 +131,7 @@ public class HistoireDialog extends JDialog {
         // Center align all cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        centerRenderer.setBackground(Color.BLACK);
+        centerRenderer.setBackground(DARK_BACKGROUND);
         centerRenderer.setForeground(Color.WHITE);
         
         for (int i = 0; i < historyTable.getColumnCount(); i++) {
@@ -171,10 +171,10 @@ public class HistoireDialog extends JDialog {
         
         // Center panel with table and totals
         JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBackground(Color.BLACK);
+        centerPanel.setBackground(DARK_BACKGROUND);
         
         JScrollPane scrollPane = new JScrollPane(historyTable);
-        scrollPane.getViewport().setBackground(Color.BLACK);
+        scrollPane.getViewport().setBackground(DARK_BACKGROUND);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
         
         centerPanel.add(scrollPane, BorderLayout.CENTER);

@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class salaryOption extends JDialog{
+    private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     private Connection conn;
     private WorkerDAO workerDAO;
     private Worker worker;
@@ -59,7 +60,7 @@ public class salaryOption extends JDialog{
     
     private void styleButton(JButton button) {
         button.setPreferredSize(new Dimension(120, 40));
-        button.setBackground(Color.BLACK);
+        button.setBackground(DARK_BACKGROUND);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(true);
@@ -72,7 +73,7 @@ public class salaryOption extends JDialog{
                 button.setBackground(Color.DARK_GRAY);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(Color.BLACK);
+                button.setBackground(DARK_BACKGROUND);
             }
         });
     }

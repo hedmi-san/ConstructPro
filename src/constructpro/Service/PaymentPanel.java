@@ -15,6 +15,8 @@ import java.time.LocalDate;
 
 public class PaymentPanel extends JDialog {
 
+    private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
+
     private WorkerDAO workerDAO;
     private PaymentCheckDAO paymentCheckDAO;
     private SalaryRecordDAO salaryRecordDAO;
@@ -48,7 +50,7 @@ public class PaymentPanel extends JDialog {
 
         // Payment type combo
         paymentTypeCombo = new JComboBox<>(new String[]{"Par Jour", "Par Tâche"});
-        paymentTypeCombo.setBackground(Color.BLACK);
+        paymentTypeCombo.setBackground(DARK_BACKGROUND);
         paymentTypeCombo.setForeground(Color.WHITE);
         paymentTypeCombo.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
@@ -68,7 +70,7 @@ public class PaymentPanel extends JDialog {
 
     private JTextField createTextField() {
         JTextField field = new JTextField(20);
-        field.setBackground(Color.BLACK);
+        field.setBackground(DARK_BACKGROUND);
         field.setForeground(Color.WHITE);
         field.setCaretColor(Color.WHITE);
         field.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -77,7 +79,7 @@ public class PaymentPanel extends JDialog {
 
     private JButton createButton(String text) {
         JButton button = new JButton(text);
-        button.setBackground(Color.BLACK);
+        button.setBackground(DARK_BACKGROUND);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -96,7 +98,7 @@ public class PaymentPanel extends JDialog {
         setLayout(new BorderLayout(10, 10));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.BLACK);
+        formPanel.setBackground(DARK_BACKGROUND);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 10, 8, 10);
         gbc.anchor = GridBagConstraints.WEST;
@@ -147,7 +149,7 @@ public class PaymentPanel extends JDialog {
         row++;
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setBackground(DARK_BACKGROUND);
         buttonPanel.add(saveButton);
         buttonPanel.add(calculateButton);
 
@@ -303,3 +305,4 @@ public class PaymentPanel extends JDialog {
         }
     }
 }
+
