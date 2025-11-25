@@ -2,7 +2,6 @@ package constructpro.Service;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
-import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,7 +9,6 @@ import java.util.logging.Logger;
 public class salaryOption extends JDialog{
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     private Connection conn;
-    private WorkerDAO workerDAO;
     private Worker worker;
     private JButton histoireBtn;
     private JButton salaireBtn;
@@ -18,9 +16,7 @@ public class salaryOption extends JDialog{
     
     public salaryOption(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "Choisissez une action", true);
-        this.workerDAO = new WorkerDAO(connection);
         this.worker = worker;
-        this.conn = connection;
         initializeComponents();
         setupLayout();
         setSize(455, 200);

@@ -4,6 +4,7 @@ import constructpro.DAO.VehicleDAO;
 import constructpro.DTO.Vehicle;
 import constructpro.Service.VehicleDetailDialog;
 import constructpro.Service.VehicleForm;
+import constructpro.Service.VehicleOption;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -122,7 +123,7 @@ public class VehiclesPage extends JPanel {
         setupButtonActions();
     }
 
-    private void loadDataSet() {
+    public void loadDataSet() {
         try {
             ResultSet rs = vehicleDAO.getVehiclesInfo();
             DefaultTableModel model = new DefaultTableModel(
@@ -194,16 +195,10 @@ public class VehiclesPage extends JPanel {
         // Add button action
         addButton.addActionListener(e -> {
             try {
-                VehicleForm dialog = new VehicleForm(parentFrame, "Ajouter une véhicule", null, conn);
+                VehicleOption dialog = new VehicleOption(conn,parentFrame, "Ajouter une véhicule",this);
                 dialog.setVisible(true);
-
-                if (dialog.isConfirmed()) {
-                    Vehicle newVehicle = dialog.getVehicleFromForm();
-                    vehicleDAO.insertVehicle(newVehicle);
-                    loadDataSet();
-                    JOptionPane.showMessageDialog(this, "Véhicule ajouté avec succès!");
-                }
-            } catch (HeadlessException | SQLException ex) {
+                
+            } catch (HeadlessException ex) {
                 JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
                         JOptionPane.ERROR_MESSAGE);
             }
