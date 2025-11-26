@@ -160,7 +160,7 @@ public class VehicleForm extends JDialog {
             }
         }
 
-        if (vehicle.getSiteID() > 0) {
+        if (vehicle.getDriverID() > 0) {
             try {
                 String driverName = workerDAO.getDriverNameById(vehicle.getDriverID());
                 if (driverName != null) {

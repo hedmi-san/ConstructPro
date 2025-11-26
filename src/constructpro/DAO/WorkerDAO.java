@@ -9,19 +9,20 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 
 public class WorkerDAO {
-    
+
     private Connection connection;
     Statement st;
     ResultSet rs;
+
     public WorkerDAO(Connection connection) throws SQLException {
         this.connection = connection;
         st = connection.createStatement();
     }
-    
+
     public void insertWorker(Worker worker) throws SQLException {
         String sql = "INSERT INTO worker (first_name, last_name, birth_place, birth_date, father_name, mother_name, " +
-                     "start_date, identity_card_number, identity_card_date, family_situation, account_number, " +
-                     "phone_number, job, site_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "start_date, identity_card_number, identity_card_date, family_situation, account_number, " +
+                "phone_number, job, site_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, worker.getFirstName());
             ps.setString(2, worker.getLastName());
@@ -40,7 +41,7 @@ public class WorkerDAO {
             ps.executeUpdate();
         }
     }
-    
+
     public void updateWorker(Worker worker) throws SQLException {
         String sql = "UPDATE worker SET first_name=?, last_name=?, birth_place=?, birth_date=?, father_name=?, mother_name=?, start_date=?, identity_card_number=?, identity_card_date=?, family_situation=?, account_number=?, phone_number=?, job=?, site_id=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -70,7 +71,7 @@ public class WorkerDAO {
             ps.executeUpdate();
         }
     }
-    
+
     public Worker getWorkerById(int id) throws SQLException {
         String sql = "SELECT * FROM worker WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -98,7 +99,7 @@ public class WorkerDAO {
         }
         return null;
     }
-    
+
     public List<Worker> getAllWorkers() throws SQLException {
         List<Worker> list = new ArrayList<>();
         String sql = "SELECT * FROM worker";
@@ -126,31 +127,31 @@ public class WorkerDAO {
         }
         return list;
     }
-    
-    public ResultSet getWorkersInfo(){
+
+    public ResultSet getWorkersInfo() {
         try {
-            String query = """ 
-                           SELECT 
-                               w.id,
-                               w.first_name,
-                               w.last_name,
-                               TIMESTAMPDIFF(YEAR, w.birth_date, CURDATE()) AS age,
-                               w.job,
-                               w.phone_number,
-                               s.name AS site_name
-                           FROM 
-                               worker w
-                           LEFT JOIN 
-                               ConstructionSite s ON w.site_id = s.id
-                           """;
+            String query = """
+                    SELECT
+                        w.id,
+                        w.first_name,
+                        w.last_name,
+                        TIMESTAMPDIFF(YEAR, w.birth_date, CURDATE()) AS age,
+                        w.job,
+                        w.phone_number,
+                        s.name AS site_name
+                    FROM
+                        worker w
+                    LEFT JOIN
+                        ConstructionSite s ON w.site_id = s.id
+                    """;
             rs = st.executeQuery(query);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return rs;
     }
-    
-        public ResultSet getUnassignedWorkers() throws SQLException {
+
+    public ResultSet getUnassignedWorkers() throws SQLException {
         String sql = "SELECT first_name,last_name,job,phone_number FROM worker WHERE site_id = 1";
         PreparedStatement ps = connection.prepareStatement(sql);
         return ps.executeQuery();
@@ -164,10 +165,9 @@ public class WorkerDAO {
         ps.executeUpdate();
     }
 
-    
-    public ResultSet getWorkerRecords(int id){
+    public ResultSet getWorkerRecords(int id) {
         String query = "SELECT * FROM worker WHERE id = ?";
-        try(PreparedStatement ps = connection.prepareStatement(query)) {
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, id);
             rs = ps.executeQuery();
         } catch (SQLException throwables) {
@@ -175,7 +175,7 @@ public class WorkerDAO {
         }
         return rs;
     }
-    
+
     public void unassignWorker(int workerId) throws SQLException {
         String sql = "UPDATE worker SET site_id = 1 WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -183,69 +183,69 @@ public class WorkerDAO {
             stmt.executeUpdate();
         }
     }
-    
+
     public List<String> getAllDriversNames() throws SQLException {
         List<String> list = new ArrayList<>();
         String sql = """
-                     SELECT
-                     CONCAT(first_name, ' ', last_name) AS driver_name
-                     FROM worker
-                     WHERE job = 'Chauffeur' or job = 'Grutier'
-                     """;
-        try(Statement stmt = connection.createStatement()){
+                SELECT
+                CONCAT(first_name, ' ', last_name) AS driver_name
+                FROM worker
+                WHERE job = 'Chauffeur' or job = 'Grutier'
+                """;
+        try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()){
+            while (rs.next()) {
                 list.add(rs.getString("driver_name"));
             }
         }
         return list;
     }
-    
+
     public int getDriverIdByName(String driverName) throws SQLException {
         if (driverName == null || driverName.equals("Sélectionner un Chauffeur")) {
             return 0;
         }
-        
+
         String sql = "SELECT id FROM worker WHERE CONCAT(first_name, ' ', last_name) = ?";
-        try(PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, driverName);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 return rs.getInt("id");
             }
         }
         return 0;
     }
-    
-    public String getDriverNameById(int workerId) throws SQLException{
+
+    public String getDriverNameById(int workerId) throws SQLException {
         String sql = """
-                     SELECT
-                        CONCAT(first_name, ' ', last_name) AS driver_name
-                        FROM worker
-                        WHERE driverId = ?
-                     """;
-        try(PreparedStatement ps = connection.prepareStatement(sql)) {
+                SELECT
+                   CONCAT(first_name, ' ', last_name) AS driver_name
+                   FROM worker
+                   WHERE id = ?
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, workerId);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 return rs.getString("driver_name");
             }
         }
         return null;
     }
-    
+
     public ResultSet getWorkersBySiteId(int siteId) {
         ResultSet rs = null;
         String sql = """
-                    SELECT 
-                        id,
-                        first_name,
-                        last_name,
-                        TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age,
-                        job,
-                        phone_number
-                    FROM worker WHERE site_id = ?
-                     """;
+                SELECT
+                    id,
+                    first_name,
+                    last_name,
+                    TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age,
+                    job,
+                    phone_number
+                FROM worker WHERE site_id = ?
+                 """;
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, siteId);
@@ -256,49 +256,49 @@ public class WorkerDAO {
 
         return rs;
     }
-    
+
     public ResultSet searchWorkersByName(String searchTerm) {
-    try {
-        String query = """
-            SELECT 
-                w.id,
-                w.first_name,
-                w.last_name,
-                TIMESTAMPDIFF(YEAR, w.birth_date, CURDATE()) AS age,
-                w.job,
-                w.phone_number,
-                s.name AS site_name
-            FROM 
-                worker w
-            LEFT JOIN 
-                ConstructionSite s ON w.site_id = s.id
-            WHERE 
-                w.first_name LIKE ? OR w.last_name LIKE ?
-        """;
-        PreparedStatement ps = connection.prepareStatement(query);
-        String likeTerm = "%" + searchTerm + "%";
-        ps.setString(1, likeTerm);
-        ps.setString(2, likeTerm);
-        return ps.executeQuery();
-    } catch (SQLException e) {
-        e.printStackTrace();
+        try {
+            String query = """
+                        SELECT
+                            w.id,
+                            w.first_name,
+                            w.last_name,
+                            TIMESTAMPDIFF(YEAR, w.birth_date, CURDATE()) AS age,
+                            w.job,
+                            w.phone_number,
+                            s.name AS site_name
+                        FROM
+                            worker w
+                        LEFT JOIN
+                            ConstructionSite s ON w.site_id = s.id
+                        WHERE
+                            w.first_name LIKE ? OR w.last_name LIKE ?
+                    """;
+            PreparedStatement ps = connection.prepareStatement(query);
+            String likeTerm = "%" + searchTerm + "%";
+            ps.setString(1, likeTerm);
+            ps.setString(2, likeTerm);
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    return null;
-    }
-    
+
     public DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         Vector<String> columnNames = new Vector<>();
         int colCount = metaData.getColumnCount();
 
-        for (int col=1; col <= colCount; col++){
+        for (int col = 1; col <= colCount; col++) {
             columnNames.add(metaData.getColumnName(col).toUpperCase(Locale.ROOT));
         }
 
         Vector<Vector<Object>> data = new Vector<Vector<Object>>();
         while (resultSet.next()) {
             Vector<Object> vector = new Vector<Object>();
-            for (int col=1; col<=colCount; col++) {
+            for (int col = 1; col <= colCount; col++) {
                 vector.add(resultSet.getObject(col));
             }
             data.add(vector);

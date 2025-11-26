@@ -197,6 +197,7 @@ public class OwnedVehicleForm extends JDialog  {
 
         vehicle.setName(vehicleNameField.getText().trim());
         vehicle.setPlateNumber(vehiclePlateNumberField.getText().trim());
+        vehicle.setOwnershipType("Possédé");
         try {
             String selectedSiteName = (String) siteComboBox.getSelectedItem();
             if (selectedSiteName != null && !selectedSiteName.equals("Sélectionner un chantier")) {

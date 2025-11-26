@@ -17,19 +17,22 @@ public class VehicleDAO {
             stmt.setString(2, vehicle.getPlateNumber());
             stmt.setString(3, vehicle.getOwnershipType());
             stmt.setInt(4, vehicle.getSiteID());
-            stmt.setInt(5, vehicle.getDriverID());
+            if (vehicle.getDriverID() > 0) {
+                stmt.setInt(5, vehicle.getDriverID());
+            } else {
+                stmt.setNull(5, java.sql.Types.INTEGER);
+            }
             stmt.executeUpdate();
         }
     }
 
     public void updateVehicle(Vehicle vehicle) throws SQLException {
-        String sql = "UPDATE vehicle SET name = ?, plateNumber = ?,ownership_type = ?, assignedSiteId = ?, driverId = ? WHERE id = ?";
+        String sql = "UPDATE vehicle SET name = ?, plateNumber = ?, assignedSiteId = ?, driverId = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, vehicle.getName());
             stmt.setString(2, vehicle.getPlateNumber());
-            stmt.setString(3, vehicle.getOwnershipType());
-            stmt.setInt(4, vehicle.getSiteID());
-            stmt.setInt(5, vehicle.getDriverID());
+            stmt.setInt(3, vehicle.getSiteID());
+            stmt.setInt(4, vehicle.getDriverID());
             stmt.setInt(6, vehicle.getId());
             stmt.executeUpdate();
         }

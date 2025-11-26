@@ -192,6 +192,7 @@ public class RentedVehicleForm extends JDialog  {
 
         vehicle.setName(vehicleNameField.getText().trim());
         vehicle.setPlateNumber(vehiclePlateNumberField.getText().trim());
+        vehicle.setOwnershipType("Loué");
         try {
             String selectedSiteName = (String) siteComboBox.getSelectedItem();
             if (selectedSiteName != null && !selectedSiteName.equals("Sélectionner un chantier")) {
