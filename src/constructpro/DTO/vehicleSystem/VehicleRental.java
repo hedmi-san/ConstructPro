@@ -5,7 +5,8 @@ import java.time.LocalDate;
 public class VehicleRental {
     private int id;
     private int vehicle_id;
-    private String owner;
+    private String ownerName;
+    private String ownerPhone;
     private double dailyRate;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -28,12 +29,20 @@ public class VehicleRental {
         this.vehicle_id = vehicle_id;
     }
 
-    public String getOwner() {
-        return owner;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getOwnerPhone() {
+        return ownerPhone;
+    }
+
+    public void setOwnerPhone(String ownerPhone) {
+        this.ownerPhone = ownerPhone;
     }
 
     public double getDailyRate() {

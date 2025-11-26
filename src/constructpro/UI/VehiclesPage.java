@@ -218,9 +218,9 @@ public class VehiclesPage extends JPanel {
                         dialog.setVisible(true);
 
                         if (dialog.isConfirmed()) {
-                            Vehicle updatedSupplier = dialog.getVehicleFromForm();
-                            updatedSupplier.setId(vehicleId);
-                            vehicleDAO.updateVehicle(updatedSupplier);
+                            Vehicle updatedVehicle = dialog.getVehicleFromForm();
+                            updatedVehicle.setId(vehicleId);
+                            vehicleDAO.updateVehicle(updatedVehicle);
                             loadDataSet();
                             JOptionPane.showMessageDialog(this, "Véhicule modifié avec succès!");
                         }

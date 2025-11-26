@@ -23,13 +23,14 @@ public class VehicleDAO {
     }
 
     public void updateVehicle(Vehicle vehicle) throws SQLException {
-        String sql = "UPDATE vehicle SET name = ?, plateNumber = ?,ownership_type = ?, assignedSiteId = ?, driverId = ?";
+        String sql = "UPDATE vehicle SET name = ?, plateNumber = ?,ownership_type = ?, assignedSiteId = ?, driverId = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, vehicle.getName());
             stmt.setString(2, vehicle.getPlateNumber());
             stmt.setString(3, vehicle.getOwnershipType());
             stmt.setInt(4, vehicle.getSiteID());
             stmt.setInt(5, vehicle.getDriverID());
+            stmt.setInt(6, vehicle.getId());
             stmt.executeUpdate();
         }
     }
@@ -82,7 +83,7 @@ public class VehicleDAO {
         return st.executeQuery(sql);
     }
 
-    public ResultSet searchVehicle(String searchTerm){
+    public ResultSet searchVehicle(String searchTerm) {
         try {
             String sql = """
                     SELECT
@@ -105,7 +106,7 @@ public class VehicleDAO {
             String likeTerm = "%" + searchTerm + "%";
             ps.setString(1, likeTerm);
             ps.setString(2, likeTerm);
-        return ps.executeQuery();
+            return ps.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }

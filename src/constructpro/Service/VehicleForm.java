@@ -164,7 +164,7 @@ public class VehicleForm extends JDialog {
             try {
                 String driverName = workerDAO.getDriverNameById(vehicle.getDriverID());
                 if (driverName != null) {
-                    siteComboBox.setSelectedItem(driverName);
+                    driverComboBox.setSelectedItem(driverName);
                 }
             } catch (SQLException e) {
             }

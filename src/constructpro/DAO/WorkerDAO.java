@@ -190,7 +190,7 @@ public class WorkerDAO {
                      SELECT
                      CONCAT(first_name, ' ', last_name) AS driver_name
                      FROM worker
-                     WHERE job = 'Chauffeur'
+                     WHERE job = 'Chauffeur' or job = 'Grutier'
                      """;
         try(Statement stmt = connection.createStatement()){
             ResultSet rs = stmt.executeQuery(sql);
@@ -222,7 +222,7 @@ public class WorkerDAO {
                      SELECT
                         CONCAT(first_name, ' ', last_name) AS driver_name
                         FROM worker
-                        WHERE job = 'Chauffeur' and driverId = ?
+                        WHERE driverId = ?
                      """;
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, workerId);

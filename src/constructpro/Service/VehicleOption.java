@@ -4,6 +4,9 @@ import constructpro.UI.VehiclesPage;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,24 +63,31 @@ public class VehicleOption extends JDialog {
     }
 
     private void setupLayout() {
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        buttonPanel.setBackground(DARK_BACKGROUND);
-
-        // Add vertical spacing and center the buttons
-        buttonPanel.add(Box.createVerticalGlue());
-
-        ownedBtn.setAlignmentX(CENTER_ALIGNMENT);
-        buttonPanel.add(ownedBtn);
-
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20))); // 20px spacing
-
-        rentedBtn.setAlignmentX(CENTER_ALIGNMENT);
-        buttonPanel.add(rentedBtn);
-
-        buttonPanel.add(Box.createVerticalGlue());
-
-        add(buttonPanel);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        
+        // Title label
+        JLabel titleLabel = new JLabel("Choisissez une action");
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Segeo UI", Font.PLAIN, 18));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 0, 30, 0);
+        add(titleLabel, gbc);
+        
+        // Histoire button
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(0, 20, 20, 30);
+        add(ownedBtn, gbc);
+        
+        // Salaire button
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 30, 20, 20);
+        add(rentedBtn, gbc);
     }
 
     private void styleButton(JButton button) {
