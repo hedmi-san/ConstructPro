@@ -2,7 +2,6 @@ package constructpro.UI;
 
 import constructpro.DAO.VehicleDAO;
 import constructpro.DTO.Vehicle;
-import constructpro.Service.VehicleDetailDialog;
 import constructpro.Service.VehicleForm;
 import constructpro.Service.VehicleOption;
 import java.awt.BorderLayout;
@@ -195,9 +194,9 @@ public class VehiclesPage extends JPanel {
         // Add button action
         addButton.addActionListener(e -> {
             try {
-                VehicleOption dialog = new VehicleOption(conn,parentFrame, "Ajouter une véhicule",this);
+                VehicleOption dialog = new VehicleOption(conn, parentFrame, "Ajouter une véhicule", this);
                 dialog.setVisible(true);
-                
+
             } catch (HeadlessException ex) {
                 JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
                         JOptionPane.ERROR_MESSAGE);
@@ -263,8 +262,8 @@ public class VehiclesPage extends JPanel {
             }
         });
     }
-    
-    private void showVehicleDetails(){
+
+    private void showVehicleDetails() {
         int selectedRow = vehiclesTable.getSelectedRow();
         if (selectedRow >= 0) {
             try {
@@ -273,13 +272,16 @@ public class VehiclesPage extends JPanel {
 
                 Vehicle vehicle = vehicleDAO.getVehicleById(vehicleId);
                 if (vehicle != null) {
-                    VehicleDetailDialog detailDialog = new VehicleDetailDialog(parentFrame, vehicle, conn);
-                    detailDialog.setVisible(true);
+                    // VehicleDetailDialog detailDialog = new VehicleDetailDialog(parentFrame,
+                    // vehicle, conn);
+                    // detailDialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Véhicule non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erreur lors du chargement des détails de le véhicule : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement des détails de le véhicule : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
