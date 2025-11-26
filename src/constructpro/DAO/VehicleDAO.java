@@ -115,4 +115,16 @@ public class VehicleDAO {
         }
         return null;
     }
+
+    public int getVehicleId(Vehicle vehicle) throws SQLException {
+        String sql = "SELECT id FROM vehicle WHERE plateNumber = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, vehicle.getPlateNumber());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        }
+        return -1;
+    }
 }
