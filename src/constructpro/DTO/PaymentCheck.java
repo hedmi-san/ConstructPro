@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class PaymentCheck {
     private int id;
     private int salaryrecordId;
+    private int siteId;
     private LocalDate paymentDate;
     private double paidAmount;
     private double baseSalary;
@@ -25,6 +26,14 @@ public class PaymentCheck {
         this.salaryrecordId = salaryrecordId;
     }
 
+    public int getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(int siteId) {
+        this.siteId = siteId;
+    }
+    
     public LocalDate getPaymentDay() {
         return paymentDate;
     }

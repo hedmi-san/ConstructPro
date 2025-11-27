@@ -27,12 +27,14 @@ public class PaymentPanel extends JDialog {
     private double paymentAmount;
     private LocalDate paymentDate;
     private boolean isDaily;
+    private Worker worker;
 
     public PaymentPanel(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "Paiement", true);
         this.workerDAO = new WorkerDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
+        this.worker = worker;
         initComponents(worker.getLastName() + " " + worker.getFirstName());
         setupLayout();
         setupActions(worker.getId());
@@ -228,9 +230,9 @@ public class PaymentPanel extends JDialog {
                     // For task-based payment, payment amount equals paid amount
                     paymentAmt = 0;
                 }
-
+                
                 // Insert PaymentCheck
-                paymentCheckDAO.insertPaymentCheck(record.getId(), paymentDate,paymentAmt,paidAmt);
+                paymentCheckDAO.insertPaymentCheck(record.getId(),worker.getAssignedSiteID(), paymentDate,paymentAmt,paidAmt);
 
                 // Update totals in salary record
                 record.setTotalEarned(record.getTotalEarned() + paymentAmt);
