@@ -28,6 +28,7 @@ public class UnAssignementPanel extends JDialog {
         this.conn = connection;
         this.workerDAO = new WorkerDAO(connection);
         this.siteDAO = new ConstructionSiteDAO(connection);
+        this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
         this.parentDialog = parentDialog;
         
         initializeComponents();

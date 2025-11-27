@@ -5,12 +5,14 @@ import java.sql.SQLException;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
 import constructpro.Service.WorkerForm;
+import constructpro.DAO.WorkerAssignmentDAO;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 import constructpro.Service.WorkerDetailDialog;
 import java.sql.Connection;
+import java.time.LocalDate;
 
 public class WorkersPage extends JPanel {
 
@@ -24,6 +26,7 @@ public class WorkersPage extends JPanel {
     private JTable workerstTable;
     private JScrollPane jScrollPane1;
     private WorkerDAO workerDAO;
+    private WorkerAssignmentDAO workerAssignmentDAO;
     private JFrame parentFrame;
     public Connection conn;
 
@@ -44,6 +47,7 @@ public class WorkersPage extends JPanel {
     private void initDAO() {
         try {
             workerDAO = new WorkerDAO(conn);
+            workerAssignmentDAO = new WorkerAssignmentDAO(conn);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données: " + e.getMessage());
         }
@@ -138,6 +142,9 @@ public class WorkersPage extends JPanel {
                     Worker newWorker = dialog.getWorkerFromForm();
                     workerDAO.insertWorker(newWorker);
                     loadDataSet();
+                    if (newWorker.getAssignedSiteID() != 1) {
+                            workerAssignmentDAO.insertAssignment(newWorker.getId(), newWorker.getAssignedSiteID(), LocalDate.now());
+                        }
                     JOptionPane.showMessageDialog(this, "Ouvrier ajouté avec succès!");
                 }
             } catch (HeadlessException | SQLException ex) {
@@ -163,6 +170,17 @@ public class WorkersPage extends JPanel {
                             updatedWorker.setId(workerId);
                             workerDAO.updateWorker(updatedWorker);
                             loadDataSet();
+                            if (existingWorker.getAssignedSiteID() != 1) {
+                                if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
+                                    workerAssignmentDAO.updateWorkerAssignment(workerId, existingWorker.getAssignedSiteID(), LocalDate.now());
+                                    workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(), LocalDate.now());
+                                }
+                            }
+                            if (existingWorker.getAssignedSiteID() == 1) {
+                                 if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
+                                    workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(), LocalDate.now());
+                                }
+                            }
                             JOptionPane.showMessageDialog(this, "Ouvrier modifié avec succès!");
                         }
                     }

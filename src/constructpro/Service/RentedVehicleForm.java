@@ -161,7 +161,7 @@ public class RentedVehicleForm extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.anchor = GridBagConstraints.WEST;
-        formPanel.add(new JLabel("Chauffeur:"), gbc);
+        formPanel.add(new JLabel("Frais de transport:"), gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(TransferFeeField, gbc);

@@ -151,8 +151,8 @@ public class WorkerDAO {
         return rs;
     }
 
-    public ResultSet getUnassignedWorkers() throws SQLException {
-        String sql = "SELECT first_name,last_name,job,phone_number FROM worker WHERE site_id = 1";
+    public ResultSet getWorkers() throws SQLException {
+        String sql = "SELECT id,first_name,last_name,job,phone_number FROM worker";
         PreparedStatement ps = connection.prepareStatement(sql);
         return ps.executeQuery();
     }

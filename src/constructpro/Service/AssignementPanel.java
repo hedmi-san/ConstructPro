@@ -35,6 +35,7 @@ public class AssignementPanel extends JDialog {
         this.conn = connection;
         this.siteDAO = new ConstructionSiteDAO(connection);
         this.workerDAO = new WorkerDAO(connection);
+        this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
         this.parentDialog= parentDialog;
         initializeComponents();
         setupLayout();
@@ -48,7 +49,7 @@ public class AssignementPanel extends JDialog {
 
     private void initializeComponents() {
         model = new DefaultTableModel(
-                new Object[]{"Prénom", "Nom", "Fonction", "Téléphone"}, 0
+                new Object[]{"ID","Prénom", "Nom", "Fonction", "Téléphone"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -95,11 +96,12 @@ public class AssignementPanel extends JDialog {
 
     private void populateData() {
         try {
-            ResultSet rs = workerDAO.getUnassignedWorkers();
+            ResultSet rs = workerDAO.getWorkers();
             model.setRowCount(0);
 
             while (rs.next()) {
                 model.addRow(new Object[]{
+                        rs.getInt("id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getString("job"),
