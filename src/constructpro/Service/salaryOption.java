@@ -22,6 +22,7 @@ public class salaryOption extends JDialog{
         setSize(455, 200);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.conn = connection;
     }
     
     private void initializeComponents(){
