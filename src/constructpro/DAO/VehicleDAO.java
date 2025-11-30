@@ -33,7 +33,7 @@ public class VehicleDAO {
             stmt.setString(2, vehicle.getPlateNumber());
             stmt.setInt(3, vehicle.getSiteID());
             stmt.setInt(4, vehicle.getDriverID());
-            stmt.setInt(6, vehicle.getId());
+            stmt.setInt(5, vehicle.getId());
             stmt.executeUpdate();
         }
     }
