@@ -2,6 +2,7 @@ package constructpro.UI;
 
 import constructpro.DAO.VehicleDAO;
 import constructpro.DTO.Vehicle;
+import constructpro.Service.VehicleDetailDialog;
 import constructpro.Service.VehicleForm;
 import constructpro.Service.VehicleOption;
 import java.awt.BorderLayout;
@@ -272,9 +273,9 @@ public class VehiclesPage extends JPanel {
 
                 Vehicle vehicle = vehicleDAO.getVehicleById(vehicleId);
                 if (vehicle != null) {
-                    // VehicleDetailDialog detailDialog = new VehicleDetailDialog(parentFrame,
-                    // vehicle, conn);
-                    // detailDialog.setVisible(true);
+                    VehicleDetailDialog detailDialog = new VehicleDetailDialog(parentFrame,
+                            vehicle, conn);
+                    detailDialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Véhicule non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }

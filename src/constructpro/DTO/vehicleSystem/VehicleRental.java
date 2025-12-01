@@ -10,6 +10,7 @@ public class VehicleRental {
     private double dailyRate;
     private LocalDate startDate;
     private LocalDate endDate;
+    private int daysWorked;
     private double transferFee;
     private double depositAmount;
 
@@ -69,6 +70,14 @@ public class VehicleRental {
         this.endDate = endDate;
     }
 
+    public int getDaysWorked() {
+        return daysWorked;
+    }
+
+    public void setDaysWorked(int daysWorked) {
+        this.daysWorked = daysWorked;
+    }
+
     public double getTransferFee() {
         return transferFee;
     }
@@ -84,6 +93,5 @@ public class VehicleRental {
     public void setDepositAmount(double depositAmount) {
         this.depositAmount = depositAmount;
     }
-    
-    
+
 }
