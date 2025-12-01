@@ -1,6 +1,7 @@
 package constructpro.DAO.vehicleSystem;
 
 import constructpro.DTO.vehicleSystem.VehicleRental;
+import java.util.List;
 import java.sql.*;
 
 public class VehicleRentalDAO {
@@ -29,7 +30,7 @@ public class VehicleRentalDAO {
     /**
      * Get all rental records for a specific vehicle
      */
-    public java.util.List<VehicleRental> getAllRentalRecords(int vehicleId) throws SQLException {
+    public List<VehicleRental> getAllRentalRecords(int vehicleId) throws SQLException {
         java.util.List<VehicleRental> records = new java.util.ArrayList<>();
         String sql = "SELECT * FROM vehicle_Rental WHERE vehicle_id = ? ORDER BY start_date DESC";
 

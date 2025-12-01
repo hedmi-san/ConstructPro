@@ -270,10 +270,9 @@ public class VehicleDetailDialog extends JDialog {
         headerPanel.add(nameLabel, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
-        // Setup panels
+        // Setup panels (rent panel will be set up after data is loaded)
         setupInfoPanel();
         setupMaintenancePanel();
-        setupRentPanel();
 
         // Add tabs
         JScrollPane infoScroll = new JScrollPane(infoPanel);
@@ -350,7 +349,7 @@ public class VehicleDetailDialog extends JDialog {
             JPanel messagePanel = new JPanel(new GridBagLayout());
             messagePanel.setBackground(DARK_BACKGROUND);
 
-            JLabel messageLabel = new JLabel("This vehicle is owned by the company.");
+            JLabel messageLabel = new JLabel("This vehicle is not rented.");
             messageLabel.setForeground(TEXT_COLOR);
             messageLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
@@ -506,6 +505,9 @@ public class VehicleDetailDialog extends JDialog {
                 driverName = "N/A";
         }
         driverNameValue.setText(driverName);
+
+        // Setup rent panel after vehicle data is loaded
+        setupRentPanel();
 
         // Load maintenance records
         loadMaintenanceRecords();
