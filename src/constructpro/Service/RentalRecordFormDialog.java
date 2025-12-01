@@ -171,7 +171,7 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Transfer Fee (DH):"), gbc);
+        formPanel.add(createLabel("Transfer Fee (DA):"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;

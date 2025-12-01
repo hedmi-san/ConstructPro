@@ -111,7 +111,7 @@ public class VehicleDetailDialog extends JDialog {
 
     private void initializeMaintenanceComponents() {
         // Create table with columns
-        String[] columns = { "Type", "Date", "Cost", "Site" };
+        String[] columns = { "Type", "Date", "Coût", "Chantier" };
         maintenanceTableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -126,9 +126,9 @@ public class VehicleDetailDialog extends JDialog {
         maintenanceTotalsPanel = createTotalsPanel();
 
         // Create buttons
-        addMaintenanceButton = createStyledButton("Add", new Color(0, 123, 255));
-        editMaintenanceButton = createStyledButton("Modify", new Color(255, 193, 7));
-        deleteMaintenanceButton = createStyledButton("Delete", new Color(220, 53, 69));
+        addMaintenanceButton = createStyledButton("Ajouter", new Color(0, 123, 255));
+        editMaintenanceButton = createStyledButton("Modifier", new Color(255, 193, 7));
+        deleteMaintenanceButton = createStyledButton("Supprimer", new Color(220, 53, 69));
 
         // Add action listeners
         addMaintenanceButton.addActionListener(e -> {
@@ -160,7 +160,7 @@ public class VehicleDetailDialog extends JDialog {
         dailyRateField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
         // Create table with columns
-        String[] columns = { "Start Date", "End Date", "Site", "Days Worked", "Transfer Fee", "Cost" };
+        String[] columns = { "Date de début", "Date de fin", "Chantier", "Jours travaillés", "Frais de transport", "Coût" };
         rentTableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -175,8 +175,8 @@ public class VehicleDetailDialog extends JDialog {
         rentTotalsPanel = createTotalsPanel();
 
         // Create buttons
-        addRentButton = createStyledButton("Add", new Color(0, 123, 255));
-        editRentButton = createStyledButton("Modify", new Color(255, 193, 7));
+        addRentButton = createStyledButton("Ajouter", new Color(0, 123, 255));
+        editRentButton = createStyledButton("Modifier", new Color(255, 193, 7));
 
         // Add action listeners
         addRentButton.addActionListener(e -> addRentalRecord());
@@ -209,7 +209,7 @@ public class VehicleDetailDialog extends JDialog {
     private void updateMaintenanceTotalsPanel(double total) {
         maintenanceTotalsPanel.removeAll();
 
-        JLabel totalLabel = createTotalLabel("Total Cost: " + String.format("%.2f DH", total));
+        JLabel totalLabel = createTotalLabel("Coût total: " + String.format("%.2f DA", total));
         maintenanceTotalsPanel.add(totalLabel);
 
         maintenanceTotalsPanel.revalidate();
@@ -219,7 +219,7 @@ public class VehicleDetailDialog extends JDialog {
     private void updateRentTotalsPanel(double total) {
         rentTotalsPanel.removeAll();
 
-        JLabel totalLabel = createTotalLabel("Total Cost: " + String.format("%.2f DH", total));
+        JLabel totalLabel = createTotalLabel("Coût total: " + String.format("%.2f DA", total));
         rentTotalsPanel.add(totalLabel);
 
         rentTotalsPanel.revalidate();
@@ -278,7 +278,7 @@ public class VehicleDetailDialog extends JDialog {
         JScrollPane infoScroll = new JScrollPane(infoPanel);
         infoScroll.setBorder(null);
         infoScroll.getViewport().setBackground(DARK_BACKGROUND);
-        tabbedPane.addTab("Info", infoScroll);
+        tabbedPane.addTab("Information", infoScroll);
 
         JScrollPane maintenanceScroll = new JScrollPane(maintenancePanel);
         maintenanceScroll.setBorder(null);
@@ -288,7 +288,7 @@ public class VehicleDetailDialog extends JDialog {
         JScrollPane rentScroll = new JScrollPane(rentPanel);
         rentScroll.setBorder(null);
         rentScroll.getViewport().setBackground(DARK_BACKGROUND);
-        tabbedPane.addTab("Rent", rentScroll);
+        tabbedPane.addTab("Loyer", rentScroll);
 
         add(tabbedPane, BorderLayout.CENTER);
     }
@@ -300,10 +300,10 @@ public class VehicleDetailDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
 
         int row = 0;
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Vehicle Name:", nameValue);
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Plate Number:", plateNumberValue);
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Assigned Site:", assignedSiteValue);
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Driver Name:", driverNameValue);
+        addFieldToPanel(infoPanel, gbc, 0, row++, "Nom du véhicule:", nameValue);
+        addFieldToPanel(infoPanel, gbc, 0, row++, "Numéro de plaque:", plateNumberValue);
+        addFieldToPanel(infoPanel, gbc, 0, row++, "Chantier attribué :", assignedSiteValue);
+        addFieldToPanel(infoPanel, gbc, 0, row++, "Nom du chauffeur:", driverNameValue);
     }
 
     private void setupMaintenancePanel() {
@@ -312,7 +312,7 @@ public class VehicleDetailDialog extends JDialog {
         // Title panel
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         titlePanel.setBackground(DARK_BACKGROUND);
-        JLabel titleLabel = new JLabel("Maintenance Records");
+        JLabel titleLabel = new JLabel("Dossiers de maintenance");
         titleLabel.setForeground(TEXT_COLOR);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         titlePanel.add(titleLabel);
@@ -344,12 +344,12 @@ public class VehicleDetailDialog extends JDialog {
         rentPanel.removeAll();
 
         // Check if vehicle is owned or rented
-        if ("owned".equalsIgnoreCase(currentVehicle.getOwnershipType())) {
+        if ("Possédé".equalsIgnoreCase(currentVehicle.getOwnershipType())) {
             // Show simple message for owned vehicles
             JPanel messagePanel = new JPanel(new GridBagLayout());
             messagePanel.setBackground(DARK_BACKGROUND);
 
-            JLabel messageLabel = new JLabel("This vehicle is not rented.");
+            JLabel messageLabel = new JLabel("Ce véhicule n'est pas loué.");
             messageLabel.setForeground(TEXT_COLOR);
             messageLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
@@ -366,7 +366,7 @@ public class VehicleDetailDialog extends JDialog {
             ownerInfoPanel.setBackground(DARK_BACKGROUND);
             ownerInfoPanel.setBorder(BorderFactory.createTitledBorder(
                     BorderFactory.createLineBorder(LABEL_COLOR),
-                    "Owner Information",
+                    "Information Possédé",
                     0, 0,
                     new Font("Segoe UI", Font.BOLD, 14),
                     TEXT_COLOR));
@@ -375,15 +375,15 @@ public class VehicleDetailDialog extends JDialog {
             gbc.insets = new Insets(10, 15, 10, 15);
             gbc.anchor = GridBagConstraints.WEST;
 
-            addFieldToPanel(ownerInfoPanel, gbc, 0, 0, "Owner Name:", ownerNameValue);
-            addFieldToPanel(ownerInfoPanel, gbc, 0, 1, "Owner Phone:", ownerPhoneValue);
-            addFieldToPanel(ownerInfoPanel, gbc, 0, 2, "Daily Rate:", dailyRateField);
+            addFieldToPanel(ownerInfoPanel, gbc, 0, 0, "Nom du propriétaire:", ownerNameValue);
+            addFieldToPanel(ownerInfoPanel, gbc, 0, 1, "Téléphone du propriétaire", ownerPhoneValue);
+            addFieldToPanel(ownerInfoPanel, gbc, 0, 2, "Tarif quotidien:", dailyRateField);
 
             // Rental records panel
             JPanel recordsPanel = new JPanel(new BorderLayout(0, 10));
             recordsPanel.setBackground(DARK_BACKGROUND);
 
-            JLabel recordsLabel = new JLabel("Rental Records");
+            JLabel recordsLabel = new JLabel("Dossiers de location");
             recordsLabel.setForeground(TEXT_COLOR);
             recordsLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
@@ -542,7 +542,7 @@ public class VehicleDetailDialog extends JDialog {
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error loading maintenance records: " + e.getMessage(),
+                    "Erreur lors du chargement des dossiers de maintenance : " + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -550,7 +550,7 @@ public class VehicleDetailDialog extends JDialog {
 
     private void loadRentalInformation() {
         try {
-            if ("rented".equalsIgnoreCase(currentVehicle.getOwnershipType())) {
+            if ("Loué".equalsIgnoreCase(currentVehicle.getOwnershipType())) {
                 // Get current rental info
                 VehicleRental currentRental = vehicleRentalDAO.getCurrentRentalInfo(currentVehicle.getId());
 
@@ -558,7 +558,7 @@ public class VehicleDetailDialog extends JDialog {
                     ownerNameValue.setText(currentRental.getOwnerName() != null ? currentRental.getOwnerName() : "N/A");
                     ownerPhoneValue
                             .setText(currentRental.getOwnerPhone() != null ? currentRental.getOwnerPhone() : "N/A");
-                    dailyRateField.setText(String.format("%.2f DH", currentRental.getDailyRate()));
+                    dailyRateField.setText(String.format("%.2f DA", currentRental.getDailyRate()));
                 }
 
                 // Load all rental records
@@ -579,7 +579,7 @@ public class VehicleDetailDialog extends JDialog {
 
                     Object[] row = {
                             record.getStartDate().toString(),
-                            record.getEndDate() != null ? record.getEndDate().toString() : "Ongoing",
+                            record.getEndDate() != null ? record.getEndDate().toString() : "En cours",
                             siteName,
                             record.getDaysWorked(),
                             String.format("%.2f", record.getTransferFee()),
@@ -595,7 +595,7 @@ public class VehicleDetailDialog extends JDialog {
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error loading rental information: " + e.getMessage(),
+                    "Erreur lors du chargement des informations de location :" + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -619,7 +619,7 @@ public class VehicleDetailDialog extends JDialog {
         int selectedRow = maintenanceTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
-                    "Please select a maintenance record to edit.",
+                    "Veuillez sélectionner un enregistrement d'entretien à modifier.",
                     "No Selection",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -644,7 +644,7 @@ public class VehicleDetailDialog extends JDialog {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error editing maintenance record: " + e.getMessage(),
+                    "Erreur lors de la modification du registre de maintenance :" + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -654,15 +654,15 @@ public class VehicleDetailDialog extends JDialog {
         int selectedRow = maintenanceTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
-                    "Please select a maintenance record to delete.",
+                    "Veuillez sélectionner un enregistrement de maintenance à supprimer.",
                     "No Selection",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete this maintenance record?",
-                "Confirm Delete",
+                "Êtes-vous sûr de vouloir supprimer cet enregistrement de maintenance ?",
+                "Confirmer la suppression",
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
@@ -675,7 +675,7 @@ public class VehicleDetailDialog extends JDialog {
                 }
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this,
-                        "Error deleting maintenance record: " + e.getMessage(),
+                        "Erreur lors de la suppression du registre de maintenance :" + e.getMessage(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -699,7 +699,7 @@ public class VehicleDetailDialog extends JDialog {
         int selectedRow = rentTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
-                    "Please select a rental record to edit.",
+                    "Veuillez sélectionner un enregistrement de location à modifier.",
                     "No Selection",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -723,7 +723,7 @@ public class VehicleDetailDialog extends JDialog {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error editing rental record: " + e.getMessage(),
+                    "Erreur lors de la modification du dossier de location :" + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }

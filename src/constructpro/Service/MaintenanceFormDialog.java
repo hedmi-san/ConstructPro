@@ -169,7 +169,7 @@ public class MaintenanceFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Cost (DH):"), gbc);
+        formPanel.add(createLabel("Cost (DA):"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
