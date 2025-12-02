@@ -35,7 +35,9 @@ public class RentalRecordFormDialog extends JDialog {
     private JButton calculateDaysButton;
 
     public RentalRecordFormDialog(Window parent, VehicleRental rental, int vehicleId, Connection conn) {
-        super(parent, rental == null ? "Add Rental Record" : "Edit Rental Record", ModalityType.APPLICATION_MODAL);
+        super(parent,
+                rental == null ? "Ajouter un enregistrement de location" : "Modifier l'enregistrement de location",
+                ModalityType.APPLICATION_MODAL);
         this.rental = rental;
         this.vehicleId = vehicleId;
         this.conn = conn;
@@ -58,12 +60,12 @@ public class RentalRecordFormDialog extends JDialog {
         // Start date field (format: YYYY-MM-DD)
         startDateField = new JTextField(20);
         styleTextField(startDateField);
-        startDateField.setToolTipText("Format: YYYY-MM-DD (e.g., 2024-12-01)");
+        startDateField.setToolTipText("Format: AAAA-MM-JJ (par ex., 2024-12-01)");
 
         // End date field (format: YYYY-MM-DD)
         endDateField = new JTextField(20);
         styleTextField(endDateField);
-        endDateField.setToolTipText("Format: YYYY-MM-DD (e.g., 2024-12-31) or leave empty for ongoing");
+        endDateField.setToolTipText("Format: AAAA-MM-JJ (par ex., 2024-12-31) ou laisser vide pour en cours");
 
         // Days worked field
         daysWorkedField = new JTextField(20);
@@ -75,12 +77,12 @@ public class RentalRecordFormDialog extends JDialog {
         transferFeeField.setText("0.0");
 
         // Calculate days button
-        calculateDaysButton = createStyledButton("Calculate Days", new Color(40, 167, 69));
+        calculateDaysButton = createStyledButton("Calculer les jours", new Color(40, 167, 69));
         calculateDaysButton.addActionListener(e -> calculateDays());
 
         // Buttons
-        saveButton = createStyledButton("Save", new Color(0, 123, 255));
-        cancelButton = createStyledButton("Cancel", new Color(108, 117, 125));
+        saveButton = createStyledButton("Enregistrer", new Color(0, 123, 255));
+        cancelButton = createStyledButton("Annuler", new Color(108, 117, 125));
 
         saveButton.addActionListener(e -> saveRecord());
         cancelButton.addActionListener(e -> dispose());
@@ -127,7 +129,7 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Start Date:"), gbc);
+        formPanel.add(createLabel("Date de début:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -138,7 +140,7 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("End Date:"), gbc);
+        formPanel.add(createLabel("Date de fin:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -160,7 +162,7 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
-        formPanel.add(createLabel("Days Worked:"), gbc);
+        formPanel.add(createLabel("Jours travaillés:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -171,7 +173,7 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Transfer Fee (DA):"), gbc);
+        formPanel.add(createLabel("Frais de transfert (DA):"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -216,8 +218,8 @@ public class RentalRecordFormDialog extends JDialog {
 
             if (startDateStr.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
-                        "Please enter start date first.",
-                        "Validation Error",
+                        "Veuillez d'abord entrer la date de début.",
+                        "Erreur de validation",
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -235,8 +237,8 @@ public class RentalRecordFormDialog extends JDialog {
             long days = ChronoUnit.DAYS.between(startDate, endDate);
             if (days < 0) {
                 JOptionPane.showMessageDialog(this,
-                        "End date must be after start date.",
-                        "Validation Error",
+                        "La date de fin doit être après la date de début.",
+                        "Erreur de validation",
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -245,8 +247,8 @@ public class RentalRecordFormDialog extends JDialog {
 
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid date format. Please use YYYY-MM-DD (e.g., 2024-12-01)",
-                    "Validation Error",
+                    "Format de date invalide. Veuillez utiliser AAAA-MM-JJ (par ex., 2024-12-01)",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -255,24 +257,24 @@ public class RentalRecordFormDialog extends JDialog {
         // Validation
         if (startDateField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter start date.",
-                    "Validation Error",
+                    "Veuillez entrer la date de début.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (daysWorkedField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter days worked.",
-                    "Validation Error",
+                    "Veuillez entrer les jours travaillés.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (transferFeeField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter transfer fee.",
-                    "Validation Error",
+                    "Veuillez entrer les frais de transfert.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -294,8 +296,8 @@ public class RentalRecordFormDialog extends JDialog {
             // Validate dates
             if (endDate != null && endDate.isBefore(startDate)) {
                 JOptionPane.showMessageDialog(this,
-                        "End date must be after start date.",
-                        "Validation Error",
+                        "La date de fin doit être après la date de début.",
+                        "Erreur de validation",
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -314,25 +316,25 @@ public class RentalRecordFormDialog extends JDialog {
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "Cannot add new rental records from this dialog. Please use the vehicle form.",
+                        "Impossible d'ajouter de nouveaux enregistrements de location depuis cette boîte de dialogue. Veuillez utiliser le formulaire de véhicule.",
                         "Information",
                         JOptionPane.INFORMATION_MESSAGE);
             }
 
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid date format. Please use YYYY-MM-DD (e.g., 2024-12-01)",
-                    "Validation Error",
+                    "Format de date invalide. Veuillez utiliser AAAA-MM-JJ (par ex., 2024-12-01)",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid number value. Please enter valid numbers for days worked and transfer fee.",
-                    "Validation Error",
+                    "Valeur numérique invalide. Veuillez entrer des nombres valides pour les jours travaillés et les frais de transfert.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error saving rental record: " + e.getMessage(),
-                    "Database Error",
+                    "Erreur lors de l'enregistrement de la location: " + e.getMessage(),
+                    "Erreur de base de données",
                     JOptionPane.ERROR_MESSAGE);
         }
     }

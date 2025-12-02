@@ -37,7 +37,9 @@ public class MaintenanceFormDialog extends JDialog {
 
     public MaintenanceFormDialog(Window parent, Maintainance maintainance, int vehicleId, Connection conn)
             throws SQLException {
-        super(parent, maintainance == null ? "Add Maintenance Record" : "Edit Maintenance Record",
+        super(parent,
+                maintainance == null ? "Ajouter un enregistrement de maintenance"
+                        : "Modifier l'enregistrement de maintenance",
                 ModalityType.APPLICATION_MODAL);
         this.maintainance = maintainance;
         this.vehicleId = vehicleId;
@@ -66,7 +68,7 @@ public class MaintenanceFormDialog extends JDialog {
         // Date field (format: YYYY-MM-DD)
         dateField = new JTextField(20);
         styleTextField(dateField);
-        dateField.setToolTipText("Format: YYYY-MM-DD (e.g., 2024-12-01)");
+        dateField.setToolTipText("Format: AAAA-MM-JJ (par ex., 2024-12-01)");
 
         // Cost field
         costField = new JTextField(20);
@@ -78,8 +80,8 @@ public class MaintenanceFormDialog extends JDialog {
         loadSites();
 
         // Buttons
-        saveButton = createStyledButton("Save", new Color(0, 123, 255));
-        cancelButton = createStyledButton("Cancel", new Color(108, 117, 125));
+        saveButton = createStyledButton("Enregistrer", new Color(0, 123, 255));
+        cancelButton = createStyledButton("Annuler", new Color(108, 117, 125));
 
         saveButton.addActionListener(e -> saveRecord());
         cancelButton.addActionListener(e -> dispose());
@@ -115,14 +117,14 @@ public class MaintenanceFormDialog extends JDialog {
     private void loadSites() {
         try {
             List<String> siteNames = siteDAO.getAllConstructionSitesNames();
-            siteComboBox.addItem("Select Site");
+            siteComboBox.addItem("Sélectionner un site");
             for (String siteName : siteNames) {
                 siteComboBox.addItem(siteName);
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error loading sites: " + e.getMessage(),
-                    "Error",
+                    "Erreur lors du chargement des sites: " + e.getMessage(),
+                    "Erreur",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -147,7 +149,7 @@ public class MaintenanceFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Maintenance Type:"), gbc);
+        formPanel.add(createLabel("Type de maintenance:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -158,7 +160,7 @@ public class MaintenanceFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Repair Date:"), gbc);
+        formPanel.add(createLabel("Date de réparation:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -169,7 +171,7 @@ public class MaintenanceFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Cost (DA):"), gbc);
+        formPanel.add(createLabel("Coût (DA):"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -228,32 +230,32 @@ public class MaintenanceFormDialog extends JDialog {
         // Validation
         if (typeField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter maintenance type.",
-                    "Validation Error",
+                    "Veuillez entrer le type de maintenance.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (dateField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter repair date.",
-                    "Validation Error",
+                    "Veuillez entrer la date de réparation.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (costField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter cost.",
-                    "Validation Error",
+                    "Veuillez entrer le coût.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (siteComboBox.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(this,
-                    "Please select a site.",
-                    "Validation Error",
+                    "Veuillez sélectionner un site.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -292,18 +294,18 @@ public class MaintenanceFormDialog extends JDialog {
 
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid date format. Please use YYYY-MM-DD (e.g., 2024-12-01)",
-                    "Validation Error",
+                    "Format de date invalide. Veuillez utiliser AAAA-MM-JJ (par ex., 2024-12-01)",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid cost value. Please enter a valid number.",
-                    "Validation Error",
+                    "Valeur de coût invalide. Veuillez entrer un nombre valide.",
+                    "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error saving maintenance record: " + e.getMessage(),
-                    "Database Error",
+                    "Erreur lors de l'enregistrement de la maintenance: " + e.getMessage(),
+                    "Erreur de base de données",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
