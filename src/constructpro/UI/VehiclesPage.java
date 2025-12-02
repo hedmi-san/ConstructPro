@@ -3,7 +3,6 @@ package constructpro.UI;
 import constructpro.DAO.VehicleDAO;
 import constructpro.DTO.Vehicle;
 import constructpro.Service.VehicleDetailDialog;
-import constructpro.Service.VehicleForm;
 import constructpro.Service.VehicleOption;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,7 +20,6 @@ public class VehiclesPage extends JPanel {
 
     private JButton addButton;
     private JButton deleteButton;
-    private JButton editButton;
     private JButton refreshButton;
     private JTextField searchText;
     private JLabel jLabel1;
@@ -45,7 +43,6 @@ public class VehiclesPage extends JPanel {
 
     private void initComponents() {
         addButton = new JButton("Ajouter");
-        editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
@@ -89,10 +86,8 @@ public class VehiclesPage extends JPanel {
         // Set white foreground color for buttons
         addButton.setForeground(Color.WHITE);
         deleteButton.setForeground(Color.WHITE);
-        editButton.setForeground(Color.WHITE);
 
         buttonPanel.add(deleteButton);
-        buttonPanel.add(editButton);
         buttonPanel.add(addButton);
 
         refreshButton.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -201,37 +196,6 @@ public class VehiclesPage extends JPanel {
             } catch (HeadlessException ex) {
                 JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
                         JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        // Edit button action
-        editButton.addActionListener(e -> {
-            int selectedRow = vehiclesTable.getSelectedRow();
-            if (selectedRow >= 0) {
-                try {
-                    DefaultTableModel model = (DefaultTableModel) vehiclesTable.getModel();
-                    int vehicleId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
-
-                    Vehicle existingVehicle = vehicleDAO.getVehicleById(vehicleId);
-                    if (existingVehicle != null) {
-                        VehicleForm dialog = new VehicleForm(parentFrame, "Modifier la Véhicule", existingVehicle,
-                                conn);
-                        dialog.setVisible(true);
-
-                        if (dialog.isConfirmed()) {
-                            Vehicle updatedVehicle = dialog.getVehicleFromForm();
-                            updatedVehicle.setId(vehicleId);
-                            vehicleDAO.updateVehicle(updatedVehicle);
-                            loadDataSet();
-                            JOptionPane.showMessageDialog(this, "Véhicule modifié avec succès!");
-                        }
-                    }
-                } catch (HeadlessException | SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une véhicules à modifier.");
             }
         });
 

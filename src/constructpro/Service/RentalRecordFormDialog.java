@@ -3,13 +3,14 @@ package constructpro.Service;
 import constructpro.DTO.vehicleSystem.VehicleRental;
 import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 import constructpro.DAO.ConstructionSiteDAO;
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 public class RentalRecordFormDialog extends JDialog {
@@ -29,11 +30,12 @@ public class RentalRecordFormDialog extends JDialog {
     private static final Color LABEL_COLOR = new Color(180, 180, 180);
 
     // Components
-    private JTextField startDateField;
-    private JTextField endDateField;
+    private JDateChooser startDateChooser;
+    private JDateChooser endDateChooser;
     private JTextField daysWorkedField;
     private JTextField transferFeeField;
     private JTextField dailyRateField;
+    private JTextField depositAmountField;
     private JComboBox<String> siteComboBox;
     private JButton saveButton;
     private JButton cancelButton;
@@ -58,21 +60,20 @@ public class RentalRecordFormDialog extends JDialog {
             populateFields();
         }
 
-        setSize(450, 450);
+        setSize(500, 550);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     private void initializeComponents() {
-        // Start date field (format: YYYY-MM-DD)
-        startDateField = new JTextField(20);
-        styleTextField(startDateField);
-        startDateField.setToolTipText("Format: AAAA-MM-JJ (par ex., 2024-12-01)");
+        // Start date chooser
+        startDateChooser = new JDateChooser();
+        styleDateChooser(startDateChooser);
+        startDateChooser.setDate(new Date()); // Default to today
 
-        // End date field (format: YYYY-MM-DD)
-        endDateField = new JTextField(20);
-        styleTextField(endDateField);
-        endDateField.setToolTipText("Format: AAAA-MM-JJ (par ex., 2024-12-31) ou laisser vide pour en cours");
+        // End date chooser
+        endDateChooser = new JDateChooser();
+        styleDateChooser(endDateChooser);
 
         // Days worked field
         daysWorkedField = new JTextField(20);
@@ -87,6 +88,11 @@ public class RentalRecordFormDialog extends JDialog {
         dailyRateField = new JTextField(20);
         styleTextField(dailyRateField);
         dailyRateField.setText("0.0");
+
+        // Deposit amount field
+        depositAmountField = new JTextField(20);
+        styleTextField(depositAmountField);
+        depositAmountField.setText("0.0");
 
         // Calculate days button
         calculateDaysButton = createStyledButton("Calculer les jours", new Color(40, 167, 69));
@@ -111,6 +117,22 @@ public class RentalRecordFormDialog extends JDialog {
         field.setCaretColor(TEXT_COLOR);
         field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(LABEL_COLOR),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+    }
+
+    private void styleDateChooser(JDateChooser dateChooser) {
+        dateChooser.setBackground(DARKER_BACKGROUND);
+        dateChooser.setForeground(TEXT_COLOR);
+        dateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        dateChooser.setDateFormatString("yyyy-MM-dd");
+
+        // Style the text field inside the date chooser
+        JTextField dateField = ((JTextField) dateChooser.getDateEditor().getUiComponent());
+        dateField.setBackground(DARKER_BACKGROUND);
+        dateField.setForeground(TEXT_COLOR);
+        dateField.setCaretColor(TEXT_COLOR);
+        dateField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(LABEL_COLOR),
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)));
     }
@@ -171,18 +193,18 @@ public class RentalRecordFormDialog extends JDialog {
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
-        formPanel.add(startDateField, gbc);
+        formPanel.add(startDateChooser, gbc);
         row++;
 
         // End Date
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Date de fin:"), gbc);
+        formPanel.add(createLabel("Date de fin (optionnel):"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
-        formPanel.add(endDateField, gbc);
+        formPanel.add(endDateChooser, gbc);
         row++;
 
         // Calculate Days Button
@@ -229,6 +251,17 @@ public class RentalRecordFormDialog extends JDialog {
         formPanel.add(dailyRateField, gbc);
         row++;
 
+        // Deposit Amount
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0;
+        formPanel.add(createLabel("Montant de dépôt (DA):"), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        formPanel.add(depositAmountField, gbc);
+        row++;
+
         // Site
         gbc.gridx = 0;
         gbc.gridy = row;
@@ -262,13 +295,16 @@ public class RentalRecordFormDialog extends JDialog {
 
     private void populateFields() {
         if (rental != null) {
-            startDateField.setText(rental.getStartDate().toString());
+            // Set dates
+            startDateChooser.setDate(java.sql.Date.valueOf(rental.getStartDate()));
             if (rental.getEndDate() != null) {
-                endDateField.setText(rental.getEndDate().toString());
+                endDateChooser.setDate(java.sql.Date.valueOf(rental.getEndDate()));
             }
+
             daysWorkedField.setText(String.valueOf(rental.getDaysWorked()));
             transferFeeField.setText(String.valueOf(rental.getTransferFee()));
             dailyRateField.setText(String.valueOf(rental.getDailyRate()));
+            depositAmountField.setText(String.valueOf(rental.getDepositAmount()));
 
             // Set selected site
             try {
@@ -283,52 +319,43 @@ public class RentalRecordFormDialog extends JDialog {
     }
 
     private void calculateDays() {
-        try {
-            String startDateStr = startDateField.getText().trim();
-            String endDateStr = endDateField.getText().trim();
+        Date startDate = startDateChooser.getDate();
+        Date endDate = endDateChooser.getDate();
 
-            if (startDateStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "Veuillez d'abord entrer la date de début.",
-                        "Erreur de validation",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            LocalDate startDate = LocalDate.parse(startDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
-            LocalDate endDate;
-
-            if (endDateStr.isEmpty()) {
-                // Use current date if end date is not specified
-                endDate = LocalDate.now();
-            } else {
-                endDate = LocalDate.parse(endDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
-            }
-
-            long days = ChronoUnit.DAYS.between(startDate, endDate);
-            if (days < 0) {
-                JOptionPane.showMessageDialog(this,
-                        "La date de fin doit être après la date de début.",
-                        "Erreur de validation",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            daysWorkedField.setText(String.valueOf(days));
-
-        } catch (DateTimeParseException e) {
+        if (startDate == null) {
             JOptionPane.showMessageDialog(this,
-                    "Format de date invalide. Veuillez utiliser AAAA-MM-JJ (par ex., 2024-12-01)",
+                    "Veuillez d'abord sélectionner la date de début.",
                     "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        // Use current date if end date is not specified
+        if (endDate == null) {
+            endDate = new Date();
+        }
+
+        // Convert to LocalDate for calculation
+        LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        long days = ChronoUnit.DAYS.between(start, end);
+        if (days < 0) {
+            JOptionPane.showMessageDialog(this,
+                    "La date de fin doit être après la date de début.",
+                    "Erreur de validation",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        daysWorkedField.setText(String.valueOf(days));
     }
 
     private void saveRecord() {
         // Validation
-        if (startDateField.getText().trim().isEmpty()) {
+        if (startDateChooser.getDate() == null) {
             JOptionPane.showMessageDialog(this,
-                    "Veuillez entrer la date de début.",
+                    "Veuillez sélectionner la date de début.",
                     "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -358,6 +385,14 @@ public class RentalRecordFormDialog extends JDialog {
             return;
         }
 
+        if (depositAmountField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez entrer le montant de dépôt.",
+                    "Erreur de validation",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         if (siteComboBox.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(this,
                     "Veuillez sélectionner un site.",
@@ -367,23 +402,17 @@ public class RentalRecordFormDialog extends JDialog {
         }
 
         try {
-            // Parse dates
-            LocalDate startDate = LocalDate.parse(startDateField.getText().trim(), DateTimeFormatter.ISO_LOCAL_DATE);
+            // Get dates from choosers
+            Date startDateUtil = startDateChooser.getDate();
+            Date endDateUtil = endDateChooser.getDate();
+
+            LocalDate startDate = startDateUtil.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate endDate = null;
-            if (!endDateField.getText().trim().isEmpty()) {
-                endDate = LocalDate.parse(endDateField.getText().trim(), DateTimeFormatter.ISO_LOCAL_DATE);
+            if (endDateUtil != null) {
+                endDate = endDateUtil.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             }
 
-            // Parse days worked
-            int daysWorked = Integer.parseInt(daysWorkedField.getText().trim());
-
-            // Parse transfer fee
-            double transferFee = Double.parseDouble(transferFeeField.getText().trim());
-
-            // Parse daily rate
-            double dailyRate = Double.parseDouble(dailyRateField.getText().trim());
-
-            // Validate dates
+            // Validate dates if both exist
             if (endDate != null && endDate.isBefore(startDate)) {
                 JOptionPane.showMessageDialog(this,
                         "La date de fin doit être après la date de début.",
@@ -391,6 +420,12 @@ public class RentalRecordFormDialog extends JDialog {
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
+            // Parse numeric fields
+            int daysWorked = Integer.parseInt(daysWorkedField.getText().trim());
+            double transferFee = Double.parseDouble(transferFeeField.getText().trim());
+            double dailyRate = Double.parseDouble(dailyRateField.getText().trim());
+            double depositAmount = Double.parseDouble(depositAmountField.getText().trim());
 
             // Get site ID
             String selectedSite = (String) siteComboBox.getSelectedItem();
@@ -404,6 +439,7 @@ public class RentalRecordFormDialog extends JDialog {
                 rental.setDaysWorked(daysWorked);
                 rental.setTransferFee(transferFee);
                 rental.setDailyRate(dailyRate);
+                rental.setDepositAmount(depositAmount);
                 rental.setAssignedSiteId(siteId);
 
                 // Save to database
@@ -420,6 +456,7 @@ public class RentalRecordFormDialog extends JDialog {
                 newRental.setDaysWorked(daysWorked);
                 newRental.setTransferFee(transferFee);
                 newRental.setDailyRate(dailyRate);
+                newRental.setDepositAmount(depositAmount);
                 newRental.setAssignedSiteId(siteId);
 
                 // Get current rental info to copy owner details
@@ -427,12 +464,10 @@ public class RentalRecordFormDialog extends JDialog {
                 if (currentRental != null) {
                     newRental.setOwnerName(currentRental.getOwnerName());
                     newRental.setOwnerPhone(currentRental.getOwnerPhone());
-                    newRental.setDepositAmount(currentRental.getDepositAmount());
                 } else {
                     // Default values if no previous rental exists
                     newRental.setOwnerName("");
                     newRental.setOwnerPhone("");
-                    newRental.setDepositAmount(0.0);
                 }
 
                 // Save to database
@@ -442,14 +477,9 @@ public class RentalRecordFormDialog extends JDialog {
                 dispose();
             }
 
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Format de date invalide. Veuillez utiliser AAAA-MM-JJ (par ex., 2024-12-01)",
-                    "Erreur de validation",
-                    JOptionPane.WARNING_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
-                    "Valeur numérique invalide. Veuillez entrer des nombres valides pour les jours travaillés et les frais de transfert.",
+                    "Valeur numérique invalide. Veuillez entrer des nombres valides.",
                     "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
         } catch (SQLException e) {

@@ -9,6 +9,7 @@ import constructpro.DTO.vehicleSystem.VehicleRental;
 import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerDAO;
+import constructpro.DAO.VehicleDAO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,6 +44,7 @@ public class VehicleDetailDialog extends JDialog {
     // Info Panel
     private JPanel infoPanel;
     private JLabel nameValue, plateNumberValue, assignedSiteValue, driverNameValue;
+    private JButton editVehicleButton;
 
     // Maintenance Panel
     private JPanel maintenancePanel;
@@ -161,8 +163,7 @@ public class VehicleDetailDialog extends JDialog {
 
         // Create table with columns
         String[] columns = { "Date de début", "Date de fin", "Chantier", "Tarif quotidien", "Jours travaillés",
-                "Frais de transport",
-                "Coût" };
+                "Dépôt", "Frais de transport", "Coût", "Reste à payer" };
         rentTableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -313,6 +314,17 @@ public class VehicleDetailDialog extends JDialog {
         addFieldToPanel(infoPanel, gbc, 0, row++, "Numéro de plaque:", plateNumberValue);
         addFieldToPanel(infoPanel, gbc, 0, row++, "Chantier attribué :", assignedSiteValue);
         addFieldToPanel(infoPanel, gbc, 0, row++, "Nom du chauffeur:", driverNameValue);
+
+        // Add edit button
+        editVehicleButton = createStyledButton("Modifier", new Color(255, 193, 7));
+        editVehicleButton.addActionListener(e -> editVehicle());
+
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(20, 20, 12, 20);
+        infoPanel.add(editVehicleButton, gbc);
     }
 
     private void setupMaintenancePanel() {
@@ -583,6 +595,7 @@ public class VehicleDetailDialog extends JDialog {
                     }
 
                     double cost = (record.getDailyRate() * record.getDaysWorked()) + record.getTransferFee();
+                    double restToPay = cost - record.getDepositAmount();
 
                     Object[] row = {
                             record.getStartDate().toString(),
@@ -590,8 +603,10 @@ public class VehicleDetailDialog extends JDialog {
                             siteName,
                             String.format("%.2f", record.getDailyRate()),
                             record.getDaysWorked(),
+                            String.format("%.2f", record.getDepositAmount()),
                             String.format("%.2f", record.getTransferFee()),
-                            String.format("%.2f", cost)
+                            String.format("%.2f", cost),
+                            String.format("%.2f", restToPay)
                     };
                     rentTableModel.addRow(row);
                 }
@@ -733,6 +748,37 @@ public class VehicleDetailDialog extends JDialog {
             JOptionPane.showMessageDialog(this,
                     "Erreur lors de la modification du dossier de location :" + e.getMessage(),
                     "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void editVehicle() {
+        try {
+            VehicleForm dialog = new VehicleForm((JFrame) SwingUtilities.getWindowAncestor(this),
+                    "Modifier la Véhicule", currentVehicle, conn);
+            dialog.setVisible(true);
+
+            if (dialog.isConfirmed()) {
+                // Get updated vehicle from form
+                Vehicle updatedVehicle = dialog.getVehicleFromForm();
+                updatedVehicle.setId(currentVehicle.getId());
+
+                // Update in database
+                VehicleDAO vehicleDAO = new VehicleDAO(conn);
+                vehicleDAO.updateVehicle(updatedVehicle);
+
+                // Update current vehicle reference
+                currentVehicle = updatedVehicle;
+
+                // Refresh all data
+                populateData();
+
+                JOptionPane.showMessageDialog(this, "Véhicule modifié avec succès!");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors de la modification du véhicule: " + e.getMessage(),
+                    "Erreur",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
