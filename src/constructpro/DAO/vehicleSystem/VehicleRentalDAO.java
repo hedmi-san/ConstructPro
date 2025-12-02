@@ -12,17 +12,18 @@ public class VehicleRentalDAO {
     }
 
     public void insertNewRentedVehicle(VehicleRental rentedVehicle) throws SQLException {
-        String sql = "INSERT INTO vehicle_Rental (vehicle_id, owner_company, owner_phone, daily_rate, start_date, end_date, days_worked, deposite_amount, transfer_fee) VALUES(?,?,?,?,?,?,?,?,?) ";
+        String sql = "INSERT INTO vehicle_Rental (vehicle_id, assigned_site_id, owner_company, owner_phone, daily_rate, start_date, end_date, days_worked, deposite_amount, transfer_fee) VALUES(?,?,?,?,?,?,?,?,?,?) ";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, rentedVehicle.getVehicle_id());
-            stmt.setString(2, rentedVehicle.getOwnerName());
-            stmt.setString(3, rentedVehicle.getOwnerPhone());
-            stmt.setDouble(4, rentedVehicle.getDailyRate());
-            stmt.setDate(5, Date.valueOf(rentedVehicle.getStartDate()));
-            stmt.setDate(6, rentedVehicle.getEndDate() != null ? Date.valueOf(rentedVehicle.getEndDate()) : null);
-            stmt.setInt(7, rentedVehicle.getDaysWorked());
-            stmt.setDouble(8, rentedVehicle.getDepositAmount());
-            stmt.setDouble(9, rentedVehicle.getTransferFee());
+            stmt.setInt(2, rentedVehicle.getAssignedSiteId());
+            stmt.setString(3, rentedVehicle.getOwnerName());
+            stmt.setString(4, rentedVehicle.getOwnerPhone());
+            stmt.setDouble(5, rentedVehicle.getDailyRate());
+            stmt.setDate(6, Date.valueOf(rentedVehicle.getStartDate()));
+            stmt.setDate(7, rentedVehicle.getEndDate() != null ? Date.valueOf(rentedVehicle.getEndDate()) : null);
+            stmt.setInt(8, rentedVehicle.getDaysWorked());
+            stmt.setDouble(9, rentedVehicle.getDepositAmount());
+            stmt.setDouble(10, rentedVehicle.getTransferFee());
             stmt.executeUpdate();
         }
     }
@@ -42,6 +43,7 @@ public class VehicleRentalDAO {
                 VehicleRental rental = new VehicleRental();
                 rental.setId(rs.getInt("id"));
                 rental.setVehicle_id(rs.getInt("vehicle_id"));
+                rental.setAssignedSiteId(rs.getInt("assigned_site_id"));
                 rental.setOwnerName(rs.getString("owner_company"));
                 rental.setOwnerPhone(rs.getString("owner_phone"));
                 rental.setDailyRate(rs.getDouble("daily_rate"));
@@ -66,14 +68,39 @@ public class VehicleRentalDAO {
      */
     public void updateRentalRecord(VehicleRental rental) throws SQLException {
         String sql = "UPDATE vehicle_Rental SET start_date = ?, end_date = ?, days_worked = ?, " +
-                "transfer_fee = ? WHERE id = ?";
+                "transfer_fee = ?, assigned_site_id = ?, daily_rate = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDate(1, Date.valueOf(rental.getStartDate()));
             stmt.setDate(2, rental.getEndDate() != null ? Date.valueOf(rental.getEndDate()) : null);
             stmt.setInt(3, rental.getDaysWorked());
             stmt.setDouble(4, rental.getTransferFee());
-            stmt.setInt(5, rental.getId());
+            stmt.setInt(5, rental.getAssignedSiteId());
+            stmt.setDouble(6, rental.getDailyRate());
+            stmt.setInt(7, rental.getId());
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
+     * Add a new rental record for an existing vehicle
+     */
+    public void addRentalRecord(VehicleRental rental) throws SQLException {
+        String sql = "INSERT INTO vehicle_Rental (vehicle_id, assigned_site_id, owner_company, owner_phone, " +
+                "daily_rate, start_date, end_date, days_worked, deposite_amount, transfer_fee) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, rental.getVehicle_id());
+            stmt.setInt(2, rental.getAssignedSiteId());
+            stmt.setString(3, rental.getOwnerName());
+            stmt.setString(4, rental.getOwnerPhone());
+            stmt.setDouble(5, rental.getDailyRate());
+            stmt.setDate(6, Date.valueOf(rental.getStartDate()));
+            stmt.setDate(7, rental.getEndDate() != null ? Date.valueOf(rental.getEndDate()) : null);
+            stmt.setInt(8, rental.getDaysWorked());
+            stmt.setDouble(9, rental.getDepositAmount());
+            stmt.setDouble(10, rental.getTransferFee());
             stmt.executeUpdate();
         }
     }
@@ -111,6 +138,7 @@ public class VehicleRentalDAO {
                 VehicleRental rental = new VehicleRental();
                 rental.setId(rs.getInt("id"));
                 rental.setVehicle_id(rs.getInt("vehicle_id"));
+                rental.setAssignedSiteId(rs.getInt("assigned_site_id"));
                 rental.setOwnerName(rs.getString("owner_company"));
                 rental.setOwnerPhone(rs.getString("owner_phone"));
                 rental.setDailyRate(rs.getDouble("daily_rate"));

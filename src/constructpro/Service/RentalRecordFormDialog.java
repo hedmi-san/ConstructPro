@@ -2,6 +2,7 @@ package constructpro.Service;
 
 import constructpro.DTO.vehicleSystem.VehicleRental;
 import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
+import constructpro.DAO.ConstructionSiteDAO;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class RentalRecordFormDialog extends JDialog {
     private VehicleRental rental;
@@ -17,6 +19,7 @@ public class RentalRecordFormDialog extends JDialog {
     private boolean saved = false;
 
     private VehicleRentalDAO rentalDAO;
+    private ConstructionSiteDAO siteDAO;
 
     // Color scheme
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
@@ -30,11 +33,14 @@ public class RentalRecordFormDialog extends JDialog {
     private JTextField endDateField;
     private JTextField daysWorkedField;
     private JTextField transferFeeField;
+    private JTextField dailyRateField;
+    private JComboBox<String> siteComboBox;
     private JButton saveButton;
     private JButton cancelButton;
     private JButton calculateDaysButton;
 
-    public RentalRecordFormDialog(Window parent, VehicleRental rental, int vehicleId, Connection conn) {
+    public RentalRecordFormDialog(Window parent, VehicleRental rental, int vehicleId, Connection conn)
+            throws SQLException {
         super(parent,
                 rental == null ? "Ajouter un enregistrement de location" : "Modifier l'enregistrement de location",
                 ModalityType.APPLICATION_MODAL);
@@ -42,6 +48,7 @@ public class RentalRecordFormDialog extends JDialog {
         this.vehicleId = vehicleId;
         this.conn = conn;
         this.rentalDAO = new VehicleRentalDAO(conn);
+        this.siteDAO = new ConstructionSiteDAO(conn);
 
         initializeComponents();
         setupLayout();
@@ -51,7 +58,7 @@ public class RentalRecordFormDialog extends JDialog {
             populateFields();
         }
 
-        setSize(450, 400);
+        setSize(450, 450);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -76,9 +83,19 @@ public class RentalRecordFormDialog extends JDialog {
         styleTextField(transferFeeField);
         transferFeeField.setText("0.0");
 
+        // Daily rate field
+        dailyRateField = new JTextField(20);
+        styleTextField(dailyRateField);
+        dailyRateField.setText("0.0");
+
         // Calculate days button
         calculateDaysButton = createStyledButton("Calculer les jours", new Color(40, 167, 69));
         calculateDaysButton.addActionListener(e -> calculateDays());
+
+        // Site combo box
+        siteComboBox = new JComboBox<>();
+        styleComboBox(siteComboBox);
+        loadSites();
 
         // Buttons
         saveButton = createStyledButton("Enregistrer", new Color(0, 123, 255));
@@ -107,6 +124,27 @@ public class RentalRecordFormDialog extends JDialog {
         button.setBorderPainted(false);
         button.setPreferredSize(new Dimension(120, 35));
         return button;
+    }
+
+    private void styleComboBox(JComboBox<String> comboBox) {
+        comboBox.setBackground(DARKER_BACKGROUND);
+        comboBox.setForeground(TEXT_COLOR);
+        comboBox.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    }
+
+    private void loadSites() {
+        try {
+            List<String> siteNames = siteDAO.getAllConstructionSitesNames();
+            siteComboBox.addItem("Sélectionner un site");
+            for (String siteName : siteNames) {
+                siteComboBox.addItem(siteName);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors du chargement des sites: " + e.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void setupLayout() {
@@ -178,6 +216,28 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         formPanel.add(transferFeeField, gbc);
+        row++;
+
+        // Daily Rate
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0;
+        formPanel.add(createLabel("Tarif quotidien (DA):"), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        formPanel.add(dailyRateField, gbc);
+        row++;
+
+        // Site
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0;
+        formPanel.add(createLabel("Site:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        formPanel.add(siteComboBox, gbc);
 
         // Buttons panel
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -208,6 +268,17 @@ public class RentalRecordFormDialog extends JDialog {
             }
             daysWorkedField.setText(String.valueOf(rental.getDaysWorked()));
             transferFeeField.setText(String.valueOf(rental.getTransferFee()));
+            dailyRateField.setText(String.valueOf(rental.getDailyRate()));
+
+            // Set selected site
+            try {
+                String siteName = siteDAO.getSiteNameById(rental.getAssignedSiteId());
+                if (siteName != null) {
+                    siteComboBox.setSelectedItem(siteName);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -279,6 +350,22 @@ public class RentalRecordFormDialog extends JDialog {
             return;
         }
 
+        if (dailyRateField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez entrer le tarif quotidien.",
+                    "Erreur de validation",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (siteComboBox.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez sélectionner un site.",
+                    "Erreur de validation",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         try {
             // Parse dates
             LocalDate startDate = LocalDate.parse(startDateField.getText().trim(), DateTimeFormatter.ISO_LOCAL_DATE);
@@ -293,6 +380,9 @@ public class RentalRecordFormDialog extends JDialog {
             // Parse transfer fee
             double transferFee = Double.parseDouble(transferFeeField.getText().trim());
 
+            // Parse daily rate
+            double dailyRate = Double.parseDouble(dailyRateField.getText().trim());
+
             // Validate dates
             if (endDate != null && endDate.isBefore(startDate)) {
                 JOptionPane.showMessageDialog(this,
@@ -302,12 +392,19 @@ public class RentalRecordFormDialog extends JDialog {
                 return;
             }
 
-            // Update rental record (only update dates, days worked, and transfer fee)
+            // Get site ID
+            String selectedSite = (String) siteComboBox.getSelectedItem();
+            int siteId = siteDAO.getSiteIdByName(selectedSite);
+
+            // Create or update rental record
             if (rental != null) {
+                // Update existing record
                 rental.setStartDate(startDate);
                 rental.setEndDate(endDate);
                 rental.setDaysWorked(daysWorked);
                 rental.setTransferFee(transferFee);
+                rental.setDailyRate(dailyRate);
+                rental.setAssignedSiteId(siteId);
 
                 // Save to database
                 rentalDAO.updateRentalRecord(rental);
@@ -315,10 +412,34 @@ public class RentalRecordFormDialog extends JDialog {
                 saved = true;
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this,
-                        "Impossible d'ajouter de nouveaux enregistrements de location depuis cette boîte de dialogue. Veuillez utiliser le formulaire de véhicule.",
-                        "Information",
-                        JOptionPane.INFORMATION_MESSAGE);
+                // Add new rental record
+                VehicleRental newRental = new VehicleRental();
+                newRental.setVehicle_id(vehicleId);
+                newRental.setStartDate(startDate);
+                newRental.setEndDate(endDate);
+                newRental.setDaysWorked(daysWorked);
+                newRental.setTransferFee(transferFee);
+                newRental.setDailyRate(dailyRate);
+                newRental.setAssignedSiteId(siteId);
+
+                // Get current rental info to copy owner details
+                VehicleRental currentRental = rentalDAO.getCurrentRentalInfo(vehicleId);
+                if (currentRental != null) {
+                    newRental.setOwnerName(currentRental.getOwnerName());
+                    newRental.setOwnerPhone(currentRental.getOwnerPhone());
+                    newRental.setDepositAmount(currentRental.getDepositAmount());
+                } else {
+                    // Default values if no previous rental exists
+                    newRental.setOwnerName("");
+                    newRental.setOwnerPhone("");
+                    newRental.setDepositAmount(0.0);
+                }
+
+                // Save to database
+                rentalDAO.addRentalRecord(newRental);
+
+                saved = true;
+                dispose();
             }
 
         } catch (DateTimeParseException e) {

@@ -13,6 +13,7 @@ public class VehicleRental {
     private int daysWorked;
     private double transferFee;
     private double depositAmount;
+    private int assignedSiteId;
 
     public int getId() {
         return id;
@@ -92,6 +93,14 @@ public class VehicleRental {
 
     public void setDepositAmount(double depositAmount) {
         this.depositAmount = depositAmount;
+    }
+
+    public int getAssignedSiteId() {
+        return assignedSiteId;
+    }
+
+    public void setAssignedSiteId(int assignedSiteId) {
+        this.assignedSiteId = assignedSiteId;
     }
 
 }

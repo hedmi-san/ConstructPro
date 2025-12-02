@@ -160,7 +160,9 @@ public class VehicleDetailDialog extends JDialog {
         dailyRateField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
         // Create table with columns
-        String[] columns = { "Date de début", "Date de fin", "Chantier", "Jours travaillés", "Frais de transport", "Coût" };
+        String[] columns = { "Date de début", "Date de fin", "Chantier", "Tarif quotidien", "Jours travaillés",
+                "Frais de transport",
+                "Coût" };
         rentTableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -179,7 +181,14 @@ public class VehicleDetailDialog extends JDialog {
         editRentButton = createStyledButton("Modifier", new Color(255, 193, 7));
 
         // Add action listeners
-        addRentButton.addActionListener(e -> addRentalRecord());
+        addRentButton.addActionListener(e -> {
+            try {
+                addRentalRecord();
+            } catch (SQLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        });
         editRentButton.addActionListener(e -> editRentalRecord());
 
         // Create rent panel
@@ -377,7 +386,6 @@ public class VehicleDetailDialog extends JDialog {
 
             addFieldToPanel(ownerInfoPanel, gbc, 0, 0, "Nom du propriétaire:", ownerNameValue);
             addFieldToPanel(ownerInfoPanel, gbc, 0, 1, "Téléphone du propriétaire", ownerPhoneValue);
-            addFieldToPanel(ownerInfoPanel, gbc, 0, 2, "Tarif quotidien:", dailyRateField);
 
             // Rental records panel
             JPanel recordsPanel = new JPanel(new BorderLayout(0, 10));
@@ -566,11 +574,10 @@ public class VehicleDetailDialog extends JDialog {
                 List<VehicleRental> records = vehicleRentalDAO.getAllRentalRecords(currentVehicle.getId());
 
                 for (VehicleRental record : records) {
-                    // Get site name from current assignment
-                    VehicleAssignment assignment = vehicleAssignmentDAO.getCurrentAssignment(currentVehicle.getId());
+                    // Get site name from rental record's assigned site
                     String siteName = "N/A";
-                    if (assignment != null) {
-                        siteName = siteDAO.getSiteNameById(assignment.getAssignedSiteId());
+                    if (record.getAssignedSiteId() > 0) {
+                        siteName = siteDAO.getSiteNameById(record.getAssignedSiteId());
                         if (siteName == null)
                             siteName = "N/A";
                     }
@@ -581,6 +588,7 @@ public class VehicleDetailDialog extends JDialog {
                             record.getStartDate().toString(),
                             record.getEndDate() != null ? record.getEndDate().toString() : "En cours",
                             siteName,
+                            String.format("%.2f", record.getDailyRate()),
                             record.getDaysWorked(),
                             String.format("%.2f", record.getTransferFee()),
                             String.format("%.2f", cost)
@@ -682,7 +690,7 @@ public class VehicleDetailDialog extends JDialog {
         }
     }
 
-    private void addRentalRecord() {
+    private void addRentalRecord() throws SQLException {
         RentalRecordFormDialog dialog = new RentalRecordFormDialog(
                 this,
                 null,
