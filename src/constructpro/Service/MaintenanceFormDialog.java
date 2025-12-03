@@ -3,12 +3,13 @@ package constructpro.Service;
 import constructpro.DTO.vehicleSystem.Maintainance;
 import constructpro.DAO.vehicleSystem.MaintainanceDAO;
 import constructpro.DAO.ConstructionSiteDAO;
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 public class MaintenanceFormDialog extends JDialog {
@@ -29,7 +30,7 @@ public class MaintenanceFormDialog extends JDialog {
 
     // Components
     private JTextField typeField;
-    private JTextField dateField;
+    private JDateChooser dateChooser;
     private JTextField costField;
     private JComboBox<String> siteComboBox;
     private JButton saveButton;
@@ -65,10 +66,14 @@ public class MaintenanceFormDialog extends JDialog {
         typeField = new JTextField(20);
         styleTextField(typeField);
 
-        // Date field (format: YYYY-MM-DD)
-        dateField = new JTextField(20);
-        styleTextField(dateField);
-        dateField.setToolTipText("Format: AAAA-MM-JJ (par ex., 2024-12-01)");
+        // Date chooser
+        dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("yyyy-MM-dd");
+        dateChooser.setPreferredSize(new Dimension(200, 30));
+        dateChooser.setBackground(DARKER_BACKGROUND);
+        dateChooser.setForeground(TEXT_COLOR);
+        dateChooser.getCalendarButton().setBackground(ACCENT_COLOR);
+        dateChooser.getCalendarButton().setForeground(Color.WHITE);
 
         // Cost field
         costField = new JTextField(20);
@@ -164,7 +169,7 @@ public class MaintenanceFormDialog extends JDialog {
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
-        formPanel.add(dateField, gbc);
+        formPanel.add(dateChooser, gbc);
         row++;
 
         // Cost
@@ -212,7 +217,12 @@ public class MaintenanceFormDialog extends JDialog {
     private void populateFields() {
         if (maintainance != null) {
             typeField.setText(maintainance.getMaintainanceType());
-            dateField.setText(maintainance.getRepair_date().toString());
+
+            // Convert LocalDate to Date for JDateChooser
+            LocalDate repairDate = maintainance.getRepair_date();
+            Date date = Date.from(repairDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            dateChooser.setDate(date);
+
             costField.setText(String.valueOf(maintainance.getRepairCost()));
 
             try {
@@ -236,9 +246,9 @@ public class MaintenanceFormDialog extends JDialog {
             return;
         }
 
-        if (dateField.getText().trim().isEmpty()) {
+        if (dateChooser.getDate() == null) {
             JOptionPane.showMessageDialog(this,
-                    "Veuillez entrer la date de réparation.",
+                    "Veuillez sélectionner la date de réparation.",
                     "Erreur de validation",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -261,8 +271,9 @@ public class MaintenanceFormDialog extends JDialog {
         }
 
         try {
-            // Parse date
-            LocalDate repairDate = LocalDate.parse(dateField.getText().trim(), DateTimeFormatter.ISO_LOCAL_DATE);
+            // Convert Date to LocalDate
+            Date selectedDate = dateChooser.getDate();
+            LocalDate repairDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
             // Parse cost
             double cost = Double.parseDouble(costField.getText().trim());
@@ -292,11 +303,6 @@ public class MaintenanceFormDialog extends JDialog {
             saved = true;
             dispose();
 
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Format de date invalide. Veuillez utiliser AAAA-MM-JJ (par ex., 2024-12-01)",
-                    "Erreur de validation",
-                    JOptionPane.WARNING_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
                     "Valeur de coût invalide. Veuillez entrer un nombre valide.",
@@ -307,6 +313,11 @@ public class MaintenanceFormDialog extends JDialog {
                     "Erreur lors de l'enregistrement de la maintenance: " + e.getMessage(),
                     "Erreur de base de données",
                     JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors de la conversion de la date: " + e.getMessage(),
+                    "Erreur de validation",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
