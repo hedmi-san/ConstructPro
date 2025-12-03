@@ -14,7 +14,8 @@ public class PaymentCheckDAO {
         this.connection = connection;
     }
 
-    public void insertPaymentCheck(int salary_record_id,int siteId,LocalDate payment_date,double base_salary,double paid_amount ) throws SQLException {
+    public void insertPaymentCheck(int salary_record_id, int siteId, LocalDate payment_date, double base_salary,
+            double paid_amount) throws SQLException {
         String sql = "INSERT INTO payment_check (salary_record_id, site_id, payment_date, base_salary, paid_amount) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, salary_record_id);
@@ -25,11 +26,11 @@ public class PaymentCheckDAO {
             stmt.executeUpdate();
         }
     }
-    
+
     public List<PaymentCheck> getAllWorkerPaymentChecks(int salaryRecordId) throws SQLException {
         List<PaymentCheck> checks = new ArrayList<>();
         String sql = "SELECT id, payment_date, base_salary, paid_amount FROM payment_check WHERE salary_record_id = ? ORDER BY payment_date";
-        
+
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, salaryRecordId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -45,12 +46,42 @@ public class PaymentCheckDAO {
         }
         return checks;
     }
-    
-    public void deletePaymentCheck(int id)throws SQLException {
+
+    public void deletePaymentCheck(int id) throws SQLException {
         String sql = "DELETE FROM payment_check WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
         }
+    }
+
+    /**
+     * Get all payment checks for a specific site and date with worker information
+     * Used for generating payment check PDF reports
+     */
+    public ResultSet getPaymentChecksBySiteAndDate(int siteId, LocalDate paymentDate) throws SQLException {
+        String sql = """
+                SELECT
+                    pc.id,
+                    pc.payment_date,
+                    pc.base_salary,
+                    pc.paid_amount,
+                    w.id as worker_id,
+                    w.first_name,
+                    w.last_name,
+                    w.job,
+                    sr.total_earned,
+                    sr.total_paid
+                FROM payment_check pc
+                INNER JOIN salary_record sr ON pc.salary_record_id = sr.id
+                INNER JOIN worker w ON sr.worker_id = w.id
+                WHERE pc.site_id = ? AND pc.payment_date = ?
+                ORDER BY w.last_name, w.first_name
+                """;
+
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setInt(1, siteId);
+        stmt.setDate(2, Date.valueOf(paymentDate));
+        return stmt.executeQuery();
     }
 }
