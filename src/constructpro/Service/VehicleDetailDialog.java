@@ -63,6 +63,7 @@ public class VehicleDetailDialog extends JDialog {
     private JPanel rentTotalsPanel;
 
     private Connection conn;
+    private JFrame parentFrame;
 
     public VehicleDetailDialog(JFrame parent, Vehicle vehicle, Connection connection) throws SQLException {
         super(parent, "Vehicle Details", true);
@@ -754,7 +755,7 @@ public class VehicleDetailDialog extends JDialog {
 
     private void editVehicle() {
         try {
-            VehicleForm dialog = new VehicleForm((JFrame) SwingUtilities.getWindowAncestor(this),
+            VehicleForm dialog = new VehicleForm(parentFrame,
                     "Modifier la Véhicule", currentVehicle, conn);
             dialog.setVisible(true);
 
@@ -781,5 +782,9 @@ public class VehicleDetailDialog extends JDialog {
                     "Erreur",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 }
