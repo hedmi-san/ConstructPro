@@ -50,7 +50,7 @@ public class PaymentCheckPDFGenerator {
 
         // Company/Title
         Font titleFont = new Font(Font.HELVETICA, 18, Font.BOLD, HEADER_COLOR);
-        Paragraph title = new Paragraph("CHÈQUES DE PAIEMENT", titleFont);
+        Paragraph title = new Paragraph("FICHE DE PAIEMENT", titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 

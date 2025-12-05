@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.sql.Connection;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
+import constructpro.Service.AttendanceRecord;
 import constructpro.Service.PaySlip;
 import constructpro.Service.WorkerList;
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 
 public class SalaryPage extends JPanel{
-    private JButton refreshButton,paymentCheckPdfButton;
+    private JButton refreshButton,paymentCheckPdfButton,attendancePaperButton;
     private JTextField searchText;
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -48,6 +49,7 @@ public class SalaryPage extends JPanel{
     private void initComponents() {
         refreshButton = new JButton("Actualiser");
         paymentCheckPdfButton = new JButton("Fiche de Paie");
+        attendancePaperButton = new JButton("Fiche de Pointage");
         searchText = new JTextField(15);
         jLabel1 = new JLabel("Salaire");
         jLabel2 = new JLabel("Rechercher");
@@ -96,7 +98,9 @@ public class SalaryPage extends JPanel{
         buttonPanel.setPreferredSize(new Dimension(0, 60));
         
         paymentCheckPdfButton.setForeground(Color.WHITE);
+        attendancePaperButton.setForeground(Color.WHITE);
         buttonPanel.add(paymentCheckPdfButton);
+        buttonPanel.add(attendancePaperButton);
 
         refreshButton.setFont(new Font("SansSerif", Font.BOLD, 12));
         refreshButton.addActionListener(e -> {
@@ -119,6 +123,15 @@ public class SalaryPage extends JPanel{
         paymentCheckPdfButton.addActionListener(e -> {
             try {
                 PaySlip dialog = new PaySlip(conn,parentFrame);
+                dialog.setVisible(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        
+        attendancePaperButton.addActionListener(e -> {
+            try {
+                AttendanceRecord dialog = new AttendanceRecord(conn,parentFrame);
                 dialog.setVisible(true);
             } catch (Exception ex) {
                 ex.printStackTrace();
