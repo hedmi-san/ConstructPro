@@ -84,10 +84,10 @@ public class PaymentCheckPDFGenerator {
             int siteId,
             LocalDate paymentDate) throws Exception {
 
-        // Create table with 6 columns
-        PdfPTable table = new PdfPTable(6);
+        // Create table with 3 columns
+        PdfPTable table = new PdfPTable(3);
         table.setWidthPercentage(100);
-        table.setWidths(new float[] { 3f, 2.5f, 2f, 2f, 2f, 2f });
+        table.setWidths(new float[] { 4f, 3f, 3f });
 
         // Header font
         Font headerFont = new Font(Font.HELVETICA, 10, Font.BOLD, Color.WHITE);
@@ -95,10 +95,7 @@ public class PaymentCheckPDFGenerator {
         // Add table headers
         addTableHeader(table, "Nom et Prénom", headerFont);
         addTableHeader(table, "Fonction", headerFont);
-        addTableHeader(table, "Salaire de Base", headerFont);
         addTableHeader(table, "Montant Payé", headerFont);
-        addTableHeader(table, "Retenue", headerFont);
-        addTableHeader(table, "Reste à Payer", headerFont);
 
         // Fetch data
         ResultSet rs = checkDAO.getPaymentChecksBySiteAndDate(siteId, paymentDate);
@@ -106,38 +103,23 @@ public class PaymentCheckPDFGenerator {
         Font cellFont = new Font(Font.HELVETICA, 9, Font.NORMAL);
         Font cellBoldFont = new Font(Font.HELVETICA, 9, Font.BOLD);
 
-        double totalBaseSalary = 0;
         double totalPaid = 0;
-        double totalRetained = 0;
-        double totalRemaining = 0;
         int rowCount = 0;
 
         while (rs.next()) {
             String firstName = rs.getString("first_name");
             String lastName = rs.getString("last_name");
             String job = rs.getString("job");
-            double baseSalary = rs.getDouble("base_salary");
             double paidAmount = rs.getDouble("paid_amount");
-            double totalEarned = rs.getDouble("total_earned");
-            double totalPaidOverall = rs.getDouble("total_paid");
 
-            double retained = baseSalary - paidAmount;
-            double remaining = totalEarned - totalPaidOverall;
-
-            totalBaseSalary += baseSalary;
             totalPaid += paidAmount;
-            totalRetained += retained;
-            totalRemaining += remaining;
 
             // Alternate row colors
             Color bgColor = (rowCount % 2 == 0) ? Color.WHITE : ALTERNATE_ROW_COLOR;
 
             addTableCell(table, lastName + " " + firstName, cellFont, bgColor);
             addTableCell(table, job != null ? job : "N/A", cellFont, bgColor);
-            addTableCell(table, String.format("%.2f DA", baseSalary), cellFont, bgColor);
             addTableCell(table, String.format("%.2f DA", paidAmount), cellFont, bgColor);
-            addTableCell(table, String.format("%.2f DA", retained), cellFont, bgColor);
-            addTableCell(table, String.format("%.2f DA", remaining), cellFont, bgColor);
 
             rowCount++;
         }
@@ -147,7 +129,7 @@ public class PaymentCheckPDFGenerator {
         if (rowCount == 0) {
             // No data found
             PdfPCell noDataCell = new PdfPCell(new Phrase("Aucun chèque de paiement trouvé pour cette date", cellFont));
-            noDataCell.setColspan(6);
+            noDataCell.setColspan(3);
             noDataCell.setHorizontalAlignment(Element.ALIGN_CENTER);
             noDataCell.setPadding(10);
             table.addCell(noDataCell);
@@ -155,10 +137,7 @@ public class PaymentCheckPDFGenerator {
             // Add totals row
             addTotalCell(table, "TOTAL", cellBoldFont);
             addTotalCell(table, "", cellBoldFont);
-            addTotalCell(table, String.format("%.2f DA", totalBaseSalary), cellBoldFont);
             addTotalCell(table, String.format("%.2f DA", totalPaid), cellBoldFont);
-            addTotalCell(table, String.format("%.2f DA", totalRetained), cellBoldFont);
-            addTotalCell(table, String.format("%.2f DA", totalRemaining), cellBoldFont);
         }
 
         document.add(table);
