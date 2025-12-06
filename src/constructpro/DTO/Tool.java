@@ -6,6 +6,7 @@ import java.time.LocalDate;
 public class Tool {
     private int Id;
     private int siteId;
+    private int supplierId;
     private String name;
     private LocalDate purshaceDate;
     private double quantity;
@@ -21,6 +22,14 @@ public class Tool {
     
     public int getSiteId() {
         return siteId;
+    }
+
+    public int getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
     }
 
     public void setSiteName(int siteName) {
