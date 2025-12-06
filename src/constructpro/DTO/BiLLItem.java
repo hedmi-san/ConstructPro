@@ -4,8 +4,10 @@ public class BiLLItem {
     private int id;
     private int billID;
     private String itemName;
+    private String billType; // Tool or Material
     private double quantity;
     private double unitPrice;
+    private double totalPrice;
 
     public int getId() {
         return id;
@@ -31,6 +33,14 @@ public class BiLLItem {
         this.itemName = itemName;
     }
 
+    public String getBillType() {
+        return billType;
+    }
+
+    public void setBillType(String billType) {
+        this.billType = billType;
+    }
+
     public double getQuantity() {
         return quantity;
     }
@@ -45,6 +55,14 @@ public class BiLLItem {
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
     
 }

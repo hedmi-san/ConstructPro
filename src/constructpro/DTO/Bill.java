@@ -4,12 +4,14 @@ import java.time.LocalDate;
 
 public class Bill {
     private int Id;
+    private String factureNumber;
+    private String facturePicturePath;
     private int supplierID;
     private int siteID;
     private LocalDate billDate;
-    private String billType;//there are two types (Tool, Material)
     private double transferFee;
     private double cost;
+    private double paidAmount;
     
 
     public int getId() {
@@ -19,6 +21,24 @@ public class Bill {
     public void setId(int Id) {
         this.Id = Id;
     }
+
+    public String getFactureNumber() {
+        return factureNumber;
+    }
+
+    public void setFactureNumber(String factureNumber) {
+        this.factureNumber = factureNumber;
+    }
+
+    public double getPaidAmount() {
+        return paidAmount;
+    }
+
+    public void setPaidAmount(double paidAmount) {
+        this.paidAmount = paidAmount;
+    }
+    
+    
 
     public int getSupplierID() {
         return supplierID;
@@ -42,14 +62,6 @@ public class Bill {
 
     public void setBillDate(LocalDate billDate) {
         this.billDate = billDate;
-    }
-
-    public String getBillType() {
-        return billType;
-    }
-
-    public void setBillType(String billType) {
-        this.billType = billType;
     }
 
     public double getTransferFee() {
