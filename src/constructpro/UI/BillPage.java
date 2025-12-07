@@ -133,7 +133,7 @@ public class BillPage extends JPanel{
                     ConstructionSite newSite = dialog.getSiteFromForm();
                     siteDAO.insertConstructionSite(newSite);
                     loadDataSet();
-                    JOptionPane.showMessageDialog(this, "Chantier ajouté avec succès!");
+                    JOptionPane.showMessageDialog(this, "Facture ajouté avec succès!");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

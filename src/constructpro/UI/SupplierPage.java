@@ -1,7 +1,7 @@
 package constructpro.UI;
 
 import constructpro.DAO.SupplierDAO;
-import constructpro.DTO.Fournisseur;
+import constructpro.DTO.Supplier;
 import constructpro.Service.SupplierForm;
 import java.awt.*;
 import java.awt.HeadlessException;
@@ -122,7 +122,7 @@ public class SupplierPage extends JPanel{
                 dialog.setVisible(true);
 
                 if (dialog.isConfirmed()) {
-                    Fournisseur newSupplier = dialog.getSupplierFromForm();
+                    Supplier newSupplier = dialog.getSupplierFromForm();
                     supplierDAO.insertSupplier(newSupplier);
                     loadDataSet();
                     JOptionPane.showMessageDialog(this, "Fournisseur ajouté avec succès!");
@@ -140,13 +140,13 @@ public class SupplierPage extends JPanel{
                     DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
                     int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
 
-                    Fournisseur existingWorker = supplierDAO.getSupplierById(supplierId);
+                    Supplier existingWorker = supplierDAO.getSupplierById(supplierId);
                     if (existingWorker != null) {
                         SupplierForm dialog = new SupplierForm(parentFrame, "Modifier le Fournisseur", existingWorker, conn);
                         dialog.setVisible(true);
 
                         if (dialog.isConfirmed()) {
-                            Fournisseur updatedSupplier = dialog.getSupplierFromForm();
+                            Supplier updatedSupplier = dialog.getSupplierFromForm();
                             updatedSupplier.setId(supplierId);
                             supplierDAO.updateSupplier(updatedSupplier);
                             loadDataSet();

@@ -10,4 +10,7 @@ public class BiLLItemDAO {
         this.connection = connection;
     }
     
+    public void insertBillItem(int billId,String itemType,String itemName,double quantity,double unitPrice){
+        
+    }
 }

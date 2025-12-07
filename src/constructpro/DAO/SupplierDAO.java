@@ -1,7 +1,7 @@
 package constructpro.DAO;
 
 import java.sql.*;
-import constructpro.DTO.Fournisseur;
+import constructpro.DTO.Supplier;
 
 public class SupplierDAO {
     private Connection connection;
@@ -10,7 +10,7 @@ public class SupplierDAO {
         this.connection = connection;
     }
     
-    public void insertSupplier(Fournisseur supplier) throws SQLException{
+    public void insertSupplier(Supplier supplier) throws SQLException{
         String sql = "INSERT INTO suppliers (supplier_name, phone, address,total_spent,total_paid) VALUES (?,?,?,?,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
@@ -22,7 +22,7 @@ public class SupplierDAO {
         }
     }
     
-    public void updateSupplier(Fournisseur supplier) throws SQLException{
+    public void updateSupplier(Supplier supplier) throws SQLException{
         String sql = "UPDATE suppliers SET supplier_name = ?, phone = ?, address = ?,total_spent = ?,total_paid = ? WHERE  supplier_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
@@ -49,13 +49,13 @@ public class SupplierDAO {
         return st.executeQuery(sql);
     }
     
-    public Fournisseur getSupplierById(int id) throws SQLException{
+    public Supplier getSupplierById(int id) throws SQLException{
         String sql = "SELECT * FROM suppliers WHERE supplier_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Fournisseur supplier = new Fournisseur();
+                Supplier supplier = new Supplier();
                 supplier.setId(rs.getInt("supplier_id"));
                 supplier.setName(rs.getString("supplier_name"));
                 supplier.setPhone(rs.getString("phone"));

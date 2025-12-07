@@ -1,15 +1,13 @@
 package constructpro.DTO;
 
-import java.util.List;
 
-public class Fournisseur {
+public class Supplier {
     private int Id;
     private String name;
     private String address;
     private String phone;
     private double totalSpent;
     private double totalPaid;
-    private double debt;
 
     public int getId() {
         return Id;
@@ -59,12 +57,5 @@ public class Fournisseur {
         this.totalPaid = totalPaid;
     }
 
-    public double getDebt() {
-        return debt;
-    }
-
-    public void setDebt(double debt) {
-        this.debt = debt;
-    }
     
 }

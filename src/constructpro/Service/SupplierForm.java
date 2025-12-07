@@ -1,6 +1,6 @@
 package constructpro.Service;
 
-import constructpro.DTO.Fournisseur;
+import constructpro.DTO.Supplier;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -18,7 +18,7 @@ public class SupplierForm extends JDialog {
     private JButton saveButton, cancelButton;
     private boolean confirmed = false;
     
-    public SupplierForm(JFrame parent, String title, Fournisseur supplier,Connection connection){
+    public SupplierForm(JFrame parent, String title, Supplier supplier,Connection connection){
         super(parent, title, true);
         
         initComponents();
@@ -99,7 +99,7 @@ public class SupplierForm extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH); 
         
     }
-    private void populateFields(Fournisseur supplier){
+    private void populateFields(Supplier supplier){
         supplierNameField.setText(supplier.getName());
         supplierPhoneNumberField.setText(supplier.getPhone());
         supplierAddress.setText(supplier.getAddress());
@@ -150,8 +150,8 @@ public class SupplierForm extends JDialog {
         });
     }
     
-    public Fournisseur getSupplierFromForm(){
-        Fournisseur supplier = new Fournisseur();
+    public Supplier getSupplierFromForm(){
+        Supplier supplier = new Supplier();
         //TODO: setting data from text fields.
         supplier.setName(supplierNameField.getText().trim());
         supplier.setPhone(supplierPhoneNumberField.getText().trim());
