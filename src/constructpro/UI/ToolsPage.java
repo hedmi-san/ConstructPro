@@ -1,6 +1,6 @@
 package constructpro.UI;
 
-import constructpro.DAO.ToolDAO;
+import constructpro.DAO.BiLLItemDAO;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,7 +22,7 @@ public class ToolsPage extends JPanel{
     private JLabel jLabel2;
     private JTable toolsTable;
     private JScrollPane jScrollPane1;
-    private ToolDAO toolDAO;
+    private BiLLItemDAO toolDAO;
     public Connection conn;
     public ToolsPage(Connection connection) {
         this.conn = connection;
@@ -32,7 +32,7 @@ public class ToolsPage extends JPanel{
     }
     
     private void initDAO(){
-        toolDAO = new ToolDAO(conn);
+        toolDAO = new BiLLItemDAO(conn);
     }
     
     private void initComponents(){
@@ -40,7 +40,7 @@ public class ToolsPage extends JPanel{
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
-        jLabel1 = new JLabel("Outils");
+        jLabel1 = new JLabel("Outil");
         jLabel2 = new JLabel("Rechercher");
         toolsTable = new JTable();
         jScrollPane1 = new JScrollPane(toolsTable);
@@ -121,12 +121,12 @@ public class ToolsPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("tool_id"),
-                    rs.getString("tool_name"),
+                    rs.getInt("item_id"),
+                    rs.getString("name"),
                     rs.getString("quantity"),
                     rs.getInt("unit_price"),
-                    rs.getString("name"),
-                    rs.getString("date_acquired")
+                    rs.getString("site_name"),
+                    rs.getString("bill_date")
                 });
             }
             toolsTable.setModel(model);
@@ -156,12 +156,12 @@ public class ToolsPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("tool_id"),
-                    rs.getString("tool_name"),
+                    rs.getInt("item_id"),
+                    rs.getString("name"),
                     rs.getString("quantity"),
                     rs.getInt("unit_price"),
-                    rs.getString("name"),
-                    rs.getString("date_acquired")
+                    rs.getString("site_name"),
+                    rs.getString("bill_date")
                 });
             }
             toolsTable.setModel(model);

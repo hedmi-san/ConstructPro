@@ -15,6 +15,7 @@ public class BillForm extends JDialog{
     private JPanel billItemPanel;
     private SupplierDAO supplierDAO;
     private ConstructionSiteDAO siteDAO;
+    private BillDAO billDAO;
     private Connection conn;
     private Bill existingBill;
     private boolean confirmed = false;
@@ -24,9 +25,39 @@ public class BillForm extends JDialog{
         this.conn = conn;
         this.siteDAO = new ConstructionSiteDAO(connection);
         this.supplierDAO = new SupplierDAO(connection);
+        this.billDAO= new BillDAO(connection);
+        initComponents();
+        setupLayout();
+        setupActions();
+
+        if (bill != null) {
+            populateFields(bill);
+        }
+
+        pack();
+        setLocationRelativeTo(parent);
         
     }
     
+    private void initComponents(){
     
+    }
+            
+    private void setupLayout(){
     
+    }
+            
+    private void setupActions(){
+    
+    }
+            
+    private void populateFields(Bill bill){
+    
+    }
+    
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+    
+    //public Bill getBillFromForm(){}
 }

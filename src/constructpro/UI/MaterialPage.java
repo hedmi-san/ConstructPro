@@ -1,5 +1,5 @@
 package constructpro.UI;
-import constructpro.DAO.MaterialDAO;
+import constructpro.DAO.BiLLItemDAO;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,7 +23,7 @@ public class MaterialPage  extends JPanel{
     private JLabel jLabel2;
     private JTable materialTable;
     private JScrollPane jScrollPane1;
-    private MaterialDAO materialDAO;
+    private BiLLItemDAO materialDAO;
     public Connection conn;
     public MaterialPage(Connection connection){
         this.conn = connection;
@@ -33,7 +33,7 @@ public class MaterialPage  extends JPanel{
     }
     
     private void initDAO(){
-    materialDAO = new MaterialDAO(conn);
+    materialDAO = new BiLLItemDAO(conn);
     }
     
     private void initComponents(){
@@ -111,7 +111,7 @@ public class MaterialPage  extends JPanel{
     
     private void loadDataSet(){
         try {
-            ResultSet rs = materialDAO.getToolsInfo();
+            ResultSet rs = materialDAO.getMaterialInfo();
             DefaultTableModel model = new DefaultTableModel(
                     new Object[]{"ID", "Nom", "Quantité", "Prix", "Chantier", "Date"}, 0
             ) {
@@ -123,12 +123,12 @@ public class MaterialPage  extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("material_id"),
-                    rs.getString("material_name"),
+                    rs.getInt("item_id"),
+                    rs.getString("name"),
                     rs.getString("quantity"),
                     rs.getInt("unit_price"),
-                    rs.getString("name"),
-                    rs.getString("date_acquired")
+                    rs.getString("site_name"),
+                    rs.getString("bill_date")
                 });
             }
             materialTable.setModel(model);
@@ -158,12 +158,12 @@ public class MaterialPage  extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("material_id"),
-                    rs.getString("material_name"),
+                    rs.getInt("item_id"),
+                    rs.getString("name"),
                     rs.getString("quantity"),
                     rs.getInt("unit_price"),
-                    rs.getString("name"),
-                    rs.getString("date_acquired")
+                    rs.getString("site_name"),
+                    rs.getString("bill_date")
                 });
             }
             materialTable.setModel(model);
