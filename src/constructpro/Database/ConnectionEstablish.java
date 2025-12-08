@@ -23,7 +23,12 @@ public class ConnectionEstablish {
     public ConnectionEstablish() {
         try {
             prop = new Properties();
-            prop.loadFromXML(new FileInputStream("src/constructpro/Database/DBCredentials.xml"));
+            // Load from classpath (works in JAR and development)
+            var inputStream = getClass().getResourceAsStream("/constructpro/Database/DBCredentials.xml");
+            if (inputStream == null) {
+                throw new IOException("DBCredentials.xml not found in classpath");
+            }
+            prop.loadFromXML(inputStream);
             username = prop.getProperty("username");
             password = prop.getProperty("password");
 
