@@ -9,8 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.table.DefaultTableModel;
 
-
-public class BillPage extends JPanel{
+public class BillPage extends JPanel {
     private JButton refreshButton;
     private JButton deleteButton;
     private JButton editButton;
@@ -24,19 +23,20 @@ public class BillPage extends JPanel{
     private BillDAO billDAO;
     private Bill bill;
     private Connection conn;
-    
+
     public BillPage(Connection connection) {
-       this.conn = connection;
+        this.conn = connection;
         initDAO();
         initComponents();
-        loadDataSet(); 
-        
+        loadDataSet();
+
     }
-    
-    private void initDAO(){
+
+    private void initDAO() {
         billDAO = new BillDAO(conn);
     }
-    private void initComponents(){
+
+    private void initComponents() {
         addButton = new JButton("Ajouter");
         editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
@@ -46,7 +46,7 @@ public class BillPage extends JPanel{
         jLabel2 = new JLabel("Rechercher");
         billsTable = new JTable();
         jScrollPane1 = new JScrollPane(billsTable);
-        
+
         setLayout(new BorderLayout());
 
         // Header panel with BorderLayout to separate left and right sections
@@ -113,16 +113,16 @@ public class BillPage extends JPanel{
 
         setupButtonActions();
     }
-    
-    private void showBillDetails(){
-        
+
+    private void showBillDetails() {
+
     }
-    
-    private void loadSearchResults(String searchTerm){
-        
+
+    private void loadSearchResults(String searchTerm) {
+
     }
-    
-    private void setupButtonActions(){
+
+    private void setupButtonActions() {
         // add button action
         addButton.addActionListener(e -> {
             try {
@@ -130,75 +130,97 @@ public class BillPage extends JPanel{
                 dialog.setVisible(true);
 
                 if (dialog.isConfirmed()) {
-                    //Bill newBill = dialog.getBillFromForm();
-                    //billDAO.insertBill(newBill);
-                    loadDataSet();
-                    JOptionPane.showMessageDialog(this, "Facture ajouté avec succès!");
+                    Bill newBill = dialog.getBillFromForm();
+
+                    // Insert the bill and get the generated bill ID
+                    int billId = billDAO.insertBill(newBill);
+
+                    if (billId > 0) {
+                        // Insert all bill items
+                        constructpro.DAO.BiLLItemDAO billItemDAO = new constructpro.DAO.BiLLItemDAO(conn);
+                        for (constructpro.DTO.BiLLItem item : dialog.getBillItems()) {
+                            billItemDAO.insertBillItem(billId, item.getBillType(), item.getItemName(),
+                                    item.getQuantity(), item.getUnitPrice());
+                        }
+
+                        loadDataSet();
+                        JOptionPane.showMessageDialog(this, "Facture ajoutée avec succès!");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout de la facture.", "Erreur",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
         // Edit button action
-//        editButton.addActionListener(e -> {
-//            int selectedRow = sitesTable.getSelectedRow();
-//            if (selectedRow >= 0) {
-//                try {
-//                    DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
-//                    int siteId = (Integer) model.getValueAt(selectedRow, 0);
-//
-//                    ConstructionSite existingSite = siteDAO.getConstructionSiteById(siteId);
-//                    if (existingSite != null) {
-//                        SiteForm dialog = new SiteForm(parentFrame, "Modifier le chantier", existingSite, conn);
-//                        dialog.setVisible(true);
-//
-//                        if (dialog.isConfirmed()) {
-//                            ConstructionSite updatedSite = dialog.getSiteFromForm();
-//                            updatedSite.setId(siteId);
-//                            siteDAO.updateConstructionSite(updatedSite);
-//                            loadDataSet();
-//                            JOptionPane.showMessageDialog(this, "Chantier modifié avec succès!");
-//                        }
-//                    }
-//                } catch (HeadlessException | SQLException ex) {
-//                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à modifier.");
-//            }
-//        });
+        // editButton.addActionListener(e -> {
+        // int selectedRow = sitesTable.getSelectedRow();
+        // if (selectedRow >= 0) {
+        // try {
+        // DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
+        // int siteId = (Integer) model.getValueAt(selectedRow, 0);
+        //
+        // ConstructionSite existingSite = siteDAO.getConstructionSiteById(siteId);
+        // if (existingSite != null) {
+        // SiteForm dialog = new SiteForm(parentFrame, "Modifier le chantier",
+        // existingSite, conn);
+        // dialog.setVisible(true);
+        //
+        // if (dialog.isConfirmed()) {
+        // ConstructionSite updatedSite = dialog.getSiteFromForm();
+        // updatedSite.setId(siteId);
+        // siteDAO.updateConstructionSite(updatedSite);
+        // loadDataSet();
+        // JOptionPane.showMessageDialog(this, "Chantier modifié avec succès!");
+        // }
+        // }
+        // } catch (HeadlessException | SQLException ex) {
+        // JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " +
+        // ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        // }
+        // } else {
+        // JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à
+        // modifier.");
+        // }
+        // });
 
         // Delete button action
-//        deleteButton.addActionListener(e -> {
-//            int selectedRow = sitesTable.getSelectedRow();
-//            if (selectedRow >= 0) {
-//                DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
-//                String chantierName = model.getValueAt(selectedRow, 1) + " " + model.getValueAt(selectedRow, 2);
-//
-//                int confirm = JOptionPane.showConfirmDialog(this,
-//                        "Êtes-vous sûr de vouloir supprimer le chantier " + chantierName + "?",
-//                        "Confirmer la suppression",
-//                        JOptionPane.YES_NO_OPTION);
-//
-//                if (confirm == JOptionPane.YES_OPTION) {
-//                    try {
-//                        int siteId = (Integer) model.getValueAt(selectedRow, 0);
-//                        siteDAO.deleteConstructionSite(siteId);
-//                        loadDataSet();
-//                        JOptionPane.showMessageDialog(this, "Chantier supprimé avec succès!");
-//                    } catch (HeadlessException | SQLException ex) {
-//                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-//                    }
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à supprimer.");
-//            }
-//        });
+        // deleteButton.addActionListener(e -> {
+        // int selectedRow = sitesTable.getSelectedRow();
+        // if (selectedRow >= 0) {
+        // DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
+        // String chantierName = model.getValueAt(selectedRow, 1) + " " +
+        // model.getValueAt(selectedRow, 2);
+        //
+        // int confirm = JOptionPane.showConfirmDialog(this,
+        // "Êtes-vous sûr de vouloir supprimer le chantier " + chantierName + "?",
+        // "Confirmer la suppression",
+        // JOptionPane.YES_NO_OPTION);
+        //
+        // if (confirm == JOptionPane.YES_OPTION) {
+        // try {
+        // int siteId = (Integer) model.getValueAt(selectedRow, 0);
+        // siteDAO.deleteConstructionSite(siteId);
+        // loadDataSet();
+        // JOptionPane.showMessageDialog(this, "Chantier supprimé avec succès!");
+        // } catch (HeadlessException | SQLException ex) {
+        // JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " +
+        // ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        // }
+        // }
+        // } else {
+        // JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à
+        // supprimer.");
+        // }
+        // });
     }
-    
-    private void loadDataSet(){
-        
+
+    private void loadDataSet() {
+
     }
 }
