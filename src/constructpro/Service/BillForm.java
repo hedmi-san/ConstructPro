@@ -303,8 +303,35 @@ public class BillForm extends JDialog {
         transferFeeTextField.setText(String.valueOf(bill.getTransferFee()));
         paidAmountTextField.setText(String.valueOf(bill.getPaidAmount()));
 
-        // Set supplier and site combo boxes if needed
-        // This would require additional DAO methods to get names by ID
+        // Set supplier
+        try {
+            String supplierName = supplierDAO.getSupplierById(bill.getSupplierID()).getName();
+            supplierComboBox.setSelectedItem(supplierName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Set site
+        try {
+            String siteName = siteDAO.getSiteNameById(bill.getSiteID());
+            siteComboBox.setSelectedItem(siteName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Load bill items
+        try {
+            constructpro.DAO.BiLLItemDAO billItemDAO = new constructpro.DAO.BiLLItemDAO(conn);
+            List<BiLLItem> items = billItemDAO.getBillItems(bill.getId());
+            for (BiLLItem item : items) {
+                billItems.add(item);
+                addItemToTable(item);
+            }
+            updateTotals();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des articles : " + e.getMessage());
+        }
     }
 
     private void loadSites() {

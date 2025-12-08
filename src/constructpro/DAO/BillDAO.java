@@ -53,6 +53,42 @@ public class BillDAO {
         return st.executeQuery(sql);
     }
 
+    public Bill getBillById(int id) throws SQLException {
+        String sql = "SELECT * FROM bills WHERE bill_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Bill bill = new Bill();
+                bill.setId(rs.getInt("bill_id"));
+                bill.setFactureNumber(rs.getString("facture_number"));
+                bill.setSupplierID(rs.getInt("supplier_id"));
+                bill.setSiteID(rs.getInt("assigned_site_id"));
+                bill.setBillDate(rs.getDate("bill_date").toLocalDate());
+                bill.setTransferFee(rs.getDouble("transfer_fee"));
+                bill.setCost(rs.getDouble("total_cost"));
+                bill.setPaidAmount(rs.getDouble("paid_amount"));
+                return bill;
+            }
+        }
+        return null;
+    }
+
+    public void updateBill(Bill bill) throws SQLException {
+        String sql = "UPDATE bills SET facture_number=?, supplier_id=?, assigned_site_id=?, bill_date=?, transfer_fee=?, total_cost=?, paid_amount=? WHERE bill_id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, bill.getFactureNumber());
+            ps.setInt(2, bill.getSupplierID());
+            ps.setInt(3, bill.getSiteID());
+            ps.setDate(4, Date.valueOf(bill.getBillDate()));
+            ps.setDouble(5, bill.getTransferFee());
+            ps.setDouble(6, bill.getCost());
+            ps.setDouble(7, bill.getPaidAmount());
+            ps.setInt(8, bill.getId());
+            ps.executeUpdate();
+        }
+    }
+
     public ResultSet searchBillsByFactureNumber(String searchTerm) throws SQLException {
         String sql = """
                 SELECT

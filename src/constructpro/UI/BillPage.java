@@ -191,36 +191,43 @@ public class BillPage extends JPanel {
         });
 
         // Edit button action
-        // editButton.addActionListener(e -> {
-        // int selectedRow = sitesTable.getSelectedRow();
-        // if (selectedRow >= 0) {
-        // try {
-        // DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
-        // int siteId = (Integer) model.getValueAt(selectedRow, 0);
-        //
-        // ConstructionSite existingSite = siteDAO.getConstructionSiteById(siteId);
-        // if (existingSite != null) {
-        // SiteForm dialog = new SiteForm(parentFrame, "Modifier le chantier",
-        // existingSite, conn);
-        // dialog.setVisible(true);
-        //
-        // if (dialog.isConfirmed()) {
-        // ConstructionSite updatedSite = dialog.getSiteFromForm();
-        // updatedSite.setId(siteId);
-        // siteDAO.updateConstructionSite(updatedSite);
-        // loadDataSet();
-        // JOptionPane.showMessageDialog(this, "Chantier modifié avec succès!");
-        // }
-        // }
-        // } catch (HeadlessException | SQLException ex) {
-        // JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " +
-        // ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-        // }
-        // } else {
-        // JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à
-        // modifier.");
-        // }
-        // });
+        editButton.addActionListener(e -> {
+            int selectedRow = billsTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                try {
+                    DefaultTableModel model = (DefaultTableModel) billsTable.getModel();
+                    int billId = (Integer) model.getValueAt(selectedRow, 0);
+
+                    Bill existingBill = billDAO.getBillById(billId);
+                    if (existingBill != null) {
+                        BillForm dialog = new BillForm(parentFrame, "Modifier la facture", existingBill, conn);
+                        dialog.setVisible(true);
+
+                        if (dialog.isConfirmed()) {
+                            Bill updatedBill = dialog.getBillFromForm();
+                            updatedBill.setId(billId);
+                            billDAO.updateBill(updatedBill);
+
+                            // Update items: Delete old items and insert new ones
+                            constructpro.DAO.BiLLItemDAO billItemDAO = new constructpro.DAO.BiLLItemDAO(conn);
+                            billItemDAO.deleteBillItems(billId);
+                            for (constructpro.DTO.BiLLItem item : dialog.getBillItems()) {
+                                billItemDAO.insertBillItem(billId, item.getBillType(), item.getItemName(),
+                                        item.getQuantity(), item.getUnitPrice());
+                            }
+
+                            loadDataSet();
+                            JOptionPane.showMessageDialog(this, "Facture modifié avec succès!");
+                        }
+                    }
+                } catch (HeadlessException | SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: "
+                            + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une facture à modifier.");
+            }
+        });
 
         // Delete button action
         // deleteButton.addActionListener(e -> {

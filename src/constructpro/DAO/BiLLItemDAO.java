@@ -2,6 +2,8 @@ package constructpro.DAO;
 
 import constructpro.DTO.BiLLItem;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BiLLItemDAO {
     private Connection connection;
@@ -21,6 +23,35 @@ public class BiLLItemDAO {
             stmt.setDouble(5, unitPrice);
             stmt.executeUpdate();
         }
+    }
+
+    public void deleteBillItems(int billId) throws SQLException {
+        String sql = "DELETE FROM bill_items WHERE bill_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, billId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public List<BiLLItem> getBillItems(int billId) throws SQLException {
+        List<BiLLItem> items = new ArrayList<>();
+        String sql = "SELECT * FROM bill_items WHERE bill_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, billId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                BiLLItem item = new BiLLItem();
+                item.setId(rs.getInt("item_id"));
+                item.setBillID(rs.getInt("bill_id"));
+                item.setBillType(rs.getString("item_type"));
+                item.setItemName(rs.getString("item_name"));
+                item.setQuantity(rs.getDouble("quantity"));
+                item.setUnitPrice(rs.getDouble("unit_price"));
+                item.setTotalPrice(item.getQuantity() * item.getUnitPrice());
+                items.add(item);
+            }
+        }
+        return items;
     }
 
     public ResultSet getToolsInfo() throws SQLException {
