@@ -17,6 +17,8 @@ public class ConnectionEstablish {
     static String username, password;
     Properties prop;
     Connection conn;
+    Statement statement;
+    ResultSet result;
 
     public ConnectionEstablish() {
         try {
