@@ -32,4 +32,46 @@ public class BillDAO {
         }
         return -1; // Return -1 if insertion failed
     }
+
+    public ResultSet getBillsInfo() throws SQLException {
+        String sql = """
+                SELECT
+                    b.bill_id,
+                    b.facture_number,
+                    s.supplier_name,
+                    cs.name AS site_name,
+                    b.bill_date,
+                    b.total_cost,
+                    b.paid_amount,
+                    b.transfer_fee
+                FROM bills b
+                JOIN suppliers s ON b.supplier_id = s.supplier_id
+                JOIN ConstructionSite cs ON b.assigned_site_id = cs.id
+                ORDER BY b.bill_date DESC
+                """;
+        Statement st = connection.createStatement();
+        return st.executeQuery(sql);
+    }
+
+    public ResultSet searchBillsByFactureNumber(String searchTerm) throws SQLException {
+        String sql = """
+                SELECT
+                    b.bill_id,
+                    b.facture_number,
+                    s.supplier_name,
+                    cs.name AS site_name,
+                    b.bill_date,
+                    b.total_cost,
+                    b.paid_amount,
+                    b.transfer_fee
+                FROM bills b
+                JOIN suppliers s ON b.supplier_id = s.supplier_id
+                JOIN ConstructionSite cs ON b.assigned_site_id = cs.id
+                WHERE b.facture_number LIKE ?
+                ORDER BY b.bill_date DESC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1, "%" + searchTerm + "%");
+        return ps.executeQuery();
+    }
 }

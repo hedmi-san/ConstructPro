@@ -115,11 +115,44 @@ public class BillPage extends JPanel {
     }
 
     private void showBillDetails() {
-
+        // TODO: Implement bill details dialog
     }
 
     private void loadSearchResults(String searchTerm) {
+        try {
+            ResultSet rs = billDAO.searchBillsByFactureNumber(searchTerm);
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[] { "ID", "Numéro de facture", "Fournisseur", "Chantier", "Date", "Coût Total (DA)",
+                            "Montant Payé (DA)" },
+                    0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
 
+            while (rs.next()) {
+                model.addRow(new Object[] {
+                        rs.getInt("bill_id"),
+                        rs.getString("facture_number"),
+                        rs.getString("supplier_name"),
+                        rs.getString("site_name"),
+                        rs.getDate("bill_date"),
+                        String.format("%.2f", rs.getDouble("total_cost")),
+                        String.format("%.2f", rs.getDouble("paid_amount"))
+                });
+            }
+            billsTable.setModel(model);
+
+            // Hide ID column
+            billsTable.getColumnModel().getColumn(0).setMinWidth(0);
+            billsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            billsTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors de la recherche: " + e.getMessage(), "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void setupButtonActions() {
@@ -221,6 +254,39 @@ public class BillPage extends JPanel {
     }
 
     private void loadDataSet() {
+        try {
+            ResultSet rs = billDAO.getBillsInfo();
+            DefaultTableModel model = new DefaultTableModel(
+                    new Object[] { "ID", "Numéro de facture", "Fournisseur", "Chantier", "Date", "Coût Total (DA)",
+                            "Montant Payé (DA)" },
+                    0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make table non-editable
+                }
+            };
 
+            while (rs.next()) {
+                model.addRow(new Object[] {
+                        rs.getInt("bill_id"),
+                        rs.getString("facture_number"),
+                        rs.getString("supplier_name"),
+                        rs.getString("site_name"),
+                        rs.getDate("bill_date"),
+                        String.format("%.2f", rs.getDouble("total_cost")),
+                        String.format("%.2f", rs.getDouble("paid_amount"))
+                });
+            }
+            billsTable.setModel(model);
+
+            // Hide ID column
+            billsTable.getColumnModel().getColumn(0).setMinWidth(0);
+            billsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            billsTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
