@@ -11,7 +11,7 @@ public class VehicleDAO {
     }
 
     public void insertVehicle(Vehicle vehicle) throws SQLException {
-        String sql = "INSERT INTO vehicle(name,plateNumber,ownership_type,assignedSiteId,driverId) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO vehicle(name,plateNumber,ownershipType,assignedSiteId,driverId) VALUES(?,?,?,?,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, vehicle.getName());
             stmt.setString(2, vehicle.getPlateNumber());
@@ -60,7 +60,7 @@ public class VehicleDAO {
                 vehicle.setId(rs.getInt("id"));
                 vehicle.setName(rs.getString("name"));
                 vehicle.setPlateNumber(rs.getString("plateNumber"));
-                vehicle.setOwnershipType(rs.getString("ownership_type"));
+                vehicle.setOwnershipType(rs.getString("ownershipType"));
                 vehicle.setSiteID(rs.getInt("assignedSiteId"));
                 vehicle.setDriverID(rs.getInt("driverId"));
                 return vehicle;
@@ -76,13 +76,13 @@ public class VehicleDAO {
                     v.id AS vehicle_id,
                     v.name AS vehicle_name,
                     v.plateNumber,
-                    v.ownership_type,
+                    v.ownershipType,
                     s.name AS site_name,
-                    CONCAT(w.first_name, ' ', w.last_name) AS driver_name
+                    CONCAT(w.firstName, ' ', w.lastName) AS driver_name
                 FROM
                     vehicle v
                 LEFT JOIN
-                    ConstructionSite s ON v.assignedSiteId = s.id
+                    constructionSite s ON v.assignedSiteId = s.id
                 LEFT JOIN
                     worker w ON v.driverId = w.id;
                 """;
@@ -97,13 +97,13 @@ public class VehicleDAO {
                          v.id AS vehicle_id,
                          v.name AS vehicle_name,
                          v.plateNumber,
-                         v.ownership_type,
+                         v.ownershipType,
                          s.name AS site_name,
-                         CONCAT(w.first_name, ' ', w.last_name) AS driver_name
+                         CONCAT(w.firstName, ' ', w.lastName) AS driver_name
                          FROM
                              vehicle v
                          LEFT JOIN
-                             ConstructionSite s ON v.assignedSiteId = s.id
+                             constructionSite s ON v.assignedSiteId = s.id
                          LEFT JOIN
                              worker w ON v.driverId = w.id
                          WHERE

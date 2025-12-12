@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Vector;
+import constructpro.Database.SQLiteDateUtils;
 import javax.swing.table.DefaultTableModel;
 
 public class WorkerDAO {
@@ -20,9 +21,9 @@ public class WorkerDAO {
     }
 
     public void insertWorker(Worker worker) throws SQLException {
-        String sql = "INSERT INTO worker (first_name, last_name, birth_place, birth_date, father_name, mother_name, " +
-                "start_date, identity_card_number, identity_card_date, family_situation, account_number, " +
-                "phone_number, job, site_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO worker (firstName, lastName, birthPlace, birthDate, fatherName, motherName, " +
+                "startDate, identityCardNumber, identityCardDate, familySituation, accountNumber, " +
+                "phoneNumber, job, siteId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, worker.getFirstName());
             ps.setString(2, worker.getLastName());
@@ -43,7 +44,7 @@ public class WorkerDAO {
     }
 
     public void updateWorker(Worker worker) throws SQLException {
-        String sql = "UPDATE worker SET first_name=?, last_name=?, birth_place=?, birth_date=?, father_name=?, mother_name=?, start_date=?, identity_card_number=?, identity_card_date=?, family_situation=?, account_number=?, phone_number=?, job=?, site_id=? WHERE id=?";
+        String sql = "UPDATE worker SET firstName=?, lastName=?, birthPlace=?, birthDate=?, fatherName=?, motherName=?, startDate=?, identityCardNumber=?, identityCardDate=?, familySituation=?, accountNumber=?, phoneNumber=?, job=?, siteId=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, worker.getFirstName());
             ps.setString(2, worker.getLastName());
@@ -80,20 +81,20 @@ public class WorkerDAO {
             if (rs.next()) {
                 Worker w = new Worker();
                 w.setId(rs.getInt("id"));
-                w.setFirstName(rs.getString("first_name"));
-                w.setLastName(rs.getString("last_name"));
-                w.setBirthPlace(rs.getString("birth_place"));
-                w.setBirthDate(rs.getDate("birth_date").toLocalDate());
-                w.setFatherName(rs.getString("father_name"));
-                w.setMotherName(rs.getString("mother_name"));
-                w.setStartDate(rs.getDate("start_date").toLocalDate());
-                w.setIdentityCardNumber(rs.getString("identity_card_number"));
-                w.setIdentityCardDate(rs.getDate("identity_card_date").toLocalDate());
-                w.setFamilySituation(rs.getString("family_situation"));
-                w.setAccountNumber(rs.getString("account_number"));
-                w.setPhoneNumber(rs.getString("phone_number"));
+                w.setFirstName(rs.getString("firstName"));
+                w.setLastName(rs.getString("lastName"));
+                w.setBirthPlace(rs.getString("birthPlace"));
+                w.setBirthDate(SQLiteDateUtils.getDate(rs, "birthDate"));
+                w.setFatherName(rs.getString("fatherName"));
+                w.setMotherName(rs.getString("motherName"));
+                w.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                w.setIdentityCardNumber(rs.getString("identityCardNumber"));
+                w.setIdentityCardDate(SQLiteDateUtils.getDate(rs, "identityCardDate"));
+                w.setFamilySituation(rs.getString("familySituation"));
+                w.setAccountNumber(rs.getString("accountNumber"));
+                w.setPhoneNumber(rs.getString("phoneNumber"));
                 w.setRole(rs.getString("job"));
-                w.setAssignedSiteID(rs.getInt("site_id"));
+                w.setAssignedSiteID(rs.getInt("siteId"));
                 return w;
             }
         }
@@ -108,20 +109,20 @@ public class WorkerDAO {
             while (rs.next()) {
                 Worker w = new Worker();
                 w.setId(rs.getInt("id"));
-                w.setFirstName(rs.getString("first_name"));
-                w.setLastName(rs.getString("last_name"));
-                w.setBirthPlace(rs.getString("birth_place"));
-                w.setBirthDate(rs.getDate("birth_date").toLocalDate());
-                w.setFatherName(rs.getString("father_name"));
-                w.setMotherName(rs.getString("mother_name"));
-                w.setStartDate(rs.getDate("start_date").toLocalDate());
-                w.setIdentityCardNumber(rs.getString("identity_card_number"));
-                w.setIdentityCardDate(rs.getDate("identity_card_date").toLocalDate());
-                w.setFamilySituation(rs.getString("family_situation"));
-                w.setAccountNumber(rs.getString("account_number"));
-                w.setPhoneNumber(rs.getString("phone_number"));
+                w.setFirstName(rs.getString("firstName"));
+                w.setLastName(rs.getString("lastName"));
+                w.setBirthPlace(rs.getString("birthPlace"));
+                w.setBirthDate(SQLiteDateUtils.getDate(rs, "birthDate"));
+                w.setFatherName(rs.getString("fatherName"));
+                w.setMotherName(rs.getString("motherName"));
+                w.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                w.setIdentityCardNumber(rs.getString("identityCardNumber"));
+                w.setIdentityCardDate(SQLiteDateUtils.getDate(rs, "identityCardDate"));
+                w.setFamilySituation(rs.getString("familySituation"));
+                w.setAccountNumber(rs.getString("accountNumber"));
+                w.setPhoneNumber(rs.getString("phoneNumber"));
                 w.setRole(rs.getString("job"));
-                w.setAssignedSiteID(rs.getInt("site_id"));
+                w.setAssignedSiteID(rs.getInt("siteId"));
                 list.add(w);
             }
         }
@@ -133,16 +134,16 @@ public class WorkerDAO {
             String query = """
                     SELECT
                         w.id,
-                        w.first_name,
-                        w.last_name,
-                        TIMESTAMPDIFF(YEAR, w.birth_date, CURDATE()) AS age,
+                        w.firstName,
+                        w.lastName,
+                        CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', w.birthDate) AS INTEGER) AS age,
                         w.job,
-                        w.phone_number,
+                        w.phoneNumber,
                         s.name AS site_name
                     FROM
                         worker w
                     LEFT JOIN
-                        ConstructionSite s ON w.site_id = s.id
+                        constructionSite s ON w.siteId = s.id
                     """;
             rs = st.executeQuery(query);
         } catch (SQLException throwables) {
@@ -152,13 +153,13 @@ public class WorkerDAO {
     }
 
     public ResultSet getWorkers() throws SQLException {
-        String sql = "SELECT id,first_name,last_name,job,phone_number FROM worker";
+        String sql = "SELECT id,firstName,lastName,job,phoneNumber FROM worker";
         PreparedStatement ps = connection.prepareStatement(sql);
         return ps.executeQuery();
     }
 
     public void assignWorkerToSite(int workerId, int siteId) throws SQLException {
-        String sql = "UPDATE worker SET site_id = ? WHERE id = ?";
+        String sql = "UPDATE worker SET siteId = ? WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, siteId);
         ps.setInt(2, workerId);
@@ -177,7 +178,7 @@ public class WorkerDAO {
     }
 
     public void unassignWorker(int workerId) throws SQLException {
-        String sql = "UPDATE worker SET site_id = 1 WHERE id = ?";
+        String sql = "UPDATE worker SET siteId = 1 WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, workerId);
             stmt.executeUpdate();
@@ -188,7 +189,7 @@ public class WorkerDAO {
         List<String> list = new ArrayList<>();
         String sql = """
                 SELECT
-                CONCAT(first_name, ' ', last_name) AS driver_name
+                CONCAT(firstName, ' ', lastName) AS driver_name
                 FROM worker
                 WHERE job = 'Chauffeur' or job = 'Grutier'
                 """;
@@ -206,7 +207,7 @@ public class WorkerDAO {
             return 0;
         }
 
-        String sql = "SELECT id FROM worker WHERE CONCAT(first_name, ' ', last_name) = ?";
+        String sql = "SELECT id FROM worker WHERE CONCAT(firstName, ' ', lastName) = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, driverName);
             ResultSet rs = ps.executeQuery();
@@ -220,7 +221,7 @@ public class WorkerDAO {
     public String getDriverNameById(int workerId) throws SQLException {
         String sql = """
                 SELECT
-                   CONCAT(first_name, ' ', last_name) AS driver_name
+                   CONCAT(firstName, ' ', lastName) AS driver_name
                    FROM worker
                    WHERE id = ?
                 """;
@@ -239,12 +240,12 @@ public class WorkerDAO {
         String sql = """
                 SELECT
                     id,
-                    first_name,
-                    last_name,
-                    TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age,
+                    firstName,
+                    lastName,
+                    CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', birthDate) AS INTEGER) AS age,
                     job,
-                    phone_number
-                FROM worker WHERE site_id = ?
+                    phoneNumber
+                FROM worker WHERE siteId = ?
                  """;
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -262,18 +263,18 @@ public class WorkerDAO {
             String query = """
                         SELECT
                             w.id,
-                            w.first_name,
-                            w.last_name,
-                            TIMESTAMPDIFF(YEAR, w.birth_date, CURDATE()) AS age,
+                            w.firstName,
+                            w.lastName,
+                            CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', w.birthDate) AS INTEGER) AS age,
                             w.job,
-                            w.phone_number,
+                            w.phoneNumber,
                             s.name AS site_name
                         FROM
                             worker w
                         LEFT JOIN
-                            ConstructionSite s ON w.site_id = s.id
+                            constructionSite s ON w.siteId = s.id
                         WHERE
-                            w.first_name LIKE ? OR w.last_name LIKE ?
+                            w.firstName LIKE ? OR w.lastName LIKE ?
                     """;
             PreparedStatement ps = connection.prepareStatement(query);
             String likeTerm = "%" + searchTerm + "%";

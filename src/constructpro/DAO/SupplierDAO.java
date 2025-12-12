@@ -13,7 +13,7 @@ public class SupplierDAO {
     }
 
     public void insertSupplier(Supplier supplier) throws SQLException {
-        String sql = "INSERT INTO suppliers (supplier_name, phone, address,total_spent,total_paid) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO suppliers (supplierName, phone, address,totalSpent,totalPaid) VALUES (?,?,?,?,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
             stmt.setString(2, supplier.getPhone());
@@ -25,7 +25,7 @@ public class SupplierDAO {
     }
 
     public void updateSupplier(Supplier supplier) throws SQLException {
-        String sql = "UPDATE suppliers SET supplier_name = ?, phone = ?, address = ?,total_spent = ?,total_paid = ? WHERE  supplier_id = ?";
+        String sql = "UPDATE suppliers SET supplierName = ?, phone = ?, address = ?,totalSpent = ?,totalPaid = ? WHERE  supplierId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
             stmt.setString(2, supplier.getPhone());
@@ -38,7 +38,7 @@ public class SupplierDAO {
     }
 
     public void deleteWorker(int id) throws SQLException {
-        String sql = "DELETE FROM suppliers WHERE supplier_id=?";
+        String sql = "DELETE FROM suppliers WHERE supplierId=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -52,18 +52,18 @@ public class SupplierDAO {
     }
 
     public Supplier getSupplierById(int id) throws SQLException {
-        String sql = "SELECT * FROM suppliers WHERE supplier_id = ?";
+        String sql = "SELECT * FROM suppliers WHERE supplierId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Supplier supplier = new Supplier();
-                supplier.setId(rs.getInt("supplier_id"));
-                supplier.setName(rs.getString("supplier_name"));
+                supplier.setId(rs.getInt("supplierId"));
+                supplier.setName(rs.getString("supplierName"));
                 supplier.setPhone(rs.getString("phone"));
                 supplier.setAddress(rs.getString("address"));
-                supplier.setTotalSpent(rs.getDouble("total_spent"));
-                supplier.setTotalPaid(rs.getDouble("total_paid"));
+                supplier.setTotalSpent(rs.getDouble("totalSpent"));
+                supplier.setTotalPaid(rs.getDouble("totalPaid"));
                 return supplier;
             }
         }
@@ -72,7 +72,7 @@ public class SupplierDAO {
 
     public ResultSet searchSupplierByName(String searchTerm) {
         try {
-            String query = "SELECT * FROM suppliers WHERE supplier_name LIKE ?";
+            String query = "SELECT * FROM suppliers WHERE supplierName LIKE ?";
             PreparedStatement ps = connection.prepareStatement(query);
             String likeTerm = "%" + searchTerm + "%";
             ps.setString(1, likeTerm);
@@ -85,11 +85,11 @@ public class SupplierDAO {
 
     public List<String> getAllSuppliersNames() throws SQLException {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT supplier_name FROM suppliers ORDER BY supplier_name";
+        String sql = "SELECT supplierName FROM suppliers ORDER BY supplierName";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                list.add(rs.getString("supplier_name"));
+                list.add(rs.getString("supplierName"));
             }
         }
         return list;
@@ -101,12 +101,12 @@ public class SupplierDAO {
             return 0;
         }
 
-        String sql = "SELECT supplier_id FROM suppliers WHERE supplier_name = ?";
+        String sql = "SELECT supplierId FROM suppliers WHERE supplierName = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, supplierName);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt("supplier_id");
+                return rs.getInt("supplierId");
             }
         }
         return 0;

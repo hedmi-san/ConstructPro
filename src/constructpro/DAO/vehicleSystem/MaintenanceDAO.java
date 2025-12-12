@@ -1,14 +1,15 @@
 package constructpro.DAO.vehicleSystem;
 
 import constructpro.DTO.vehicleSystem.Maintainance;
+import constructpro.Database.SQLiteDateUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaintainanceDAO {
+public class MaintenanceDAO {
     private Connection connection;
 
-    public MaintainanceDAO(Connection connection) {
+    public MaintenanceDAO(Connection connection) {
         this.connection = connection;
     }
 
@@ -17,7 +18,7 @@ public class MaintainanceDAO {
      */
     public List<Maintainance> getAllMaintainanceRecords(int vehicleId) throws SQLException {
         List<Maintainance> records = new ArrayList<>();
-        String sql = "SELECT * FROM maitainance_Ticket WHERE vehicle_id = ? ORDER BY repaire_date DESC";
+        String sql = "SELECT * FROM maintenanceTicket WHERE vehicleId = ? ORDER BY repairDate DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, vehicleId);
@@ -26,10 +27,10 @@ public class MaintainanceDAO {
             while (rs.next()) {
                 Maintainance maintainance = new Maintainance();
                 maintainance.setId(rs.getInt("id"));
-                maintainance.setVehicle_id(rs.getInt("vehicle_id"));
-                maintainance.setMaintainanceType(rs.getString("maitainance_type"));
+                maintainance.setVehicle_id(rs.getInt("vehicleId"));
+                maintainance.setMaintainanceType(rs.getString("maintenanceType"));
                 maintainance.setAssignedSiteId(rs.getInt("assignedSiteId"));
-                maintainance.setRepair_date(rs.getDate("repaire_date").toLocalDate());
+                maintainance.setRepair_date(SQLiteDateUtils.getDate(rs, "repairDate"));
                 maintainance.setRepairCost(rs.getDouble("cost"));
                 records.add(maintainance);
             }
@@ -41,7 +42,7 @@ public class MaintainanceDAO {
      * Add a new maintenance record
      */
     public void addMaintainance(Maintainance maintainance) throws SQLException {
-        String sql = "INSERT INTO maitainance_Ticket (maitainance_type, vehicle_id, assignedSiteId, repaire_date, cost) "
+        String sql = "INSERT INTO maintenanceTicket (maintenanceType, vehicleId, assignedSiteId, repairDate, cost) "
                 +
                 "VALUES (?, ?, ?, ?, ?)";
 
@@ -59,8 +60,8 @@ public class MaintainanceDAO {
      * Update an existing maintenance record
      */
     public void updateMaintainance(Maintainance maintainance) throws SQLException {
-        String sql = "UPDATE maitainance_Ticket SET maitainance_type = ?, assignedSiteId = ?, " +
-                "repaire_date = ?, cost = ? WHERE id = ?";
+        String sql = "UPDATE maintenanceTicket SET maintenanceType = ?, assignedSiteId = ?, " +
+                "repairDate = ?, cost = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, maintainance.getMaintainanceType());
@@ -76,7 +77,7 @@ public class MaintainanceDAO {
      * Delete a maintenance record
      */
     public void deleteMaintainance(int id) throws SQLException {
-        String sql = "DELETE FROM maitainance_Ticket WHERE id = ?";
+        String sql = "DELETE FROM maintenanceTicket WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -88,7 +89,7 @@ public class MaintainanceDAO {
      * Calculate total maintenance cost for a vehicle
      */
     public double getTotalMaintainanceCost(int vehicleId) throws SQLException {
-        String sql = "SELECT SUM(cost) as total FROM maitainance_Ticket WHERE vehicle_id = ?";
+        String sql = "SELECT SUM(cost) as total FROM maintenanceTicket WHERE vehicleId = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, vehicleId);

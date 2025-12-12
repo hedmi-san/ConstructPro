@@ -4,7 +4,7 @@ import constructpro.DTO.Vehicle;
 import constructpro.DTO.vehicleSystem.VehicleAssignment;
 import constructpro.DAO.vehicleSystem.VehicleAssignmentDAO;
 import constructpro.DTO.vehicleSystem.Maintainance;
-import constructpro.DAO.vehicleSystem.MaintainanceDAO;
+import constructpro.DAO.vehicleSystem.MaintenanceDAO;
 import constructpro.DTO.vehicleSystem.VehicleRental;
 import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 import constructpro.DAO.ConstructionSiteDAO;
@@ -25,7 +25,7 @@ public class VehicleDetailDialog extends JDialog {
     private Maintainance maintainance;
     private VehicleRental vehicleRental;
     private VehicleAssignmentDAO vehicleAssignmentDAO;
-    private MaintainanceDAO maintainanceDAO;
+    private MaintenanceDAO maintainanceDAO;
     private VehicleRentalDAO vehicleRentalDAO;
     private WorkerDAO workerDAO;
     private ConstructionSiteDAO siteDAO;
@@ -69,7 +69,7 @@ public class VehicleDetailDialog extends JDialog {
         super(parent, "Vehicle Details", true);
         this.currentVehicle = vehicle;
         this.conn = connection;
-        this.maintainanceDAO = new MaintainanceDAO(connection);
+        this.maintainanceDAO = new MaintenanceDAO(connection);
         this.vehicleRentalDAO = new VehicleRentalDAO(connection);
         this.vehicleAssignmentDAO = new VehicleAssignmentDAO(connection);
         this.workerDAO = new WorkerDAO(connection);

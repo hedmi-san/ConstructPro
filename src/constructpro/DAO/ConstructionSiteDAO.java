@@ -4,6 +4,7 @@ import constructpro.DTO.ConstructionSite;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import constructpro.Database.SQLiteDateUtils;
 
 public class ConstructionSiteDAO {
 
@@ -18,7 +19,7 @@ public class ConstructionSiteDAO {
 
     // CREATE - Insert a new construction site
     public void insertConstructionSite(ConstructionSite site) throws SQLException {
-        String sql = "INSERT INTO ConstructionSite (name, location,status,start_date, end_date) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO constructionSite (name, location,status,startDate, endDate) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, site.getName());
             ps.setString(2, site.getLocation());
@@ -41,7 +42,7 @@ public class ConstructionSiteDAO {
     // READ - Get all construction sites with names only
     public List<String> getAllConstructionSitesNames() throws SQLException {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT name FROM ConstructionSite ORDER BY name";
+        String sql = "SELECT name FROM constructionSite ORDER BY name";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -54,7 +55,7 @@ public class ConstructionSiteDAO {
     // READ - Get all construction sites with complete information
     public List<ConstructionSite> getAllConstructionSites() throws SQLException {
         List<ConstructionSite> list = new ArrayList<>();
-        String sql = "SELECT * FROM ConstructionSite ORDER BY start_date DESC";
+        String sql = "SELECT * FROM constructionSite ORDER BY startDate DESC";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -63,14 +64,14 @@ public class ConstructionSiteDAO {
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
 
-                Date startDate = rs.getDate("start_date");
+                java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
                 if (startDate != null) {
-                    site.setStartDate(startDate.toLocalDate());
+                    site.setStartDate(startDate);
                 }
 
-                Date endDate = rs.getDate("end_date");
+                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
                 if (endDate != null) {
-                    site.setEndDate(endDate.toLocalDate());
+                    site.setEndDate(endDate);
                 }
 
                 list.add(site);
@@ -81,7 +82,7 @@ public class ConstructionSiteDAO {
 
     // READ - Get construction site by ID
     public ConstructionSite getConstructionSiteById(int id) throws SQLException {
-        String sql = "SELECT * FROM ConstructionSite WHERE id = ?";
+        String sql = "SELECT * FROM constructionSite WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -92,14 +93,14 @@ public class ConstructionSiteDAO {
                 site.setLocation(rs.getString("location"));
                 site.setStatus(rs.getString("status"));
 
-                Date startDate = rs.getDate("start_date");
+                java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
                 if (startDate != null) {
-                    site.setStartDate(startDate.toLocalDate());
+                    site.setStartDate(startDate);
                 }
 
-                Date endDate = rs.getDate("end_date");
+                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
                 if (endDate != null) {
-                    site.setEndDate(endDate.toLocalDate());
+                    site.setEndDate(endDate);
                 }
 
                 return site;
@@ -110,7 +111,7 @@ public class ConstructionSiteDAO {
 
     // READ - Get construction site by name
     public ConstructionSite getConstructionSiteByName(String name) throws SQLException {
-        String sql = "SELECT * FROM ConstructionSite WHERE name = ?";
+        String sql = "SELECT * FROM constructionSite WHERE name = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
@@ -120,14 +121,14 @@ public class ConstructionSiteDAO {
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
 
-                Date startDate = rs.getDate("start_date");
+                java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
                 if (startDate != null) {
-                    site.setStartDate(startDate.toLocalDate());
+                    site.setStartDate(startDate);
                 }
 
-                Date endDate = rs.getDate("end_date");
+                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
                 if (endDate != null) {
-                    site.setEndDate(endDate.toLocalDate());
+                    site.setEndDate(endDate);
                 }
 
                 return site;
@@ -144,11 +145,10 @@ public class ConstructionSiteDAO {
                         s.name,
                         s.location,
                         s.status,
-                        s.start_date,
-                        s.end_date,
-                        s.total_cost
+                        s.startDate,
+                        s.endDate
                     FROM
-                        ConstructionSite s
+                        constructionSite s
                     WHERE
                         s.status is not null
                     """;
@@ -166,10 +166,10 @@ public class ConstructionSiteDAO {
                         s.id,
                         s.name,
                         s.location,
-                        s.start_date,
-                        s.end_date
+                        s.startDate,
+                        s.endDate
                     FROM
-                        ConstructionSite s
+                        constructionSite s
                     WHERE
                         s.status = 'Active'
                     """;
@@ -188,10 +188,10 @@ public class ConstructionSiteDAO {
                         s.id,
                         s.name,
                         s.location,
-                        s.start_date,
-                        s.end_date
+                        s.startDate,
+                        s.endDate
                     FROM
-                        ConstructionSite s
+                        constructionSite s
                     WHERE
                         s.status = 'Active'
                         AND (s.name LIKE ? OR s.location LIKE ?)
@@ -211,7 +211,7 @@ public class ConstructionSiteDAO {
 
     // UPDATE - Update an existing construction site
     public void updateConstructionSite(ConstructionSite site) throws SQLException {
-        String sql = "UPDATE ConstructionSite SET name=?, location=?, status=?, start_date=?, end_date=? WHERE id=?";
+        String sql = "UPDATE constructionSite SET name=?, location=?, status=?, startDate=?, endDate=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, site.getName());
             ps.setString(2, site.getLocation());
@@ -230,7 +230,7 @@ public class ConstructionSiteDAO {
     // DELETE - Delete construction site by ID
     public void deleteConstructionSite(int id) throws SQLException {
         // First check if there are workers assigned to this site
-        String checkWorkersSQL = "SELECT COUNT(*) FROM worker WHERE site_id = ?";
+        String checkWorkersSQL = "SELECT COUNT(*) FROM worker WHERE siteId = ?";
         try (PreparedStatement checkPs = connection.prepareStatement(checkWorkersSQL)) {
             checkPs.setInt(1, id);
             ResultSet rs = checkPs.executeQuery();
@@ -241,7 +241,7 @@ public class ConstructionSiteDAO {
         }
 
         // If no workers are assigned, proceed with deletion
-        String sql = "DELETE FROM ConstructionSite WHERE id=?";
+        String sql = "DELETE FROM constructionSite WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             int rowsAffected = ps.executeUpdate();
@@ -271,16 +271,15 @@ public class ConstructionSiteDAO {
     public ResultSet searchsitesByName(String searchTerm) {
         try {
             String query = """
-                        SELECT
+                        select
                             s.id,
                             s.name,
                             s.location,
                             s.status,
-                            s.start_date,
-                            s.end_date,
-                            s.total_cost
-                            FROM
-                            ConstructionSite s
+                            s.startDate,
+                            s.endDate
+                        FROM
+                            constructionSite s
                         WHERE
                             s.name LIKE ? OR s.location LIKE ?
                     """;
@@ -335,7 +334,7 @@ public class ConstructionSiteDAO {
 
     // Check if site name exists for update (excluding current site ID)
     public boolean siteNameExistsForUpdate(String name, int excludeId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ConstructionSite WHERE name = ? AND id != ?";
+        String sql = "SELECT COUNT(*) FROM constructionSite WHERE name = ? AND id != ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, name);
             ps.setInt(2, excludeId);
@@ -349,7 +348,7 @@ public class ConstructionSiteDAO {
 
     // Get worker count for a specific site
     public int getWorkerCountBySite(int siteId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM worker WHERE site_id = ?";
+        String sql = "SELECT COUNT(*) FROM worker WHERE siteId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, siteId);
             ResultSet rs = ps.executeQuery();
@@ -367,23 +366,23 @@ public class ConstructionSiteDAO {
                     cs.id,
                     cs.name,
                     cs.location,
-                    cs.start_date,
-                    cs.end_date,
+                    cs.startDate,
+                    cs.endDate,
                     COUNT(w.id) as worker_count,
-                    DATEDIFF(cs.end_date, cs.start_date) as duration_days,
+                    CAST(julianday(cs.endDate) - julianday(cs.startDate) AS INTEGER) as duration_days,
                     CASE
-                        WHEN cs.end_date < CURDATE() THEN 'Completed'
-                        WHEN cs.start_date > CURDATE() THEN 'Not Started'
+                        WHEN cs.endDate < date('now') THEN 'Completed'
+                        WHEN cs.startDate > date('now') THEN 'Not Started'
                         ELSE 'In Progress'
                     END as status
                 FROM
-                    ConstructionSite cs
+                    constructionSite cs
                 LEFT JOIN
-                    worker w ON cs.id = w.site_id
+                    worker w ON cs.id = w.siteId
                 GROUP BY
-                    cs.id, cs.name, cs.location, cs.start_date, cs.end_date
+                    cs.id, cs.name, cs.location, cs.startDate, cs.endDate
                 ORDER BY
-                    cs.start_date DESC
+                    cs.startDate DESC
                 """;
         return st.executeQuery(query);
     }

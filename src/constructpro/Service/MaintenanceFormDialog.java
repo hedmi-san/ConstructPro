@@ -1,7 +1,7 @@
 package constructpro.Service;
 
 import constructpro.DTO.vehicleSystem.Maintainance;
-import constructpro.DAO.vehicleSystem.MaintainanceDAO;
+import constructpro.DAO.vehicleSystem.MaintenanceDAO;
 import constructpro.DAO.ConstructionSiteDAO;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
@@ -18,7 +18,7 @@ public class MaintenanceFormDialog extends JDialog {
     private Connection conn;
     private boolean saved = false;
 
-    private MaintainanceDAO maintainanceDAO;
+    private MaintenanceDAO maintainanceDAO;
     private ConstructionSiteDAO siteDAO;
 
     // Color scheme
@@ -45,7 +45,7 @@ public class MaintenanceFormDialog extends JDialog {
         this.maintainance = maintainance;
         this.vehicleId = vehicleId;
         this.conn = conn;
-        this.maintainanceDAO = new MaintainanceDAO(conn);
+        this.maintainanceDAO = new MaintenanceDAO(conn);
         this.siteDAO = new ConstructionSiteDAO(conn);
 
         initializeComponents();

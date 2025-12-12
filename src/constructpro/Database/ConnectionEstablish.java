@@ -1,6 +1,5 @@
 package constructpro.Database;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,8 +10,8 @@ import java.util.Properties;
 
 public class ConnectionEstablish {
 
-    static String driver = "com.mysql.cj.jdbc.Driver";
-    static String url = "jdbc:mysql://localhost:3306/construction";
+    static String driver = "org.sqlite.JDBC";
+    static String url = "jdbc:sqlite:data/construction.db";
     static String username, password;
     Properties prop;
     Connection conn;
@@ -21,22 +20,20 @@ public class ConnectionEstablish {
 
     public ConnectionEstablish() {
         try {
-            prop = new Properties();
-            // Load from classpath (works in JAR and development)
-            var inputStream = getClass().getResourceAsStream("/constructpro/Database/DBCredentials.xml");
-            if (inputStream == null) {
-                throw new IOException("DBCredentials.xml not found in classpath");
+            // SQLite does not strictly require username/password
+            username = "";
+            password = "";
+
+            // Ensure data directory exists
+            java.io.File dataDir = new java.io.File("data");
+            if (!dataDir.exists()) {
+                dataDir.mkdirs();
             }
-            prop.loadFromXML(inputStream);
-            username = prop.getProperty("username");
-            password = prop.getProperty("password");
 
             Class.forName(driver);
-            conn = DriverManager.getConnection(url, username, password);
+            conn = DriverManager.getConnection(url);
             statement = conn.createStatement();
             System.out.println("Connected to DB successfully.");
-        } catch (IOException e) {
-            System.err.println("Failed to load DB credentials: " + e.getMessage());
         } catch (SQLException | ClassNotFoundException ex) {
             System.err.println("Database connection error: " + ex.getMessage());
         }

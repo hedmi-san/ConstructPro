@@ -2,6 +2,7 @@ package constructpro.DAO;
 
 import constructpro.DTO.Insurance;
 import java.sql.*;
+import constructpro.Database.SQLiteDateUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +17,8 @@ public class InsuranceDAO {
     // CREATE - Add new insurance record
     public boolean addInsurance(Insurance insurance) throws SQLException {
         String sql = """
-                INSERT INTO Insurance (worker_id, insurance_number, agency_name, status,
-                                     start_date, end_date, insurance_documents)
+                INSERT INTO insurance (workerId, insuranceNumber, agencyName, status,
+                                     startDate, endDate, insuranceDocuments)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
@@ -54,10 +55,10 @@ public class InsuranceDAO {
     // READ - Get insurance by worker ID
     public Insurance getInsuranceByWorkerId(int workerId) throws SQLException {
         String sql = """
-                SELECT id, worker_id, insurance_number, agency_name, status,
-                       start_date, end_date, insurance_documents
-                FROM Insurance
-                WHERE worker_id = ?
+                SELECT id, workerId, insuranceNumber, agencyName, status,
+                       startDate, endDate, insuranceDocuments
+                FROM insurance
+                WHERE workerId = ?
                 """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -75,9 +76,9 @@ public class InsuranceDAO {
 
     public Insurance getInsuranceById(int insuranceId) throws SQLException {
         String sql = """
-                SELECT id, worker_id, insurance_number, agency_name, status,
-                       start_date, end_date, insurance_documents
-                FROM Insurance
+                SELECT id, workerId, insuranceNumber, agencyName, status,
+                       startDate, endDate, insuranceDocuments
+                FROM insurance
                 WHERE id = ?
                 """;
 
@@ -96,9 +97,9 @@ public class InsuranceDAO {
 
     public List<Insurance> getAllInsurances() throws SQLException {
         String sql = """
-                SELECT id, worker_id, insurance_number, agency_name, status,
-                       start_date, end_date, insurance_documents
-                FROM Insurance
+                SELECT id, workerId, insuranceNumber, agencyName, status,
+                       startDate, endDate, insuranceDocuments
+                FROM insurance
                 ORDER BY id
                 """;
 
@@ -117,9 +118,9 @@ public class InsuranceDAO {
 
     public List<Insurance> getInsurancesByStatus(String status) throws SQLException {
         String sql = """
-                SELECT id, worker_id, insurance_number, agency_name, status,
-                       start_date, end_date, insurance_documents
-                FROM Insurance
+                SELECT id, workerId, insuranceNumber, agencyName, status,
+                       startDate, endDate, insuranceDocuments
+                FROM insurance
                 WHERE LOWER(status) = LOWER(?)
                 ORDER BY id
                 """;
@@ -142,13 +143,13 @@ public class InsuranceDAO {
 
     public List<Insurance> getExpiringInsurances(int daysFromNow) throws SQLException {
         String sql = """
-                SELECT id, worker_id, insurance_number, agency_name, status,
-                       start_date, end_date, insurance_documents
-                FROM Insurance
-                WHERE end_date <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
-                AND end_date >= CURDATE()
+                SELECT id, workerId, insuranceNumber, agencyName, status,
+                       startDate, endDate, insuranceDocuments
+                FROM insurance
+                WHERE endDate <= date('now', '+' || ? || ' day')
+                AND endDate >= date('now')
                 AND LOWER(status) = 'active'
-                ORDER BY end_date ASC
+                ORDER BY endDate ASC
                 """;
 
         List<Insurance> insurances = new ArrayList<>();
@@ -169,9 +170,9 @@ public class InsuranceDAO {
 
     public boolean updateInsurance(Insurance insurance) throws SQLException {
         String sql = """
-                UPDATE Insurance
-                SET insurance_number = ?, agency_name = ?, status = ?,
-                    start_date = ?, end_date = ?, insurance_documents = ?
+                UPDATE insurance
+                SET insuranceNumber = ?, agencyName = ?, status = ?,
+                    startDate = ?, endDate = ?, insuranceDocuments = ?
                 WHERE id = ?
                 """;
 
@@ -195,7 +196,7 @@ public class InsuranceDAO {
     }
 
     public boolean updateInsuranceStatus(int insuranceId, String status) throws SQLException {
-        String sql = "UPDATE Insurance SET status = ? WHERE id = ?";
+        String sql = "UPDATE insurance SET status = ? WHERE id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
@@ -245,7 +246,7 @@ public class InsuranceDAO {
 
     // DELETE - Delete insurance by ID
     public boolean deleteInsurance(int insuranceId) throws SQLException {
-        String sql = "DELETE FROM Insurance WHERE id = ?";
+        String sql = "DELETE FROM insurance WHERE id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
@@ -256,7 +257,7 @@ public class InsuranceDAO {
 
     // DELETE - Delete insurance by worker ID
     public boolean deleteInsuranceByWorkerId(int workerId) throws SQLException {
-        String sql = "DELETE FROM Insurance WHERE worker_id = ?";
+        String sql = "DELETE FROM insurance WHERE workerId = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
@@ -267,7 +268,7 @@ public class InsuranceDAO {
 
     // UTILITY - Check if worker has insurance
     public boolean workerHasInsurance(int workerId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Insurance WHERE worker_id = ?";
+        String sql = "SELECT COUNT(*) FROM insurance WHERE workerId = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
@@ -345,23 +346,23 @@ public class InsuranceDAO {
         Insurance insurance = new Insurance();
 
         insurance.setId(rs.getInt("id"));
-        insurance.setWorkerId(rs.getInt("worker_id"));
-        insurance.setInsuranceNumber(rs.getString("insurance_number"));
-        insurance.setAgencyName(rs.getString("agency_name"));
+        insurance.setWorkerId(rs.getInt("workerId"));
+        insurance.setInsuranceNumber(rs.getString("insuranceNumber"));
+        insurance.setAgencyName(rs.getString("agencyName"));
         insurance.setStatus(rs.getString("status"));
 
         // Handle dates
-        Date startDate = rs.getDate("start_date");
+        java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
         if (startDate != null) {
-            insurance.setStartDate(startDate.toLocalDate());
+            insurance.setStartDate(startDate);
         }
 
-        Date endDate = rs.getDate("end_date");
+        java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
         if (endDate != null) {
-            insurance.setEndDate(endDate.toLocalDate());
+            insurance.setEndDate(endDate);
         }
 
-        String documentsStr = rs.getString("insurance_documents");
+        String documentsStr = rs.getString("insuranceDocuments");
         if (documentsStr != null && !documentsStr.trim().isEmpty()) {
             List<String> documents = Arrays.asList(documentsStr.split(","));
             documents = documents.stream()

@@ -1,6 +1,7 @@
 package constructpro.DAO.vehicleSystem;
 
 import constructpro.DTO.vehicleSystem.VehicleRental;
+import constructpro.Database.SQLiteDateUtils;
 import java.util.List;
 import java.sql.*;
 
@@ -12,7 +13,7 @@ public class VehicleRentalDAO {
     }
 
     public void insertNewRentedVehicle(VehicleRental rentedVehicle) throws SQLException {
-        String sql = "INSERT INTO vehicle_Rental (vehicle_id, assigned_site_id, owner_company, owner_phone, daily_rate, start_date, end_date, days_worked, deposite_amount, transfer_fee) VALUES(?,?,?,?,?,?,?,?,?,?) ";
+        String sql = "INSERT INTO vehicleRental (vehicleId, assignedSiteId, ownerCompany, ownerPhone, dailyRate, startDate, endDate, daysWorked, depositAmount, transferFee) VALUES(?,?,?,?,?,?,?,?,?,?) ";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, rentedVehicle.getVehicle_id());
             stmt.setInt(2, rentedVehicle.getAssignedSiteId());
@@ -33,7 +34,7 @@ public class VehicleRentalDAO {
      */
     public List<VehicleRental> getAllRentalRecords(int vehicleId) throws SQLException {
         java.util.List<VehicleRental> records = new java.util.ArrayList<>();
-        String sql = "SELECT * FROM vehicle_Rental WHERE vehicle_id = ? ORDER BY start_date DESC";
+        String sql = "SELECT * FROM vehicleRental WHERE vehicleId = ? ORDER BY startDate DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, vehicleId);
@@ -42,21 +43,21 @@ public class VehicleRentalDAO {
             while (rs.next()) {
                 VehicleRental rental = new VehicleRental();
                 rental.setId(rs.getInt("id"));
-                rental.setVehicle_id(rs.getInt("vehicle_id"));
-                rental.setAssignedSiteId(rs.getInt("assigned_site_id"));
-                rental.setOwnerName(rs.getString("owner_company"));
-                rental.setOwnerPhone(rs.getString("owner_phone"));
-                rental.setDailyRate(rs.getDouble("daily_rate"));
-                rental.setStartDate(rs.getDate("start_date").toLocalDate());
+                rental.setVehicle_id(rs.getInt("vehicleId"));
+                rental.setAssignedSiteId(rs.getInt("assignedSiteId"));
+                rental.setOwnerName(rs.getString("ownerCompany"));
+                rental.setOwnerPhone(rs.getString("ownerPhone"));
+                rental.setDailyRate(rs.getDouble("dailyRate"));
+                rental.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
 
-                Date endDate = rs.getDate("end_date");
+                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
                 if (endDate != null) {
-                    rental.setEndDate(endDate.toLocalDate());
+                    rental.setEndDate(endDate);
                 }
 
-                rental.setDaysWorked(rs.getInt("days_worked"));
-                rental.setDepositAmount(rs.getDouble("deposite_amount"));
-                rental.setTransferFee(rs.getDouble("transfer_fee"));
+                rental.setDaysWorked(rs.getInt("daysWorked"));
+                rental.setDepositAmount(rs.getDouble("depositAmount"));
+                rental.setTransferFee(rs.getDouble("transferFee"));
                 records.add(rental);
             }
         }
@@ -67,8 +68,8 @@ public class VehicleRentalDAO {
      * Update an existing rental record
      */
     public void updateRentalRecord(VehicleRental rental) throws SQLException {
-        String sql = "UPDATE vehicle_Rental SET start_date = ?, end_date = ?, days_worked = ?, " +
-                "transfer_fee = ?, assigned_site_id = ?, daily_rate = ? WHERE id = ?";
+        String sql = "UPDATE vehicleRental SET startDate = ?, endDate = ?, daysWorked = ?, " +
+                "transferFee = ?, assignedSiteId = ?, dailyRate = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDate(1, Date.valueOf(rental.getStartDate()));
@@ -86,8 +87,8 @@ public class VehicleRentalDAO {
      * Add a new rental record for an existing vehicle
      */
     public void addRentalRecord(VehicleRental rental) throws SQLException {
-        String sql = "INSERT INTO vehicle_Rental (vehicle_id, assigned_site_id, owner_company, owner_phone, " +
-                "daily_rate, start_date, end_date, days_worked, deposite_amount, transfer_fee) " +
+        String sql = "INSERT INTO vehicleRental (vehicleId, assignedSiteId, ownerCompany, ownerPhone, " +
+                "dailyRate, startDate, endDate, daysWorked, depositAmount, transferFee) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -110,7 +111,7 @@ public class VehicleRentalDAO {
      * Cost = (daily_rate * days_worked) + transfer_fee
      */
     public double getTotalRentalCost(int vehicleId) throws SQLException {
-        String sql = "SELECT SUM((daily_rate * days_worked) + transfer_fee) as total FROM vehicle_Rental WHERE vehicle_id = ?";
+        String sql = "SELECT SUM((dailyRate * daysWorked) + transferFee) as total FROM vehicleRental WHERE vehicleId = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, vehicleId);
@@ -128,7 +129,7 @@ public class VehicleRentalDAO {
      * Returns the most recent rental record (by start_date)
      */
     public VehicleRental getCurrentRentalInfo(int vehicleId) throws SQLException {
-        String sql = "SELECT * FROM vehicle_Rental WHERE vehicle_id = ? ORDER BY start_date DESC LIMIT 1";
+        String sql = "SELECT * FROM vehicleRental WHERE vehicleId = ? ORDER BY startDate DESC LIMIT 1";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, vehicleId);
@@ -137,21 +138,21 @@ public class VehicleRentalDAO {
             if (rs.next()) {
                 VehicleRental rental = new VehicleRental();
                 rental.setId(rs.getInt("id"));
-                rental.setVehicle_id(rs.getInt("vehicle_id"));
-                rental.setAssignedSiteId(rs.getInt("assigned_site_id"));
-                rental.setOwnerName(rs.getString("owner_company"));
-                rental.setOwnerPhone(rs.getString("owner_phone"));
-                rental.setDailyRate(rs.getDouble("daily_rate"));
-                rental.setStartDate(rs.getDate("start_date").toLocalDate());
+                rental.setVehicle_id(rs.getInt("vehicleId"));
+                rental.setAssignedSiteId(rs.getInt("assignedSiteId"));
+                rental.setOwnerName(rs.getString("ownerCompany"));
+                rental.setOwnerPhone(rs.getString("ownerPhone"));
+                rental.setDailyRate(rs.getDouble("dailyRate"));
+                rental.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
 
-                Date endDate = rs.getDate("end_date");
+                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
                 if (endDate != null) {
-                    rental.setEndDate(endDate.toLocalDate());
+                    rental.setEndDate(endDate);
                 }
 
-                rental.setDaysWorked(rs.getInt("days_worked"));
-                rental.setDepositAmount(rs.getDouble("deposite_amount"));
-                rental.setTransferFee(rs.getDouble("transfer_fee"));
+                rental.setDaysWorked(rs.getInt("daysWorked"));
+                rental.setDepositAmount(rs.getDouble("depositAmount"));
+                rental.setTransferFee(rs.getDouble("transferFee"));
                 return rental;
             }
         }

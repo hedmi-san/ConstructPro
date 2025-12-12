@@ -2,6 +2,7 @@ package constructpro.DAO;
 
 import constructpro.DTO.PaymentCheck;
 import java.sql.*;
+import constructpro.Database.SQLiteDateUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class PaymentCheckDAO {
 
     public void insertPaymentCheck(int salary_record_id, int siteId, LocalDate payment_date, double base_salary,
             double paid_amount) throws SQLException {
-        String sql = "INSERT INTO payment_check (salary_record_id, site_id, payment_date, base_salary, paid_amount) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO paymentCheck (salaryRecordId, siteId, paymentDate, baseSalary, paidAmount) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, salary_record_id);
             stmt.setInt(2, siteId);
@@ -29,7 +30,7 @@ public class PaymentCheckDAO {
 
     public List<PaymentCheck> getAllWorkerPaymentChecks(int salaryRecordId) throws SQLException {
         List<PaymentCheck> checks = new ArrayList<>();
-        String sql = "SELECT id, payment_date, base_salary, paid_amount FROM payment_check WHERE salary_record_id = ? ORDER BY payment_date";
+        String sql = "SELECT id, paymentDate, baseSalary, paidAmount FROM paymentCheck WHERE salaryRecordId = ? ORDER BY paymentDate";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, salaryRecordId);
@@ -37,9 +38,9 @@ public class PaymentCheckDAO {
                 while (rs.next()) {
                     PaymentCheck check = new PaymentCheck();
                     check.setId(rs.getInt("id"));
-                    check.setPaymentDay(rs.getDate("payment_date").toLocalDate());
-                    check.setBaseSalary(rs.getDouble("base_salary"));
-                    check.setPaidAmount(rs.getDouble("paid_amount"));
+                    check.setPaymentDay(SQLiteDateUtils.getDate(rs, "paymentDate"));
+                    check.setBaseSalary(rs.getDouble("baseSalary"));
+                    check.setPaidAmount(rs.getDouble("paidAmount"));
                     checks.add(check);
                 }
             }
@@ -48,7 +49,7 @@ public class PaymentCheckDAO {
     }
 
     public void deletePaymentCheck(int id) throws SQLException {
-        String sql = "DELETE FROM payment_check WHERE id=?";
+        String sql = "DELETE FROM paymentCheck WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -63,20 +64,20 @@ public class PaymentCheckDAO {
         String sql = """
                 SELECT
                     pc.id,
-                    pc.payment_date,
-                    pc.base_salary,
-                    pc.paid_amount,
+                    pc.paymentDate,
+                    pc.baseSalary,
+                    pc.paidAmount,
                     w.id as worker_id,
-                    w.first_name,
-                    w.last_name,
+                    w.firstName,
+                    w.lastName,
                     w.job,
-                    sr.total_earned,
-                    sr.total_paid
-                FROM payment_check pc
-                INNER JOIN salary_record sr ON pc.salary_record_id = sr.id
-                INNER JOIN worker w ON sr.worker_id = w.id
-                WHERE pc.site_id = ? AND pc.payment_date = ?
-                ORDER BY w.last_name, w.first_name
+                    sr.totalEarned,
+                    sr.totalPaid
+                FROM paymentCheck pc
+                INNER JOIN salaryRecord sr ON pc.salaryRecordId = sr.id
+                INNER JOIN worker w ON sr.workerId = w.id
+                WHERE pc.siteId = ? AND pc.paymentDate = ?
+                ORDER BY w.lastName, w.firstName
                 """;
 
         PreparedStatement stmt = connection.prepareStatement(sql);

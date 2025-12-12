@@ -2,6 +2,7 @@ package constructpro.DAO;
 
 import constructpro.DTO.Bill;
 import java.sql.*;
+import constructpro.Database.SQLiteDateUtils;
 
 public class BillDAO {
     private Connection connection;
@@ -11,7 +12,7 @@ public class BillDAO {
     }
 
     public int insertBill(Bill bill) throws SQLException {
-        String sql = "INSERT INTO bills(bill_date,facture_number,supplier_id,assigned_site_id,transfer_fee,total_cost,paid_amount) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO bills(billDate,factureNumber,supplierId,assignedSiteId,transferFee,totalCost,paidAmount) VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setDate(1, Date.valueOf(bill.getBillDate()));
             stmt.setString(2, bill.getFactureNumber());
@@ -36,38 +37,38 @@ public class BillDAO {
     public ResultSet getBillsInfo() throws SQLException {
         String sql = """
                 SELECT
-                    b.bill_id,
-                    b.facture_number,
-                    s.supplier_name,
+                    b.billId,
+                    b.factureNumber,
+                    s.supplierName,
                     cs.name AS site_name,
-                    b.bill_date,
-                    b.total_cost,
-                    b.paid_amount,
-                    b.transfer_fee
+                    b.billDate,
+                    b.totalCost,
+                    b.paidAmount,
+                    b.transferFee
                 FROM bills b
-                JOIN suppliers s ON b.supplier_id = s.supplier_id
-                JOIN ConstructionSite cs ON b.assigned_site_id = cs.id
-                ORDER BY b.bill_date DESC
+                JOIN suppliers s ON b.supplierId = s.supplierId
+                JOIN constructionSite cs ON b.assignedSiteId = cs.id
+                ORDER BY b.billDate DESC
                 """;
         Statement st = connection.createStatement();
         return st.executeQuery(sql);
     }
 
     public Bill getBillById(int id) throws SQLException {
-        String sql = "SELECT * FROM bills WHERE bill_id = ?";
+        String sql = "SELECT * FROM bills WHERE billId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Bill bill = new Bill();
-                bill.setId(rs.getInt("bill_id"));
-                bill.setFactureNumber(rs.getString("facture_number"));
-                bill.setSupplierID(rs.getInt("supplier_id"));
-                bill.setSiteID(rs.getInt("assigned_site_id"));
-                bill.setBillDate(rs.getDate("bill_date").toLocalDate());
-                bill.setTransferFee(rs.getDouble("transfer_fee"));
-                bill.setCost(rs.getDouble("total_cost"));
-                bill.setPaidAmount(rs.getDouble("paid_amount"));
+                bill.setId(rs.getInt("billId"));
+                bill.setFactureNumber(rs.getString("factureNumber"));
+                bill.setSupplierID(rs.getInt("supplierId"));
+                bill.setSiteID(rs.getInt("assignedSiteId"));
+                bill.setBillDate(SQLiteDateUtils.getDate(rs, "billDate"));
+                bill.setTransferFee(rs.getDouble("transferFee"));
+                bill.setCost(rs.getDouble("totalCost"));
+                bill.setPaidAmount(rs.getDouble("paidAmount"));
                 return bill;
             }
         }
@@ -75,7 +76,7 @@ public class BillDAO {
     }
 
     public void updateBill(Bill bill) throws SQLException {
-        String sql = "UPDATE bills SET facture_number=?, supplier_id=?, assigned_site_id=?, bill_date=?, transfer_fee=?, total_cost=?, paid_amount=? WHERE bill_id=?";
+        String sql = "UPDATE bills SET factureNumber=?, supplierId=?, assignedSiteId=?, billDate=?, transferFee=?, totalCost=?, paidAmount=? WHERE billId=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, bill.getFactureNumber());
             ps.setInt(2, bill.getSupplierID());
@@ -92,19 +93,19 @@ public class BillDAO {
     public ResultSet searchBillsByFactureNumber(String searchTerm) throws SQLException {
         String sql = """
                 SELECT
-                    b.bill_id,
-                    b.facture_number,
-                    s.supplier_name,
+                    b.billId,
+                    b.factureNumber,
+                    s.supplierName,
                     cs.name AS site_name,
-                    b.bill_date,
-                    b.total_cost,
-                    b.paid_amount,
-                    b.transfer_fee
+                    b.billDate,
+                    b.totalCost,
+                    b.paidAmount,
+                    b.transferFee
                 FROM bills b
-                JOIN suppliers s ON b.supplier_id = s.supplier_id
-                JOIN ConstructionSite cs ON b.assigned_site_id = cs.id
-                WHERE b.facture_number LIKE ?
-                ORDER BY b.bill_date DESC
+                JOIN suppliers s ON b.supplierId = s.supplierId
+                JOIN constructionSite cs ON b.assignedSiteId = cs.id
+                WHERE b.factureNumber LIKE ?
+                ORDER BY b.billDate DESC
                 """;
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, "%" + searchTerm + "%");

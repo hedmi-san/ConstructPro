@@ -12,7 +12,7 @@ public class SalaryRecordDAO {
     }
 
     public SalaryRecord insertSalaryRecord(SalaryRecord record) throws SQLException {
-        String sql = "INSERT INTO salary_record (worker_id, total_earned, total_paid) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO salaryRecord (workerId, totalEarned, totalPaid) VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, record.getWorkerId());
@@ -30,7 +30,7 @@ public class SalaryRecordDAO {
     }
 
     public void updateSalaryRecord(SalaryRecord record) throws SQLException {
-        String sql = "UPDATE salary_record SET total_earned = ?, total_paid = ? WHERE id = ?";
+        String sql = "UPDATE salaryRecord SET totalEarned = ?, totalPaid = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, record.getTotalEarned());
             stmt.setDouble(2, record.getAmountPaid());
@@ -40,16 +40,16 @@ public class SalaryRecordDAO {
     }
 
     public SalaryRecord getSalaryRecordByWorkerId(int workerId) throws SQLException {
-        String sql = "SELECT id, worker_id, total_earned, total_paid FROM salary_record WHERE worker_id = ?";
+        String sql = "SELECT id, workerId, totalEarned, totalPaid FROM salaryRecord WHERE workerId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, workerId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     SalaryRecord record = new SalaryRecord();
                     record.setId(rs.getInt("id"));
-                    record.setWorkerId(rs.getInt("worker_id"));
-                    record.setTotalEarned(rs.getDouble("total_earned"));
-                    record.setAmountPaid(rs.getDouble("total_paid"));
+                    record.setWorkerId(rs.getInt("workerId"));
+                    record.setTotalEarned(rs.getDouble("totalEarned"));
+                    record.setAmountPaid(rs.getDouble("totalPaid"));
                     return record;
                 }
             }
@@ -57,8 +57,8 @@ public class SalaryRecordDAO {
         return null;
     }
 
-    /** 
-     * If the record does not exist for this worker, create one 
+    /**
+     * If the record does not exist for this worker, create one
      */
     public SalaryRecord getOrCreateSalaryRecord(int workerId) throws SQLException {
         SalaryRecord record = getSalaryRecordByWorkerId(workerId);
