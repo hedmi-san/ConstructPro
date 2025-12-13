@@ -221,9 +221,9 @@ public class ConstructionSitePage extends JPanel {
                     rs.getString("Name"),
                     rs.getString("Location"),
                     rs.getString("Status"),
-                    rs.getDate("Start_Date"),
-                    rs.getDate("End_date"),
-                    rs.getString("Total_Cost")
+                    rs.getDate("startDate"),
+                    rs.getDate("endDate"),
+                    rs.getDouble("totalCost")
                 });
             }
             sitesTable.setModel(model);
@@ -274,9 +274,9 @@ public class ConstructionSitePage extends JPanel {
                     rs.getString("Name"),
                     rs.getString("Location"),
                     rs.getString("Status"),
-                    rs.getDate("Start_Date"),
-                    rs.getDate("End_date"),
-                    rs.getString("Total_Cost")
+                    rs.getDate("startDate"),
+                    rs.getDate("endDate"),
+                    rs.getDouble("totalCost")
                 });
             }
             sitesTable.setModel(model);

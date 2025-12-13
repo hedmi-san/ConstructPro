@@ -154,8 +154,8 @@ public class AttendancePDFGenerator {
         int rowCount = 0;
 
         while (rs.next()) {
-            String firstName = rs.getString("first_name");
-            String lastName = rs.getString("last_name");
+            String firstName = rs.getString("firstName");
+            String lastName = rs.getString("lastName");
 
             // Alternate row colors
             Color bgColor = (rowCount % 2 == 0) ? Color.WHITE : ALTERNATE_ROW_COLOR;

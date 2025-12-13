@@ -26,7 +26,7 @@ public class ConstructionSiteDAO {
             ps.setString(3, site.getStatus());
             ps.setDate(4, Date.valueOf(site.getStartDate()));
             ps.setDate(5, Date.valueOf(site.getEndDate()));
-
+            
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 // Get the generated ID and set it in the site object
@@ -146,7 +146,8 @@ public class ConstructionSiteDAO {
                         s.location,
                         s.status,
                         s.startDate,
-                        s.endDate
+                        s.endDate,
+                        s.totalCost
                     FROM
                         constructionSite s
                     WHERE
@@ -222,7 +223,7 @@ public class ConstructionSiteDAO {
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("No construction site found with ID: " + site.getId());
+                throw new SQLException("Aucun chantier trouvé avec le nom :" + site.getName());
             }
         }
     }
@@ -236,7 +237,7 @@ public class ConstructionSiteDAO {
             ResultSet rs = checkPs.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
                 throw new SQLException(
-                        "Cannot delete construction site. There are workers assigned to this site. Please reassign or remove workers first.");
+                        "Impossible de supprimer le chantier. Des ouvriers sont affectés à ce site. Veuillez d'abord réaffecter ou retirer les ouvriers.");
             }
         }
 
@@ -246,7 +247,7 @@ public class ConstructionSiteDAO {
             ps.setInt(1, id);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("No construction site found with ID: " + id);
+                throw new SQLException("Aucun chantier trouvé avec l'id : " + id);
             }
         }
     }

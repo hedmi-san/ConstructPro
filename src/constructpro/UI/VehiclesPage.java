@@ -134,7 +134,7 @@ public class VehiclesPage extends JPanel {
                         rs.getInt("vehicle_id"),
                         rs.getString("vehicle_name"),
                         rs.getString("plateNumber"),
-                        rs.getString("ownership_type"),
+                        rs.getString("ownershipType"),
                         rs.getString("site_name"),
                         rs.getString("driver_name")
                 });
@@ -168,7 +168,7 @@ public class VehiclesPage extends JPanel {
                         rs.getInt("vehicle_id"),
                         rs.getString("vehicle_name"),
                         rs.getString("plateNumber"),
-                        rs.getString("ownership_type"),
+                        rs.getString("ownershipType"),
                         rs.getString("site_name"),
                         rs.getString("driver_name")
                 });

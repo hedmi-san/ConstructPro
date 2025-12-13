@@ -133,7 +133,7 @@ public class BillPage extends JPanel {
 
             while (rs.next()) {
                 model.addRow(new Object[] {
-                        rs.getInt("bill_id"),
+                        rs.getInt("billId"),
                         rs.getString("facture_number"),
                         rs.getString("supplier_name"),
                         rs.getString("site_name"),
@@ -264,8 +264,8 @@ public class BillPage extends JPanel {
         try {
             ResultSet rs = billDAO.getBillsInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "ID", "Numéro de facture", "Fournisseur", "Chantier", "Date", "Coût Total (DA)",
-                            "Montant Payé (DA)" },
+                    new Object[] { "ID", "Numéro de facture", "Fournisseur", "Chantier", "Date", "Coût Total",
+                            "Montant Payé" },
                     0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -275,13 +275,13 @@ public class BillPage extends JPanel {
 
             while (rs.next()) {
                 model.addRow(new Object[] {
-                        rs.getInt("bill_id"),
-                        rs.getString("facture_number"),
-                        rs.getString("supplier_name"),
+                        rs.getInt("billId"),
+                        rs.getString("factureNumber"),
+                        rs.getString("supplierName"),
                         rs.getString("site_name"),
-                        rs.getDate("bill_date"),
-                        String.format("%.2f", rs.getDouble("total_cost")),
-                        String.format("%.2f", rs.getDouble("paid_amount"))
+                        rs.getDate("billDate"),
+                        String.format("%.2f", rs.getDouble("totalCost")),
+                        String.format("%.2f", rs.getDouble("paidAmount"))
                 });
             }
             billsTable.setModel(model);

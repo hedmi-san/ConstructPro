@@ -154,11 +154,11 @@ public class SalaryPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                        rs.getInt("Id"),
-                        rs.getString("Name"),
-                        rs.getString("Location"),
-                        rs.getDate("Start_Date"),
-                        rs.getDate("End_date")
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("location"),
+                        rs.getDate("startDate"),
+                        rs.getDate("endDate")
                 });
             }
             activeSitesTable.setModel(model);
@@ -187,11 +187,11 @@ public class SalaryPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("Id"),
-                    rs.getString("Name"),
-                    rs.getString("Location"),
-                    rs.getDate("Start_Date"),
-                    rs.getDate("End_date")
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("location"),
+                    rs.getDate("startDate"),
+                    rs.getDate("endDate")
                 });
             }
             activeSitesTable.setModel(model);

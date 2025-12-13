@@ -203,12 +203,12 @@ public class SupplierPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("supplier_id"),
-                    rs.getString("supplier_name"),
+                    rs.getInt("supplierId"),
+                    rs.getString("supplierName"),
                     rs.getString("phone"),
                     rs.getString("address"),
-                    rs.getDouble("total_spent"),
-                    rs.getDouble("total_paid")
+                    rs.getDouble("totalSpent"),
+                    rs.getDouble("totalPaid")
                 });
             }
             suppliersTable.setModel(model);
@@ -237,12 +237,12 @@ public class SupplierPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("supplier_id"),
-                    rs.getString("supplier_name"),
+                    rs.getInt("supplierId"),
+                    rs.getString("supplierName"),
                     rs.getString("phone"),
                     rs.getString("address"),
-                    rs.getDouble("total_spent"),
-                    rs.getDouble("total_paid")
+                    rs.getDouble("totalSpent"),
+                    rs.getDouble("totalPaid")
                 });
             }
             suppliersTable.setModel(model);

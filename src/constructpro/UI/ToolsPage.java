@@ -121,12 +121,12 @@ public class ToolsPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("item_id"),
+                    rs.getInt("itemId"),
                     rs.getString("name"),
                     rs.getString("quantity"),
-                    rs.getInt("unit_price"),
+                    rs.getInt("unitPrice"),
                     rs.getString("site_name"),
-                    rs.getString("bill_date")
+                    rs.getString("billDate")
                 });
             }
             toolsTable.setModel(model);
@@ -156,12 +156,12 @@ public class ToolsPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("item_id"),
+                    rs.getInt("itemId"),
                     rs.getString("name"),
                     rs.getString("quantity"),
-                    rs.getInt("unit_price"),
+                    rs.getInt("unitPrice"),
                     rs.getString("site_name"),
-                    rs.getString("bill_date")
+                    rs.getString("billDate")
                 });
             }
             toolsTable.setModel(model);

@@ -107,10 +107,10 @@ public class PaymentCheckPDFGenerator {
         int rowCount = 0;
 
         while (rs.next()) {
-            String firstName = rs.getString("first_name");
-            String lastName = rs.getString("last_name");
+            String firstName = rs.getString("firstName");
+            String lastName = rs.getString("lastName");
             String job = rs.getString("job");
-            double paidAmount = rs.getDouble("paid_amount");
+            double paidAmount = rs.getDouble("paidAmount");
 
             totalPaid += paidAmount;
 

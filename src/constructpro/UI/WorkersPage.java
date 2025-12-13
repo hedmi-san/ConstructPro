@@ -235,11 +235,11 @@ public class WorkersPage extends JPanel {
             while (rs.next()) {
                 model.addRow(new Object[]{
                     rs.getInt("id"),
-                    rs.getString("first_name"),
-                    rs.getString("last_name"),
+                    rs.getString("firstName"),
+                    rs.getString("lastName"),
                     rs.getInt("age"),
                     rs.getString("job"),
-                    rs.getString("phone_number"),
+                    rs.getString("phoneNumber"),
                     rs.getString("site_name")
                 });
             }
@@ -290,11 +290,11 @@ public class WorkersPage extends JPanel {
             while (rs.next()) {
                 model.addRow(new Object[]{
                     rs.getInt("id"),
-                    rs.getString("first_name"),
-                    rs.getString("last_name"),
+                    rs.getString("firstName"),
+                    rs.getString("lastName"),
                     rs.getInt("age"),
                     rs.getString("job"),
-                    rs.getString("phone_number"),
+                    rs.getString("phoneNumber"),
                     rs.getString("site_name")
                 });
             }
