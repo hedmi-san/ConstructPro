@@ -7,6 +7,8 @@ import constructpro.DTO.Worker;
 import constructpro.Service.WorkerForm;
 import constructpro.DAO.WorkerAssignmentDAO;
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.awt.event.*;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
@@ -143,12 +145,14 @@ public class WorkersPage extends JPanel {
                     workerDAO.insertWorker(newWorker);
                     loadDataSet();
                     if (newWorker.getAssignedSiteID() != 1) {
-                            workerAssignmentDAO.insertAssignment(newWorker.getId(), newWorker.getAssignedSiteID(), LocalDate.now());
-                        }
+                        workerAssignmentDAO.insertAssignment(newWorker.getId(), newWorker.getAssignedSiteID(),
+                                LocalDate.now());
+                    }
                     JOptionPane.showMessageDialog(this, "Ouvrier ajouté avec succès!");
                 }
             } catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -172,20 +176,24 @@ public class WorkersPage extends JPanel {
                             loadDataSet();
                             if (existingWorker.getAssignedSiteID() != 1) {
                                 if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
-                                    workerAssignmentDAO.updateWorkerAssignment(workerId, existingWorker.getAssignedSiteID(), LocalDate.now());
-                                    workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(), LocalDate.now());
+                                    workerAssignmentDAO.updateWorkerAssignment(workerId,
+                                            existingWorker.getAssignedSiteID(), LocalDate.now());
+                                    workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(),
+                                            LocalDate.now());
                                 }
                             }
                             if (existingWorker.getAssignedSiteID() == 1) {
-                                 if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
-                                    workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(), LocalDate.now());
+                                if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
+                                    workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(),
+                                            LocalDate.now());
                                 }
                             }
                             JOptionPane.showMessageDialog(this, "Ouvrier modifié avec succès!");
                         }
                     }
                 } catch (HeadlessException | SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner un ouvrier à modifier.");
@@ -211,7 +219,8 @@ public class WorkersPage extends JPanel {
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Ouvrier supprimé avec succès!");
                     } catch (HeadlessException | SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(),
+                                "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else {
@@ -221,38 +230,32 @@ public class WorkersPage extends JPanel {
     }
 
     private void loadDataSet() {
-        try {
-            ResultSet rs = workerDAO.getWorkersInfo();
-            DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone", "Chantier"}, 0
-            ) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false; // Make table non-editable
-                }
-            };
-
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("firstName"),
-                    rs.getString("lastName"),
-                    rs.getInt("age"),
-                    rs.getString("job"),
-                    rs.getString("phoneNumber"),
-                    rs.getString("site_name")
-                });
+        List<Worker> workers = workerDAO.getWorkersInfo();
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone", "Chantier" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table non-editable
             }
-            workerstTable.setModel(model);
+        };
 
-            // Hide ID column if desired
-            workerstTable.getColumnModel().getColumn(0).setMinWidth(0);
-            workerstTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            workerstTable.getColumnModel().getColumn(0).setWidth(0);
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        for (Worker w : workers) {
+            model.addRow(new Object[] {
+                    w.getId(),
+                    w.getFirstName(),
+                    w.getLastName(),
+                    w.getAge(),
+                    w.getRole(),
+                    w.getPhoneNumber(),
+                    w.getSiteName()
+            });
         }
+        workerstTable.setModel(model);
+
+        // Hide ID column if desired
+        workerstTable.getColumnModel().getColumn(0).setMinWidth(0);
+        workerstTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        workerstTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
     private void showWorkerDetails() {
@@ -270,41 +273,38 @@ public class WorkersPage extends JPanel {
                     JOptionPane.showMessageDialog(this, "Employé non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erreur lors du chargement des détails de l'employé : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement des détails de l'employé : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     private void loadSearchResults(String searchTerm) {
-        try {
-            ResultSet rs = workerDAO.searchWorkersByName(searchTerm);
-            DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone", "Chantier"}, 0
-            ) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("firstName"),
-                    rs.getString("lastName"),
-                    rs.getInt("age"),
-                    rs.getString("job"),
-                    rs.getString("phoneNumber"),
-                    rs.getString("site_name")
-                });
+        List<Worker> workers = workerDAO.searchWorkersByName(searchTerm);
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone", "Chantier" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-            workerstTable.setModel(model);
-            workerstTable.getColumnModel().getColumn(0).setMinWidth(0);
-            workerstTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            workerstTable.getColumnModel().getColumn(0).setWidth(0);
+        };
 
-        } catch (SQLException e) {
+        for (Worker w : workers) {
+            model.addRow(new Object[] {
+                    w.getId(),
+                    w.getFirstName(),
+                    w.getLastName(),
+                    w.getAge(),
+                    w.getRole(),
+                    w.getPhoneNumber(),
+                    w.getSiteName()
+            });
         }
+        workerstTable.setModel(model);
+        workerstTable.getColumnModel().getColumn(0).setMinWidth(0);
+        workerstTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        workerstTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
     public void setParentFrame(JFrame parent) {

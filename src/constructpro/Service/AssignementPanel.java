@@ -3,8 +3,11 @@ package constructpro.Service;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerAssignmentDAO;
 import constructpro.DAO.WorkerDAO;
+import constructpro.DTO.Worker;
 import constructpro.DTO.ConstructionSite;
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.*;
 import java.time.LocalDate;
 import javax.swing.*;
@@ -28,15 +31,16 @@ public class AssignementPanel extends JDialog {
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final Color BTN_BG = new Color(70, 130, 180);
     private ShowSitesDetails parentDialog;
-    
-    public AssignementPanel(JFrame parent, ConstructionSite site, Connection connection,ShowSitesDetails parentDialog) throws SQLException {
+
+    public AssignementPanel(JFrame parent, ConstructionSite site, Connection connection, ShowSitesDetails parentDialog)
+            throws SQLException {
         super(parent, "Affecter des Travailleurs", true);
         this.site = site;
         this.conn = connection;
         this.siteDAO = new ConstructionSiteDAO(connection);
         this.workerDAO = new WorkerDAO(connection);
         this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
-        this.parentDialog= parentDialog;
+        this.parentDialog = parentDialog;
         initializeComponents();
         setupLayout();
         populateData();
@@ -49,8 +53,7 @@ public class AssignementPanel extends JDialog {
 
     private void initializeComponents() {
         model = new DefaultTableModel(
-                new Object[]{"ID","Prénom", "Nom", "Fonction", "Téléphone"}, 0
-        ) {
+                new Object[] { "ID", "Prénom", "Nom", "Fonction", "Téléphone" }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -66,7 +69,7 @@ public class AssignementPanel extends JDialog {
         workersTable.getTableHeader().setForeground(Color.ORANGE);
         workersTable.setDefaultEditor(Object.class, null);
         workersTable.getTableHeader().setReorderingAllowed(false);
-        
+
         assignBtn = new JButton("Affecter");
         cancelBtn = new JButton("Annuler");
         assignBtn.setBackground(BTN_BG);
@@ -96,16 +99,16 @@ public class AssignementPanel extends JDialog {
 
     private void populateData() {
         try {
-            ResultSet rs = workerDAO.getWorkers();
+            List<Worker> workers = workerDAO.getWorkers();
             model.setRowCount(0);
 
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                        rs.getInt("id"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("job"),
-                        rs.getString("phoneNumber")
+            for (Worker w : workers) {
+                model.addRow(new Object[] {
+                        w.getId(),
+                        w.getFirstName(),
+                        w.getLastName(),
+                        w.getRole(),
+                        w.getPhoneNumber()
                 });
             }
 

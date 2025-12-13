@@ -4,7 +4,10 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.ConstructionSite;
+import constructpro.DTO.Worker;
 import java.io.FileOutputStream;
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -148,14 +151,14 @@ public class AttendancePDFGenerator {
         }
 
         // Fetch workers for this site
-        ResultSet rs = workerDAO.getWorkersBySiteId(siteId);
+        List<Worker> workers = workerDAO.getWorkersBySiteId(siteId);
 
         Font cellFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
         int rowCount = 0;
 
-        while (rs.next()) {
-            String firstName = rs.getString("firstName");
-            String lastName = rs.getString("lastName");
+        for (Worker worker : workers) {
+            String firstName = worker.getFirstName();
+            String lastName = worker.getLastName();
 
             // Alternate row colors
             Color bgColor = (rowCount % 2 == 0) ? Color.WHITE : ALTERNATE_ROW_COLOR;
@@ -171,7 +174,7 @@ public class AttendancePDFGenerator {
             rowCount++;
         }
 
-        rs.close();
+        // rs.close(); is no longer needed
 
         if (rowCount == 0) {
             // No workers found

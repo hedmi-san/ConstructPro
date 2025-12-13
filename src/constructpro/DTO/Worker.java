@@ -5,11 +5,13 @@ import java.time.LocalDate;
 public class Worker {
     private int id;
     private String firstName, lastName, birthPlace, fatherName, motherName;
-    private LocalDate birthDate, startDate, identityCardDate;              
-    private String familySituation,identityCardNumber, accountNumber, phoneNumber;// account number : compte ccp
+    private LocalDate birthDate, startDate, identityCardDate;
+    private String familySituation, identityCardNumber, accountNumber, phoneNumber;// account number : compte ccp
     private String role;
     private int assignedSiteID;
-    
+    private int age;
+    private String siteName;
+
     public int getId() {
         return id;
     }
@@ -17,7 +19,7 @@ public class Worker {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public int getAssignedSiteID() {
         return assignedSiteID;
     }
@@ -25,7 +27,23 @@ public class Worker {
     public void setAssignedSiteID(int siteID) {
         this.assignedSiteID = siteID;
     }
-    
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -33,7 +51,7 @@ public class Worker {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
@@ -131,21 +149,21 @@ public class Worker {
     }
 
     public Worker getWorkerFromFields() {
-    Worker w = new Worker();
-    w.setFirstName(getFirstName());
-    w.setLastName(getLastName());
-    w.setFatherName(getFatherName());
-    w.setMotherName(getMotherName());
-    w.setBirthPlace(getBirthPlace());
-    w.setBirthDate(getBirthDate());
-    w.setStartDate(getStartDate());
-    w.setIdentityCardNumber(getIdentityCardNumber());
-    w.setIdentityCardDate(getIdentityCardDate());
-    w.setPhoneNumber(getPhoneNumber());
-    w.setRole(getRole());
-    w.setAccountNumber(getAccountNumber());
-    w.setFamilySituation(getFamilySituation());
-    w.setAssignedSiteID(getAssignedSiteID());
-    return w;
-    }  
+        Worker w = new Worker();
+        w.setFirstName(getFirstName());
+        w.setLastName(getLastName());
+        w.setFatherName(getFatherName());
+        w.setMotherName(getMotherName());
+        w.setBirthPlace(getBirthPlace());
+        w.setBirthDate(getBirthDate());
+        w.setStartDate(getStartDate());
+        w.setIdentityCardNumber(getIdentityCardNumber());
+        w.setIdentityCardDate(getIdentityCardDate());
+        w.setPhoneNumber(getPhoneNumber());
+        w.setRole(getRole());
+        w.setAccountNumber(getAccountNumber());
+        w.setFamilySituation(getFamilySituation());
+        w.setAssignedSiteID(getAssignedSiteID());
+        return w;
+    }
 }

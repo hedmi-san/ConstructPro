@@ -1,10 +1,13 @@
 package constructpro.UI;
 
 import javax.swing.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.SQLException;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
+import constructpro.Database.SQLiteDateUtils;
 import constructpro.Service.ShowSitesDetails;
 import constructpro.Service.SiteForm;
 import java.awt.*;
@@ -142,7 +145,8 @@ public class ConstructionSitePage extends JPanel {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -168,7 +172,8 @@ public class ConstructionSitePage extends JPanel {
                         }
                     }
                 } catch (HeadlessException | SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à modifier.");
@@ -194,7 +199,8 @@ public class ConstructionSitePage extends JPanel {
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Chantier supprimé avec succès!");
                     } catch (HeadlessException | SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(),
+                                "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else {
@@ -204,36 +210,30 @@ public class ConstructionSitePage extends JPanel {
     }
 
     private void loadSearchResults(String searchTerm) {
-        try {
-            ResultSet rs = siteDAO.searchsitesByName(searchTerm);
-            DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total"}, 0
-            ) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("Id"),
-                    rs.getString("Name"),
-                    rs.getString("Location"),
-                    rs.getString("Status"),
-                    rs.getDate("startDate"),
-                    rs.getDate("endDate"),
-                    rs.getDouble("totalCost")
-                });
+        List<ConstructionSite> sites = siteDAO.searchsitesByName(searchTerm);
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-            sitesTable.setModel(model);
-            sitesTable.getColumnModel().getColumn(0).setMinWidth(0);
-            sitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            sitesTable.getColumnModel().getColumn(0).setWidth(0);
+        };
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (ConstructionSite site : sites) {
+            model.addRow(new Object[] {
+                    site.getId(),
+                    site.getName(),
+                    site.getLocation(),
+                    site.getStatus(),
+                    site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
+                    site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
+                    site.getTotalCost()
+            });
         }
+        sitesTable.setModel(model);
+        sitesTable.getColumnModel().getColumn(0).setMinWidth(0);
+        sitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        sitesTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
     private void showSiteDetails() {
@@ -251,44 +251,40 @@ public class ConstructionSitePage extends JPanel {
                     JOptionPane.showMessageDialog(this, "Chantier non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erreur lors du chargement des détails du chantier : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement des détails du chantier : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     private void loadDataSet() {
-        try {
-            ResultSet rs = siteDAO.getConstructionSiteInfo();
-            DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total"}, 0
-            ) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false; // Make table non-editable
-                }
-            };
-
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("Id"),
-                    rs.getString("Name"),
-                    rs.getString("Location"),
-                    rs.getString("Status"),
-                    rs.getDate("startDate"),
-                    rs.getDate("endDate"),
-                    rs.getDouble("totalCost")
-                });
+        List<ConstructionSite> sites = siteDAO.getConstructionSiteInfo();
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table non-editable
             }
-            sitesTable.setModel(model);
+        };
 
-            // Hide ID column if desired
-            sitesTable.getColumnModel().getColumn(0).setMinWidth(0);
-            sitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            sitesTable.getColumnModel().getColumn(0).setWidth(0);
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        for (ConstructionSite site : sites) {
+            model.addRow(new Object[] {
+                    site.getId(),
+                    site.getName(),
+                    site.getLocation(),
+                    site.getStatus(),
+                    site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
+                    site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
+                    site.getTotalCost()
+            });
         }
+        sitesTable.setModel(model);
+
+        // Hide ID column if desired
+        sitesTable.getColumnModel().getColumn(0).setMinWidth(0);
+        sitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        sitesTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
 }

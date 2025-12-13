@@ -9,12 +9,11 @@ import constructpro.Database.SQLiteDateUtils;
 public class ConstructionSiteDAO {
 
     final Connection connection;
-    Statement st;
-    ResultSet rs;
+    // Statement st;
+    // ResultSet rs;
 
     public ConstructionSiteDAO(Connection con) throws SQLException {
         this.connection = con;
-        st = connection.createStatement();
     }
 
     // CREATE - Insert a new construction site
@@ -26,7 +25,7 @@ public class ConstructionSiteDAO {
             ps.setString(3, site.getStatus());
             ps.setDate(4, Date.valueOf(site.getStartDate()));
             ps.setDate(5, Date.valueOf(site.getEndDate()));
-            
+
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 // Get the generated ID and set it in the site object
@@ -137,77 +136,108 @@ public class ConstructionSiteDAO {
         return null;
     }
 
-    public ResultSet getConstructionSiteInfo() {
-        try {
-            String query = """
-                    SELECT
-                        s.id,
-                        s.name,
-                        s.location,
-                        s.status,
-                        s.startDate,
-                        s.endDate,
-                        s.totalCost
-                    FROM
-                        constructionSite s
-                    WHERE
-                        s.status is not null
-                    """;
-            rs = st.executeQuery(query);
+    public List<ConstructionSite> getConstructionSiteInfo() {
+        List<ConstructionSite> list = new ArrayList<>();
+        String query = """
+                SELECT
+                    s.id,
+                    s.name,
+                    s.location,
+                    s.status,
+                    s.startDate,
+                    s.endDate,
+                    s.totalCost
+                FROM
+                    constructionSite s
+                WHERE
+                    s.status is not null
+                """;
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                ConstructionSite site = new ConstructionSite();
+                site.setId(rs.getInt("id"));
+                site.setName(rs.getString("name"));
+                site.setLocation(rs.getString("location"));
+                site.setStatus(rs.getString("status"));
+                site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                site.setTotalCost(rs.getDouble("totalCost"));
+                list.add(site);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return rs;
+        return list;
     }
 
-    public ResultSet getActiveConstructionSiteInfo() {
-        try {
-            String query = """
-                    SELECT
-                        s.id,
-                        s.name,
-                        s.location,
-                        s.startDate,
-                        s.endDate
-                    FROM
-                        constructionSite s
-                    WHERE
-                        s.status = 'Active'
-                    """;
-            rs = st.executeQuery(query);
+    public List<ConstructionSite> getActiveConstructionSiteInfo() {
+        List<ConstructionSite> list = new ArrayList<>();
+        String query = """
+                SELECT
+                    s.id,
+                    s.name,
+                    s.location,
+                    s.startDate,
+                    s.endDate
+                FROM
+                    constructionSite s
+                WHERE
+                    s.status = 'Active'
+                """;
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                ConstructionSite site = new ConstructionSite();
+                site.setId(rs.getInt("id"));
+                site.setName(rs.getString("name"));
+                site.setLocation(rs.getString("location"));
+                site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                list.add(site);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return rs;
+        return list;
     }
 
-    public ResultSet getSpecificActiveConstructionSiteInfo(String searchTerm) {
-        ResultSet rs = null;
-        try {
-            String query = """
-                    SELECT
-                        s.id,
-                        s.name,
-                        s.location,
-                        s.startDate,
-                        s.endDate
-                    FROM
-                        constructionSite s
-                    WHERE
-                        s.status = 'Active'
-                        AND (s.name LIKE ? OR s.location LIKE ?)
-                    """;
+    public List<ConstructionSite> getSpecificActiveConstructionSiteInfo(String searchTerm) {
+        List<ConstructionSite> list = new ArrayList<>();
+        String query = """
+                SELECT
+                    s.id,
+                    s.name,
+                    s.location,
+                    s.startDate,
+                    s.endDate
+                FROM
+                    constructionSite s
+                WHERE
+                    s.status = 'Active'
+                    AND (s.name LIKE ? OR s.location LIKE ?)
+                """;
 
-            PreparedStatement ps = connection.prepareStatement(query);
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
             String term = "%" + searchTerm + "%";
             ps.setString(1, term);
             ps.setString(2, term);
 
-            rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ConstructionSite site = new ConstructionSite();
+                    site.setId(rs.getInt("id"));
+                    site.setName(rs.getString("name"));
+                    site.setLocation(rs.getString("location"));
+                    site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                    site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                    list.add(site);
+                }
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return rs;
+        return list;
     }
 
     // UPDATE - Update an existing construction site
@@ -269,30 +299,43 @@ public class ConstructionSiteDAO {
         return 0;
     }
 
-    public ResultSet searchsitesByName(String searchTerm) {
-        try {
-            String query = """
-                        select
-                            s.id,
-                            s.name,
-                            s.location,
-                            s.status,
-                            s.startDate,
-                            s.endDate
-                        FROM
-                            constructionSite s
-                        WHERE
-                            s.name LIKE ? OR s.location LIKE ?
-                    """;
-            PreparedStatement ps = connection.prepareStatement(query);
+    public List<ConstructionSite> searchsitesByName(String searchTerm) {
+        List<ConstructionSite> list = new ArrayList<>();
+        String query = """
+                    select
+                        s.id,
+                        s.name,
+                        s.location,
+                        s.status,
+                        s.startDate,
+                        s.endDate,
+                        s.totalCost
+                    FROM
+                        constructionSite s
+                    WHERE
+                        s.name LIKE ? OR s.location LIKE ?
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
             String likeTerm = "%" + searchTerm + "%";
             ps.setString(1, likeTerm);
             ps.setString(2, likeTerm);
-            return ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ConstructionSite site = new ConstructionSite();
+                    site.setId(rs.getInt("id"));
+                    site.setName(rs.getString("name"));
+                    site.setLocation(rs.getString("location"));
+                    site.setStatus(rs.getString("status"));
+                    site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                    site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                    site.setTotalCost(rs.getDouble("totalCost"));
+                    list.add(site);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return list;
     }
 
     // Get site name by ID
@@ -361,7 +404,8 @@ public class ConstructionSiteDAO {
     }
 
     // Get sites with worker information
-    public ResultSet getSitesWithWorkerInfo() throws SQLException {
+    public List<ConstructionSite> getSitesWithWorkerInfo() throws SQLException {
+        List<ConstructionSite> list = new ArrayList<>();
         String query = """
                 SELECT
                     cs.id,
@@ -385,6 +429,20 @@ public class ConstructionSiteDAO {
                 ORDER BY
                     cs.startDate DESC
                 """;
-        return st.executeQuery(query);
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                ConstructionSite site = new ConstructionSite();
+                site.setId(rs.getInt("id"));
+                site.setName(rs.getString("name"));
+                site.setLocation(rs.getString("location"));
+                site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                site.setStatus(rs.getString("status"));
+                // worker_count and duration_days are currently ignored as they lack DTO fields
+                list.add(site);
+            }
+        }
+        return list;
     }
 }

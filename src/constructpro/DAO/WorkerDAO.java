@@ -12,12 +12,11 @@ import javax.swing.table.DefaultTableModel;
 public class WorkerDAO {
 
     private Connection connection;
-    Statement st;
-    ResultSet rs;
+    // Statement st;
+    // ResultSet rs;
 
     public WorkerDAO(Connection connection) throws SQLException {
         this.connection = connection;
-        st = connection.createStatement();
     }
 
     public void insertWorker(Worker worker) throws SQLException {
@@ -129,33 +128,57 @@ public class WorkerDAO {
         return list;
     }
 
-    public ResultSet getWorkersInfo() {
-        try {
-            String query = """
-                    SELECT
-                        w.id,
-                        w.firstName,
-                        w.lastName,
-                        CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', w.birthDate) AS INTEGER) AS age,
-                        w.job,
-                        w.phoneNumber,
-                        s.name AS site_name
-                    FROM
-                        worker w
-                    LEFT JOIN
-                        constructionSite s ON w.siteId = s.id
-                    """;
-            rs = st.executeQuery(query);
+    public List<Worker> getWorkersInfo() {
+        List<Worker> list = new ArrayList<>();
+        String query = """
+                SELECT
+                    w.id,
+                    w.firstName,
+                    w.lastName,
+                    CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', w.birthDate) AS INTEGER) AS age,
+                    w.job,
+                    w.phoneNumber,
+                    s.name AS site_name
+                FROM
+                    worker w
+                LEFT JOIN
+                    constructionSite s ON w.siteId = s.id
+                """;
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Worker w = new Worker();
+                w.setId(rs.getInt("id"));
+                w.setFirstName(rs.getString("firstName"));
+                w.setLastName(rs.getString("lastName"));
+                w.setAge(rs.getInt("age"));
+                w.setRole(rs.getString("job"));
+                w.setPhoneNumber(rs.getString("phoneNumber"));
+                w.setSiteName(rs.getString("site_name"));
+                list.add(w);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return rs;
+        return list;
     }
 
-    public ResultSet getWorkers() throws SQLException {
+    public List<Worker> getWorkers() throws SQLException {
+        List<Worker> list = new ArrayList<>();
         String sql = "SELECT id,firstName,lastName,job,phoneNumber FROM worker";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        return ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Worker w = new Worker();
+                w.setId(rs.getInt("id"));
+                w.setFirstName(rs.getString("firstName"));
+                w.setLastName(rs.getString("lastName"));
+                w.setRole(rs.getString("job"));
+                w.setPhoneNumber(rs.getString("phoneNumber"));
+                list.add(w);
+            }
+        }
+        return list;
     }
 
     public void assignWorkerToSite(int workerId, int siteId) throws SQLException {
@@ -166,15 +189,28 @@ public class WorkerDAO {
         ps.executeUpdate();
     }
 
-    public ResultSet getWorkerRecords(int id) {
+    public Worker getWorkerRecords(int id) {
         String query = "SELECT * FROM worker WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, id);
-            rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Worker w = new Worker();
+                    w.setId(rs.getInt("id"));
+                    w.setFirstName(rs.getString("firstName"));
+                    w.setLastName(rs.getString("lastName"));
+                    w.setBirthPlace(rs.getString("birthPlace"));
+                    w.setBirthDate(SQLiteDateUtils.getDate(rs, "birthDate"));
+                    w.setRole(rs.getString("job"));
+                    w.setPhoneNumber(rs.getString("phoneNumber"));
+                    // Populate minimal fields for records
+                    return w;
+                }
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return rs;
+        return null;
     }
 
     public void unassignWorker(int workerId) throws SQLException {
@@ -235,8 +271,8 @@ public class WorkerDAO {
         return null;
     }
 
-    public ResultSet getWorkersBySiteId(int siteId) {
-        ResultSet rs = null;
+    public List<Worker> getWorkersBySiteId(int siteId) {
+        List<Worker> list = new ArrayList<>();
         String sql = """
                 SELECT
                     id,
@@ -247,18 +283,29 @@ public class WorkerDAO {
                     phoneNumber
                 FROM worker WHERE siteId = ?
                  """;
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, siteId);
-            rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Worker w = new Worker();
+                    w.setId(rs.getInt("id"));
+                    w.setFirstName(rs.getString("firstName"));
+                    w.setLastName(rs.getString("lastName"));
+                    w.setAge(rs.getInt("age"));
+                    w.setRole(rs.getString("job"));
+                    w.setPhoneNumber(rs.getString("phoneNumber"));
+                    list.add(w);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return rs;
+        return list;
     }
 
-    public ResultSet searchWorkersByName(String searchTerm) {
+    public List<Worker> searchWorkersByName(String searchTerm) {
+        List<Worker> list = new ArrayList<>();
         try {
             String query = """
                         SELECT
@@ -276,15 +323,28 @@ public class WorkerDAO {
                         WHERE
                             w.firstName LIKE ? OR w.lastName LIKE ?
                     """;
-            PreparedStatement ps = connection.prepareStatement(query);
-            String likeTerm = "%" + searchTerm + "%";
-            ps.setString(1, likeTerm);
-            ps.setString(2, likeTerm);
-            return ps.executeQuery();
+            try (PreparedStatement ps = connection.prepareStatement(query)) {
+                String likeTerm = "%" + searchTerm + "%";
+                ps.setString(1, likeTerm);
+                ps.setString(2, likeTerm);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Worker w = new Worker();
+                        w.setId(rs.getInt("id"));
+                        w.setFirstName(rs.getString("firstName"));
+                        w.setLastName(rs.getString("lastName"));
+                        w.setAge(rs.getInt("age"));
+                        w.setRole(rs.getString("job"));
+                        w.setPhoneNumber(rs.getString("phoneNumber"));
+                        w.setSiteName(rs.getString("site_name"));
+                        list.add(w);
+                    }
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return list;
     }
 
     public DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {

@@ -1,9 +1,12 @@
 package constructpro.UI;
 
 import javax.swing.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.Connection;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
+import constructpro.Database.SQLiteDateUtils;
 import constructpro.Service.AttendanceRecord;
 import constructpro.Service.PaySlip;
 import constructpro.Service.WorkerList;
@@ -13,8 +16,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 
-public class SalaryPage extends JPanel{
-    private JButton refreshButton,paymentCheckPdfButton,attendancePaperButton;
+public class SalaryPage extends JPanel {
+    private JButton refreshButton, paymentCheckPdfButton, attendancePaperButton;
     private JTextField searchText;
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -23,14 +26,14 @@ public class SalaryPage extends JPanel{
     private ConstructionSiteDAO siteDAO;
     private JFrame parentFrame;
     public Connection conn;
-    
+
     public SalaryPage(Connection connection) {
         this.conn = connection;
         initDAO();
         initComponents();
         loadDataSet();
     }
-    
+
     public SalaryPage(JFrame parent) {
         this.parentFrame = parent;
         initDAO();
@@ -96,7 +99,7 @@ public class SalaryPage extends JPanel{
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         buttonPanel.setPreferredSize(new Dimension(0, 60));
-        
+
         paymentCheckPdfButton.setForeground(Color.WHITE);
         attendancePaperButton.setForeground(Color.WHITE);
         buttonPanel.add(paymentCheckPdfButton);
@@ -115,96 +118,84 @@ public class SalaryPage extends JPanel{
         add(headerPanel, BorderLayout.NORTH);
         add(jScrollPane1, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-        
+
         setupButtonActions();
     }
-    
-    private void setupButtonActions(){
+
+    private void setupButtonActions() {
         paymentCheckPdfButton.addActionListener(e -> {
             try {
-                PaySlip dialog = new PaySlip(conn,parentFrame);
+                PaySlip dialog = new PaySlip(conn, parentFrame);
                 dialog.setVisible(true);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
-        
+
         attendancePaperButton.addActionListener(e -> {
             try {
-                AttendanceRecord dialog = new AttendanceRecord(conn,parentFrame);
+                AttendanceRecord dialog = new AttendanceRecord(conn, parentFrame);
                 dialog.setVisible(true);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
-    
+
     }
 
     private void loadDataSet() {
-        try {
-            ResultSet rs = siteDAO.getActiveConstructionSiteInfo();
-            DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Lieu","Date de début", "Date de fin"}, 0
-            ) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false; // Make table non-editable
-                }
-            };
-
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("location"),
-                        rs.getDate("startDate"),
-                        rs.getDate("endDate")
-                });
+        List<ConstructionSite> sites = siteDAO.getActiveConstructionSiteInfo();
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Nom", "Lieu", "Date de début", "Date de fin" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table non-editable
             }
-            activeSitesTable.setModel(model);
-            
-            // Hide ID column if desired
-            activeSitesTable.getColumnModel().getColumn(0).setMinWidth(0);
-            activeSitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            activeSitesTable.getColumnModel().getColumn(0).setWidth(0);
-            
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    private void loadSearchResults(String searchterm){
-        try {
-            ResultSet rs = siteDAO.getSpecificActiveConstructionSiteInfo(searchterm);
-            DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Lieu","Date de début", "Date de fin"}, 0
-            ) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
+        };
 
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getString("location"),
-                    rs.getDate("startDate"),
-                    rs.getDate("endDate")
-                });
+        for (ConstructionSite site : sites) {
+            model.addRow(new Object[] {
+                    site.getId(),
+                    site.getName(),
+                    site.getLocation(),
+                    site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
+                    site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null
+            });
+        }
+        activeSitesTable.setModel(model);
+
+        // Hide ID column if desired
+        activeSitesTable.getColumnModel().getColumn(0).setMinWidth(0);
+        activeSitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        activeSitesTable.getColumnModel().getColumn(0).setWidth(0);
+    }
+
+    private void loadSearchResults(String searchterm) {
+        List<ConstructionSite> sites = siteDAO.getSpecificActiveConstructionSiteInfo(searchterm);
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Nom", "Lieu", "Date de début", "Date de fin" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-            activeSitesTable.setModel(model);
-            activeSitesTable.getColumnModel().getColumn(0).setMinWidth(0);
-            activeSitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            activeSitesTable.getColumnModel().getColumn(0).setWidth(0);
+        };
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (ConstructionSite site : sites) {
+            model.addRow(new Object[] {
+                    site.getId(),
+                    site.getName(),
+                    site.getLocation(),
+                    site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
+                    site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null
+            });
         }
+        activeSitesTable.setModel(model);
+        activeSitesTable.getColumnModel().getColumn(0).setMinWidth(0);
+        activeSitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        activeSitesTable.getColumnModel().getColumn(0).setWidth(0);
     }
-    
-    private void showSiteAssignedWorkersList(){
+
+    private void showSiteAssignedWorkersList() {
         int selectedRow = activeSitesTable.getSelectedRow();
         if (selectedRow >= 0) {
             try {
@@ -216,12 +207,15 @@ public class SalaryPage extends JPanel{
                     WorkerList workerListDialog = new WorkerList(parentFrame, site, conn);
                     workerListDialog.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(this, "La liste des travailleurs est introuvable.!", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "La liste des travailleurs est introuvable.!", "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erreur lors du chargement la liste des travailleursé : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement la liste des travailleursé : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-    
+
 }

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.BillDAO;
 import constructpro.DTO.Bill;
+import constructpro.Database.SQLiteDateUtils;
 import constructpro.Service.BillForm;
 import java.awt.*;
 import java.awt.event.*;
@@ -134,12 +135,12 @@ public class BillPage extends JPanel {
             while (rs.next()) {
                 model.addRow(new Object[] {
                         rs.getInt("billId"),
-                        rs.getString("facture_number"),
-                        rs.getString("supplier_name"),
+                        rs.getString("factureNumber"),
+                        rs.getString("supplierName"),
                         rs.getString("site_name"),
-                        rs.getDate("bill_date"),
-                        String.format("%.2f", rs.getDouble("total_cost")),
-                        String.format("%.2f", rs.getDouble("paid_amount"))
+                        SQLiteDateUtils.getDate(rs, "billDate"),
+                        String.format("%.2f", rs.getDouble("totalCost")),
+                        String.format("%.2f", rs.getDouble("paidAmount"))
                 });
             }
             billsTable.setModel(model);
@@ -279,7 +280,7 @@ public class BillPage extends JPanel {
                         rs.getString("factureNumber"),
                         rs.getString("supplierName"),
                         rs.getString("site_name"),
-                        rs.getDate("billDate"),
+                        SQLiteDateUtils.getDate(rs, "billDate"),
                         String.format("%.2f", rs.getDouble("totalCost")),
                         String.format("%.2f", rs.getDouble("paidAmount"))
                 });
