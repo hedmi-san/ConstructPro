@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Vector;
-import constructpro.Database.SQLiteDateUtils;
+
 import javax.swing.table.DefaultTableModel;
 
 public class WorkerDAO {
@@ -83,12 +83,18 @@ public class WorkerDAO {
                 w.setFirstName(rs.getString("firstName"));
                 w.setLastName(rs.getString("lastName"));
                 w.setBirthPlace(rs.getString("birthPlace"));
-                w.setBirthDate(SQLiteDateUtils.getDate(rs, "birthDate"));
+                java.sql.Date birthDate = rs.getDate("birthDate");
+                if (birthDate != null)
+                    w.setBirthDate(birthDate.toLocalDate());
                 w.setFatherName(rs.getString("fatherName"));
                 w.setMotherName(rs.getString("motherName"));
-                w.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                java.sql.Date startDate = rs.getDate("startDate");
+                if (startDate != null)
+                    w.setStartDate(startDate.toLocalDate());
                 w.setIdentityCardNumber(rs.getString("identityCardNumber"));
-                w.setIdentityCardDate(SQLiteDateUtils.getDate(rs, "identityCardDate"));
+                java.sql.Date idDate = rs.getDate("identityCardDate");
+                if (idDate != null)
+                    w.setIdentityCardDate(idDate.toLocalDate());
                 w.setFamilySituation(rs.getString("familySituation"));
                 w.setAccountNumber(rs.getString("accountNumber"));
                 w.setPhoneNumber(rs.getString("phoneNumber"));
@@ -111,12 +117,18 @@ public class WorkerDAO {
                 w.setFirstName(rs.getString("firstName"));
                 w.setLastName(rs.getString("lastName"));
                 w.setBirthPlace(rs.getString("birthPlace"));
-                w.setBirthDate(SQLiteDateUtils.getDate(rs, "birthDate"));
+                java.sql.Date birthDate = rs.getDate("birthDate");
+                if (birthDate != null)
+                    w.setBirthDate(birthDate.toLocalDate());
                 w.setFatherName(rs.getString("fatherName"));
                 w.setMotherName(rs.getString("motherName"));
-                w.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                java.sql.Date startDate = rs.getDate("startDate");
+                if (startDate != null)
+                    w.setStartDate(startDate.toLocalDate());
                 w.setIdentityCardNumber(rs.getString("identityCardNumber"));
-                w.setIdentityCardDate(SQLiteDateUtils.getDate(rs, "identityCardDate"));
+                java.sql.Date idDate = rs.getDate("identityCardDate");
+                if (idDate != null)
+                    w.setIdentityCardDate(idDate.toLocalDate());
                 w.setFamilySituation(rs.getString("familySituation"));
                 w.setAccountNumber(rs.getString("accountNumber"));
                 w.setPhoneNumber(rs.getString("phoneNumber"));
@@ -135,7 +147,7 @@ public class WorkerDAO {
                     w.id,
                     w.firstName,
                     w.lastName,
-                    CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', w.birthDate) AS INTEGER) AS age,
+                    TIMESTAMPDIFF(YEAR, w.birthDate, CURDATE()) AS age,
                     w.job,
                     w.phoneNumber,
                     s.name AS site_name
@@ -200,7 +212,9 @@ public class WorkerDAO {
                     w.setFirstName(rs.getString("firstName"));
                     w.setLastName(rs.getString("lastName"));
                     w.setBirthPlace(rs.getString("birthPlace"));
-                    w.setBirthDate(SQLiteDateUtils.getDate(rs, "birthDate"));
+                    java.sql.Date birthDate = rs.getDate("birthDate");
+                    if (birthDate != null)
+                        w.setBirthDate(birthDate.toLocalDate());
                     w.setRole(rs.getString("job"));
                     w.setPhoneNumber(rs.getString("phoneNumber"));
                     // Populate minimal fields for records
@@ -278,7 +292,7 @@ public class WorkerDAO {
                     id,
                     firstName,
                     lastName,
-                    CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', birthDate) AS INTEGER) AS age,
+                    TIMESTAMPDIFF(YEAR, birthDate, CURDATE()) AS age,
                     job,
                     phoneNumber
                 FROM worker WHERE siteId = ?
@@ -312,7 +326,7 @@ public class WorkerDAO {
                             w.id,
                             w.firstName,
                             w.lastName,
-                            CAST(strftime('%Y.%m%d', 'now') - strftime('%Y.%m%d', w.birthDate) AS INTEGER) AS age,
+                            TIMESTAMPDIFF(YEAR, w.birthDate, CURDATE()) AS age,
                             w.job,
                             w.phoneNumber,
                             s.name AS site_name

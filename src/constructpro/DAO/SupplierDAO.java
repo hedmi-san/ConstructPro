@@ -25,7 +25,7 @@ public class SupplierDAO {
     }
 
     public void updateSupplier(Supplier supplier) throws SQLException {
-        String sql = "UPDATE suppliers SET supplierName = ?, phone = ?, address = ?,totalSpent = ?,totalPaid = ? WHERE  supplierId = ?";
+        String sql = "UPDATE suppliers SET supplierName = ?, phone = ?, address = ?,totalSpent = ?,totalPaid = ? WHERE  id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
             stmt.setString(2, supplier.getPhone());
@@ -38,7 +38,7 @@ public class SupplierDAO {
     }
 
     public void deleteWorker(int id) throws SQLException {
-        String sql = "DELETE FROM suppliers WHERE supplierId=?";
+        String sql = "DELETE FROM suppliers WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -52,13 +52,13 @@ public class SupplierDAO {
     }
 
     public Supplier getSupplierById(int id) throws SQLException {
-        String sql = "SELECT * FROM suppliers WHERE supplierId = ?";
+        String sql = "SELECT * FROM suppliers WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Supplier supplier = new Supplier();
-                supplier.setId(rs.getInt("supplierId"));
+                supplier.setId(rs.getInt("id"));
                 supplier.setName(rs.getString("supplierName"));
                 supplier.setPhone(rs.getString("phone"));
                 supplier.setAddress(rs.getString("address"));
@@ -101,12 +101,12 @@ public class SupplierDAO {
             return 0;
         }
 
-        String sql = "SELECT supplierId FROM suppliers WHERE supplierName = ?";
+        String sql = "SELECT id FROM suppliers WHERE supplierName = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, supplierName);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt("supplierId");
+                return rs.getInt("id");
             }
         }
         return 0;

@@ -1,6 +1,5 @@
 package constructpro.DAO;
 
-import constructpro.Database.SQLiteDateUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,14 +49,14 @@ public class WorkerAssignmentDAO {
                 assignment.setWorkerId(rs.getInt("workerId"));
                 assignment.setSiteId(rs.getInt("siteId"));
 
-                java.time.LocalDate assignmentDate = SQLiteDateUtils.getDate(rs, "assignmentDate");
-                if (assignmentDate != null) {
-                    assignment.setAssignmentDate(assignmentDate);
+                java.sql.Date aDate = rs.getDate("assignmentDate");
+                if (aDate != null) {
+                    assignment.setAssignmentDate(aDate.toLocalDate());
                 }
 
-                java.time.LocalDate unassignmentDate = SQLiteDateUtils.getDate(rs, "unassignmentDate");
-                if (unassignmentDate != null) {
-                    assignment.setUnAssignmentDate(unassignmentDate);
+                java.sql.Date uDate = rs.getDate("unassignmentDate");
+                if (uDate != null) {
+                    assignment.setUnAssignmentDate(uDate.toLocalDate());
                 }
 
                 assignments.add(assignment);

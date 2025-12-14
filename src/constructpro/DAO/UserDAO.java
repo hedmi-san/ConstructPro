@@ -3,6 +3,7 @@ package constructpro.DAO;
 import constructpro.DTO.User;
 import constructpro.Database.ConnectionEstablish;
 import constructpro.UI.UsersPage;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
@@ -46,7 +47,7 @@ public class UserDAO {
 
     public void addFunction(User userDTO, String userType) {
         try {
-            String query = "INSERT INTO users (fullName, location, phone, userName, passWord, usertype) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO users (fullName, location, phone, username, password, usertype) VALUES (?, ?, ?, ?, ?, ?)";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, userDTO.getFullName());
             prepStatement.setString(2, userDTO.getLocation());
@@ -65,7 +66,7 @@ public class UserDAO {
 
     public void editUserDAO(User userDTO) {
         try {
-            String query = "UPDATE users SET fullName=?, location=?, phone=?, usertype=? WHERE userName=?";
+            String query = "UPDATE users SET fullName=?, location=?, phone=?, usertype=? WHERE username=?";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, userDTO.getFullName());
             prepStatement.setString(2, userDTO.getLocation());
@@ -81,7 +82,7 @@ public class UserDAO {
 
     public void deleteUserDAO(String username) {
         try {
-            String query = "DELETE FROM users WHERE userName=?";
+            String query = "DELETE FROM users WHERE username=?";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, username);
             prepStatement.executeUpdate();
@@ -104,7 +105,7 @@ public class UserDAO {
 
     public ResultSet getUserDAO(String username) {
         try {
-            String query = "SELECT fullName,userName,location,phone,passWord,usertype FROM users WHERE userName=?";
+            String query = "SELECT fullName,username,location,phone,passWord,usertype FROM users WHERE username=?";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, username);
             resultSet = prepStatement.executeQuery();
@@ -116,7 +117,7 @@ public class UserDAO {
 
     public void getFullName(User userDTO, String username) {
         try {
-            String query = "SELECT fullName FROM users WHERE userName=? LIMIT 1";
+            String query = "SELECT fullName FROM users WHERE username=? LIMIT 1";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, username);
             resultSet = prepStatement.executeQuery();
@@ -130,48 +131,44 @@ public class UserDAO {
 
     public ResultSet getUserLogsDAO() {
         try {
-            String query = "SELECT users.fullName, userLogs.userName, inTime, outTime " +
-                    "FROM userLogs INNER JOIN users ON userLogs.userName = users.userName";
+            String query = "SELECT users.fullName, userlogs.username, in_time, out_time " +
+                           "FROM userLogs INNER JOIN users ON userLogs.username = users.username";
             resultSet = statement.executeQuery(query);
-        } catch (SQLException e) {
-        }
+        } catch (SQLException e) {}
         return resultSet;
     }
 
     public void addUserLogin(User userDTO) {
         try {
-            String query = "INSERT INTO userLogs (userName, inTime, outTime) VALUES (?, ?, ?)";
+            String query = "INSERT INTO userLogs (username, in_time, out_time) VALUES (?, ?, ?)";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, userDTO.getUserName());
             prepStatement.setString(2, userDTO.getInTime());
             prepStatement.setString(3, userDTO.getOutTime());
             prepStatement.executeUpdate();
-        } catch (SQLException e) {
-        }
+        } catch (SQLException e) {}
     }
 
     public ResultSet getPassDAO(String username, String password) {
         try {
-            String query = "SELECT passWord FROM users WHERE userName=? AND passWord=?";
+            String query = "SELECT password FROM users WHERE username=? AND password=?";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, username);
             prepStatement.setString(2, password);
             resultSet = prepStatement.executeQuery();
-        } catch (SQLException ex) {
-        }
+        } catch (SQLException ex) {}
         return resultSet;
     }
 
     public void changePass(String username, String password) {
         try {
-            String query = "UPDATE users SET passWord=? WHERE userName=?";
+            String query = "UPDATE users SET password=? WHERE username=?";
             prepStatement = conn.prepareStatement(query);
             prepStatement.setString(1, password);
             prepStatement.setString(2, username);
             prepStatement.executeUpdate();
             JOptionPane.showMessageDialog(null, "Password has been changed.");
-        } catch (SQLException ex) {
-        }
+        } catch (SQLException ex) {}
     }
 
     public DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {

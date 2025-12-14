@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class UserLogPage extends JPanel{
-    
+
     private JLabel jLabel1;
     private JLabel jLabel2;
     private JScrollPane jScrollPane1;
@@ -16,12 +16,12 @@ public class UserLogPage extends JPanel{
     private JTable logTable;
     private JButton refreshButton;
     private JTextField searchText;
-    
+
     public UserLogPage(Connection connection) {
         initComponents();
         loadDataSet();
     }
-    
+
     @SuppressWarnings("unchecked")
     private void initComponents(){
         jLabel1 = new JLabel();
@@ -31,7 +31,7 @@ public class UserLogPage extends JPanel{
         refreshButton = new JButton();
         searchText = new JTextField();
         jLabel2 = new JLabel();
-        
+
         jLabel1.setFont(new Font("SansSerif", Font.BOLD, 22));
         jLabel1.setText("Logs");
 
@@ -100,14 +100,14 @@ public class UserLogPage extends JPanel{
                 .addContainerGap(26, Short.MAX_VALUE))
         );
     }
-    
+
     private void searchTextKeyReleased(KeyEvent evt) {
     }
-    
+
     private void refreshButtonActionPerformed(ActionEvent evt) {
         loadDataSet();
     }
-    
+
     public void loadDataSet(){
         try {
             UserDAO userDAO = new UserDAO();

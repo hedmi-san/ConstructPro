@@ -193,7 +193,7 @@ public class SupplierPage extends JPanel{
         try {
             ResultSet rs = supplierDAO.getSuppliersInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"supplier_id", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
+                    new Object[]{"ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -203,7 +203,7 @@ public class SupplierPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("supplierId"),
+                    rs.getInt("id"),
                     rs.getString("supplierName"),
                     rs.getString("phone"),
                     rs.getString("address"),
@@ -227,7 +227,7 @@ public class SupplierPage extends JPanel{
         try {
             ResultSet rs = supplierDAO.searchSupplierByName(searchterm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"supplier_id", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
+                    new Object[]{"ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -237,7 +237,7 @@ public class SupplierPage extends JPanel{
 
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("supplierId"),
+                    rs.getInt("id"),
                     rs.getString("supplierName"),
                     rs.getString("phone"),
                     rs.getString("address"),

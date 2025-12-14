@@ -2,7 +2,7 @@ package constructpro.DAO;
 
 import constructpro.DTO.PaymentCheck;
 import java.sql.*;
-import constructpro.Database.SQLiteDateUtils;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,9 @@ public class PaymentCheckDAO {
                 while (rs.next()) {
                     PaymentCheck check = new PaymentCheck();
                     check.setId(rs.getInt("id"));
-                    check.setPaymentDay(SQLiteDateUtils.getDate(rs, "paymentDate"));
+                    java.sql.Date pDate = rs.getDate("paymentDate");
+                    if (pDate != null)
+                        check.setPaymentDay(pDate.toLocalDate());
                     check.setBaseSalary(rs.getDouble("baseSalary"));
                     check.setPaidAmount(rs.getDouble("paidAmount"));
                     checks.add(check);

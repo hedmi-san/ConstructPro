@@ -64,7 +64,7 @@ public class BiLLItemDAO {
                     cs.name AS site_name,
                     b.billDate
                 FROM billItems bi
-                JOIN bills b       ON bi.billId = b.billId
+                JOIN bills b       ON bi.billId = b.id
                 JOIN constructionSite cs ON b.assignedSiteId = cs.id
                 WHERE bi.itemType = 'Outil';
                 """;
@@ -82,7 +82,7 @@ public class BiLLItemDAO {
                         cs.name AS site_name,
                         b.billDate
                     FROM billItems bi
-                    JOIN bills b ON bi.billId = b.billId
+                    JOIN bills b ON bi.billId = b.id
                     JOIN constructionSite cs ON b.assignedSiteId = cs.id
                     WHERE bi.itemType = 'Outil'
                       AND bi.itemName LIKE ?
@@ -105,7 +105,7 @@ public class BiLLItemDAO {
                     cs.name AS site_name,
                     b.billDate
                 FROM billItems bi
-                JOIN bills b       ON bi.billId = b.billId
+                JOIN bills b       ON bi.billId = b.id
                 JOIN constructionSite cs ON b.assignedSiteId = cs.id
                 WHERE bi.itemType = 'Matériel';
                 """;
@@ -123,7 +123,7 @@ public class BiLLItemDAO {
                         cs.name AS site_name,
                         b.billDate
                     FROM billItems bi
-                    JOIN bills b ON bi.billId = b.billId
+                    JOIN bills b ON bi.billId = b.id
                     JOIN constructionSite cs ON b.assignedSiteId = cs.id
                     WHERE bi.itemType = 'Matériel'
                       AND bi.itemName LIKE ?

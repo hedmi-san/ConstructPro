@@ -1,7 +1,7 @@
 package constructpro.DAO.vehicleSystem;
 
 import constructpro.DTO.vehicleSystem.Maintainance;
-import constructpro.Database.SQLiteDateUtils;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,9 @@ public class MaintenanceDAO {
                 maintainance.setVehicle_id(rs.getInt("vehicleId"));
                 maintainance.setMaintainanceType(rs.getString("maintenanceType"));
                 maintainance.setAssignedSiteId(rs.getInt("assignedSiteId"));
-                maintainance.setRepair_date(SQLiteDateUtils.getDate(rs, "repairDate"));
+                java.sql.Date rDate = rs.getDate("repairDate");
+                if (rDate != null)
+                    maintainance.setRepair_date(rDate.toLocalDate());
                 maintainance.setRepairCost(rs.getDouble("cost"));
                 records.add(maintainance);
             }

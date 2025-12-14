@@ -4,7 +4,6 @@ import constructpro.DTO.ConstructionSite;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import constructpro.Database.SQLiteDateUtils;
 
 public class ConstructionSiteDAO {
 
@@ -63,14 +62,14 @@ public class ConstructionSiteDAO {
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
 
-                java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
+                java.sql.Date startDate = rs.getDate("startDate");
                 if (startDate != null) {
-                    site.setStartDate(startDate);
+                    site.setStartDate(startDate.toLocalDate());
                 }
 
-                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
+                java.sql.Date endDate = rs.getDate("endDate");
                 if (endDate != null) {
-                    site.setEndDate(endDate);
+                    site.setEndDate(endDate.toLocalDate());
                 }
 
                 list.add(site);
@@ -92,14 +91,14 @@ public class ConstructionSiteDAO {
                 site.setLocation(rs.getString("location"));
                 site.setStatus(rs.getString("status"));
 
-                java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
+                java.sql.Date startDate = rs.getDate("startDate");
                 if (startDate != null) {
-                    site.setStartDate(startDate);
+                    site.setStartDate(startDate.toLocalDate());
                 }
 
-                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
+                java.sql.Date endDate = rs.getDate("endDate");
                 if (endDate != null) {
-                    site.setEndDate(endDate);
+                    site.setEndDate(endDate.toLocalDate());
                 }
 
                 return site;
@@ -120,14 +119,14 @@ public class ConstructionSiteDAO {
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
 
-                java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
+                java.sql.Date startDate = rs.getDate("startDate");
                 if (startDate != null) {
-                    site.setStartDate(startDate);
+                    site.setStartDate(startDate.toLocalDate());
                 }
 
-                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
+                java.sql.Date endDate = rs.getDate("endDate");
                 if (endDate != null) {
-                    site.setEndDate(endDate);
+                    site.setEndDate(endDate.toLocalDate());
                 }
 
                 return site;
@@ -160,8 +159,12 @@ public class ConstructionSiteDAO {
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
                 site.setStatus(rs.getString("status"));
-                site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
-                site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                java.sql.Date sDate = rs.getDate("startDate");
+                if (sDate != null)
+                    site.setStartDate(sDate.toLocalDate());
+                java.sql.Date eDate = rs.getDate("endDate");
+                if (eDate != null)
+                    site.setEndDate(eDate.toLocalDate());
                 site.setTotalCost(rs.getDouble("totalCost"));
                 list.add(site);
             }
@@ -192,8 +195,12 @@ public class ConstructionSiteDAO {
                 site.setId(rs.getInt("id"));
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
-                site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
-                site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                java.sql.Date sDate = rs.getDate("startDate");
+                if (sDate != null)
+                    site.setStartDate(sDate.toLocalDate());
+                java.sql.Date eDate = rs.getDate("endDate");
+                if (eDate != null)
+                    site.setEndDate(eDate.toLocalDate());
                 list.add(site);
             }
         } catch (SQLException throwables) {
@@ -229,8 +236,12 @@ public class ConstructionSiteDAO {
                     site.setId(rs.getInt("id"));
                     site.setName(rs.getString("name"));
                     site.setLocation(rs.getString("location"));
-                    site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
-                    site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                    java.sql.Date sDate = rs.getDate("startDate");
+                    if (sDate != null)
+                        site.setStartDate(sDate.toLocalDate());
+                    java.sql.Date eDate = rs.getDate("endDate");
+                    if (eDate != null)
+                        site.setEndDate(eDate.toLocalDate());
                     list.add(site);
                 }
             }
@@ -326,8 +337,12 @@ public class ConstructionSiteDAO {
                     site.setName(rs.getString("name"));
                     site.setLocation(rs.getString("location"));
                     site.setStatus(rs.getString("status"));
-                    site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
-                    site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                    java.sql.Date sDate = rs.getDate("startDate");
+                    if (sDate != null)
+                        site.setStartDate(sDate.toLocalDate());
+                    java.sql.Date eDate = rs.getDate("endDate");
+                    if (eDate != null)
+                        site.setEndDate(eDate.toLocalDate());
                     site.setTotalCost(rs.getDouble("totalCost"));
                     list.add(site);
                 }
@@ -414,10 +429,10 @@ public class ConstructionSiteDAO {
                     cs.startDate,
                     cs.endDate,
                     COUNT(w.id) as worker_count,
-                    CAST(julianday(cs.endDate) - julianday(cs.startDate) AS INTEGER) as duration_days,
+                    DATEDIFF(cs.endDate, cs.startDate) as duration_days,
                     CASE
-                        WHEN cs.endDate < date('now') THEN 'Completed'
-                        WHEN cs.startDate > date('now') THEN 'Not Started'
+                        WHEN cs.endDate < CURDATE() THEN 'Completed'
+                        WHEN cs.startDate > CURDATE() THEN 'Not Started'
                         ELSE 'In Progress'
                     END as status
                 FROM
@@ -436,8 +451,12 @@ public class ConstructionSiteDAO {
                 site.setId(rs.getInt("id"));
                 site.setName(rs.getString("name"));
                 site.setLocation(rs.getString("location"));
-                site.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
-                site.setEndDate(SQLiteDateUtils.getDate(rs, "endDate"));
+                java.sql.Date sDate = rs.getDate("startDate");
+                if (sDate != null)
+                    site.setStartDate(sDate.toLocalDate());
+                java.sql.Date eDate = rs.getDate("endDate");
+                if (eDate != null)
+                    site.setEndDate(eDate.toLocalDate());
                 site.setStatus(rs.getString("status"));
                 // worker_count and duration_days are currently ignored as they lack DTO fields
                 list.add(site);

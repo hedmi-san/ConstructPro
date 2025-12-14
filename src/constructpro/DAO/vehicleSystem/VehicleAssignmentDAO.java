@@ -1,7 +1,7 @@
 package constructpro.DAO.vehicleSystem;
 
 import constructpro.DTO.vehicleSystem.VehicleAssignment;
-import constructpro.Database.SQLiteDateUtils;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +28,13 @@ public class VehicleAssignmentDAO {
                 assignment.setId(rs.getInt("id"));
                 assignment.setVehicle_id(rs.getInt("vehicleId"));
                 assignment.setAssignedSiteId(rs.getInt("assignedSiteId"));
-                assignment.setAssignmentDate(SQLiteDateUtils.getDate(rs, "assignmentDate"));
+                java.sql.Date aDate = rs.getDate("assignmentDate");
+                if (aDate != null)
+                    assignment.setAssignmentDate(aDate.toLocalDate());
 
-                java.time.LocalDate unassignDate = SQLiteDateUtils.getDate(rs, "unassignmentDate");
-                if (unassignDate != null) {
-                    assignment.setUnAssignmentDate(unassignDate);
+                java.sql.Date uDate = rs.getDate("unassignmentDate");
+                if (uDate != null) {
+                    assignment.setUnAssignmentDate(uDate.toLocalDate());
                 }
 
                 return assignment;
@@ -57,11 +59,13 @@ public class VehicleAssignmentDAO {
                 assignment.setId(rs.getInt("id"));
                 assignment.setVehicle_id(rs.getInt("vehicleId"));
                 assignment.setAssignedSiteId(rs.getInt("assignedSiteId"));
-                assignment.setAssignmentDate(SQLiteDateUtils.getDate(rs, "assignmentDate"));
+                java.sql.Date aDate = rs.getDate("assignmentDate");
+                if (aDate != null)
+                    assignment.setAssignmentDate(aDate.toLocalDate());
 
-                java.time.LocalDate unassignDate = SQLiteDateUtils.getDate(rs, "unassignmentDate");
-                if (unassignDate != null) {
-                    assignment.setUnAssignmentDate(unassignDate);
+                java.sql.Date uDate = rs.getDate("unassignmentDate");
+                if (uDate != null) {
+                    assignment.setUnAssignmentDate(uDate.toLocalDate());
                 }
 
                 assignments.add(assignment);

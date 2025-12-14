@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.BillDAO;
 import constructpro.DTO.Bill;
-import constructpro.Database.SQLiteDateUtils;
+
 import constructpro.Service.BillForm;
 import java.awt.*;
 import java.awt.event.*;
@@ -123,8 +123,8 @@ public class BillPage extends JPanel {
         try {
             ResultSet rs = billDAO.searchBillsByFactureNumber(searchTerm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "ID", "Numéro de facture", "Fournisseur", "Chantier", "Date", "Coût Total (DA)",
-                            "Montant Payé (DA)" },
+                    new Object[] { "ID", "Numéro de facture", "Fournisseur", "Chantier", "Date", "Coût Total",
+                            "Montant Payé" },
                     0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -134,11 +134,11 @@ public class BillPage extends JPanel {
 
             while (rs.next()) {
                 model.addRow(new Object[] {
-                        rs.getInt("billId"),
+                        rs.getInt("id"),
                         rs.getString("factureNumber"),
                         rs.getString("supplierName"),
                         rs.getString("site_name"),
-                        SQLiteDateUtils.getDate(rs, "billDate"),
+                        rs.getDate("billDate"),
                         String.format("%.2f", rs.getDouble("totalCost")),
                         String.format("%.2f", rs.getDouble("paidAmount"))
                 });
@@ -276,11 +276,11 @@ public class BillPage extends JPanel {
 
             while (rs.next()) {
                 model.addRow(new Object[] {
-                        rs.getInt("billId"),
+                        rs.getInt("id"),
                         rs.getString("factureNumber"),
                         rs.getString("supplierName"),
                         rs.getString("site_name"),
-                        SQLiteDateUtils.getDate(rs, "billDate"),
+                        rs.getDate("billDate"),
                         String.format("%.2f", rs.getDouble("totalCost")),
                         String.format("%.2f", rs.getDouble("paidAmount"))
                 });

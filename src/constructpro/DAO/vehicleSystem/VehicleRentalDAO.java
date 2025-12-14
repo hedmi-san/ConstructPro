@@ -1,7 +1,7 @@
 package constructpro.DAO.vehicleSystem;
 
 import constructpro.DTO.vehicleSystem.VehicleRental;
-import constructpro.Database.SQLiteDateUtils;
+
 import java.util.List;
 import java.sql.*;
 
@@ -48,11 +48,13 @@ public class VehicleRentalDAO {
                 rental.setOwnerName(rs.getString("ownerCompany"));
                 rental.setOwnerPhone(rs.getString("ownerPhone"));
                 rental.setDailyRate(rs.getDouble("dailyRate"));
-                rental.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                java.sql.Date sDate = rs.getDate("startDate");
+                if (sDate != null)
+                    rental.setStartDate(sDate.toLocalDate());
 
-                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
-                if (endDate != null) {
-                    rental.setEndDate(endDate);
+                java.sql.Date eDate = rs.getDate("endDate");
+                if (eDate != null) {
+                    rental.setEndDate(eDate.toLocalDate());
                 }
 
                 rental.setDaysWorked(rs.getInt("daysWorked"));
@@ -143,11 +145,13 @@ public class VehicleRentalDAO {
                 rental.setOwnerName(rs.getString("ownerCompany"));
                 rental.setOwnerPhone(rs.getString("ownerPhone"));
                 rental.setDailyRate(rs.getDouble("dailyRate"));
-                rental.setStartDate(SQLiteDateUtils.getDate(rs, "startDate"));
+                java.sql.Date sDate = rs.getDate("startDate");
+                if (sDate != null)
+                    rental.setStartDate(sDate.toLocalDate());
 
-                java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
-                if (endDate != null) {
-                    rental.setEndDate(endDate);
+                java.sql.Date eDate = rs.getDate("endDate");
+                if (eDate != null) {
+                    rental.setEndDate(eDate.toLocalDate());
                 }
 
                 rental.setDaysWorked(rs.getInt("daysWorked"));

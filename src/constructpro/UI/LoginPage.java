@@ -28,15 +28,23 @@ public class LoginPage extends JFrame {
     private javax.swing.JTextField userText;
     public Connection connection;
     public Statement st;
+
     public LoginPage() {
-        
+
         initComponents();
         user = new User();
         try {
             connection = new ConnectionEstablish().getConn();
-            st = connection.createStatement();
+            if (connection != null) {
+                st = connection.createStatement();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to connect to database", "Connection Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Database Error: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -76,7 +84,7 @@ public class LoginPage extends JFrame {
         this.add(passText);
 
         this.add(comboBox);
-        comboBox.setModel(new DefaultComboBoxModel<>(new String[]{"Admin", "Employee"}));
+        comboBox.setModel(new DefaultComboBoxModel<>(new String[] { "Admin", "Employee" }));
 
         this.add(loginButton);
         loginButton.setText("LOGIN");
@@ -98,18 +106,19 @@ public class LoginPage extends JFrame {
                                 .addGap(47)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel1, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel1, GroupLayout.PREFERRED_SIZE, 74,
+                                                        GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(userText))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel2, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel2, GroupLayout.PREFERRED_SIZE, 74,
+                                                        GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(passText))
                                         .addComponent(comboBox, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
                                 .addGap(52))
-                        .addComponent(loginButton, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-        );
+                        .addComponent(loginButton, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE));
 
         layout.setVerticalGroup(
                 layout.createSequentialGroup()
@@ -127,8 +136,7 @@ public class LoginPage extends JFrame {
                         .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
                         .addGap(46)
                         .addComponent(loginButton, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
-                        .addGap(80)
-        );
+                        .addGap(80));
 
         pack();
         setVisible(true);
@@ -138,20 +146,20 @@ public class LoginPage extends JFrame {
         String username = userText.getText();
         String password = new String(passText.getPassword()).trim();
         userType = (String) comboBox.getSelectedItem();
-        
+
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter username and password.");
             return;
         }
-        
+
         if (new ConnectionEstablish().checkLogin(username, password, userType)) {
             inTime = LocalDateTime.now();
             user.setInTime(String.valueOf(inTime));
             System.out.println("Login successful for: " + username + " as " + userType);
             dispose();
-            new Dashboard(connection,username, userType, user);
+            new Dashboard(connection, username, userType, user);
         } else {
-            JOptionPane.showMessageDialog(null,"Invalid username or password.");
+            JOptionPane.showMessageDialog(null, "Invalid username or password.");
         }
     }
 

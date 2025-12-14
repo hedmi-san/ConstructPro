@@ -2,7 +2,8 @@ package constructpro.DAO;
 
 import constructpro.DTO.Insurance;
 import java.sql.*;
-import constructpro.Database.SQLiteDateUtils;
+import constructpro.DTO.Insurance;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -146,8 +147,8 @@ public class InsuranceDAO {
                 SELECT id, workerId, insuranceNumber, agencyName, status,
                        startDate, endDate, insuranceDocuments
                 FROM insurance
-                WHERE endDate <= date('now', '+' || ? || ' day')
-                AND endDate >= date('now')
+                WHERE endDate <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
+                AND endDate >= CURDATE()
                 AND LOWER(status) = 'active'
                 ORDER BY endDate ASC
                 """;
@@ -352,14 +353,14 @@ public class InsuranceDAO {
         insurance.setStatus(rs.getString("status"));
 
         // Handle dates
-        java.time.LocalDate startDate = SQLiteDateUtils.getDate(rs, "startDate");
+        java.sql.Date startDate = rs.getDate("startDate");
         if (startDate != null) {
-            insurance.setStartDate(startDate);
+            insurance.setStartDate(startDate.toLocalDate());
         }
 
-        java.time.LocalDate endDate = SQLiteDateUtils.getDate(rs, "endDate");
+        java.sql.Date endDate = rs.getDate("endDate");
         if (endDate != null) {
-            insurance.setEndDate(endDate);
+            insurance.setEndDate(endDate.toLocalDate());
         }
 
         String documentsStr = rs.getString("insuranceDocuments");

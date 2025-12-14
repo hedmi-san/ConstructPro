@@ -30,13 +30,14 @@ public class UsersPage extends JPanel{
     private JComboBox<String> userTypeCombo;
     private JTextField usernameText;
     String userType;;
-    
+
+
     
     public UsersPage(Connection connection) {
         initComponents();
         loadDataSet();
     }
-    
+
     @SuppressWarnings("unchecked")
     private void initComponents() {
         // --- Components ---
@@ -162,7 +163,7 @@ public class UsersPage extends JPanel{
         this.add(entryPanel, gbc);
     }
 
-    
+
     public void loadDataSet(){
         try {
             UserDAO userDAO = new UserDAO();
@@ -171,7 +172,7 @@ public class UsersPage extends JPanel{
             ex.printStackTrace();
         }
     }
-    
+
     private void userTableMouseClicked(MouseEvent evt) {
         int row = userTable.getSelectedRow();
         int col = userTable.getColumnCount();
@@ -186,7 +187,7 @@ public class UsersPage extends JPanel{
         usernameText.setText(val[4].toString());
         userTypeCombo.setSelectedItem(val[6].toString());
     }
-    
+
     private void deleteButtonActionPerformed(ActionEvent evt) {
         if (userTable.getSelectedRow()<0)
             JOptionPane.showMessageDialog(null, "Please select an entry from the table");
@@ -205,8 +206,8 @@ public class UsersPage extends JPanel{
             }
         }
     }
-    
-    
+
+
     private void addButtonActionPerformed(ActionEvent evt) {
         User userDTO = new User();
 
@@ -224,7 +225,7 @@ public class UsersPage extends JPanel{
             loadDataSet();
         }
     }
-    
+
     private void clearButtonActionPerformed(ActionEvent evt) {
         nameText.setText("");
         locationText.setText("");
