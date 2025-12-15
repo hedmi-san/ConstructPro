@@ -380,4 +380,16 @@ public class WorkerDAO {
         }
         return new DefaultTableModel(data, columnNames);
     }
+
+    public List<String> getDistinctRoles() throws SQLException {
+        List<String> roles = new ArrayList<>();
+        String sql = "SELECT DISTINCT job FROM worker WHERE job IS NOT NULL AND job != '' ORDER BY job";
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                roles.add(rs.getString("job"));
+            }
+        }
+        return roles;
+    }
 }
