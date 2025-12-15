@@ -36,7 +36,7 @@ public class Dashboard extends JFrame {
     private JButton SuppliersButton;
     private JButton truckButton;
     private JButton AccountButton;
-    private JButton MaterialButton;
+    private JButton AttachmentButton;
     private JButton ToolsButton;
     private JButton usersButton;
     private JButton logsButton;
@@ -71,8 +71,8 @@ public class Dashboard extends JFrame {
         displayPanel.add("Suppliers", new SupplierPage(connection));
         displayPanel.add("Trucks", new VehiclesPage(connection));
         displayPanel.add("Accounting office", new AccountingOffice(connection));
-        displayPanel.add("Material", new MaterialPage(connection));
-        displayPanel.add("Tools", new ToolsPage(connection));
+        displayPanel.add("Attachment", new AttachmentPage(connection));
+        displayPanel.add("Tools", new ToolAndMaterialPage(connection));
         displayPanel.add("Users", new UsersPage(connection));
         displayPanel.add("Logs", new UserLogPage(connection));
         
@@ -115,8 +115,8 @@ public class Dashboard extends JFrame {
     public void addAccountPage(){
         layout.show(displayPanel, "Accounting office");
     }
-    public void addMaterialPage(){
-        layout.show(displayPanel, "Material");
+    public void addAttachmentPage(){
+        layout.show(displayPanel, "Attachment");
     }
     public void addToolPage(){
         layout.show(displayPanel, "Tools");
@@ -150,7 +150,7 @@ public class Dashboard extends JFrame {
         SuppliersButton = new JButton();
         truckButton = new JButton();
         AccountButton = new JButton();
-        MaterialButton = new JButton();
+        AttachmentButton = new JButton();
         ToolsButton = new JButton();
         usersButton = new JButton();
         logsButton = new JButton();
@@ -258,16 +258,16 @@ public class Dashboard extends JFrame {
             }
         });
         
-        MaterialButton.setText("Matériel");
-        MaterialButton.setForeground(Color.white);
-        MaterialButton.addActionListener(new ActionListener() {
+        AttachmentButton.setText("Attachement");
+        AttachmentButton.setForeground(Color.white);
+        AttachmentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MaterialButtonActionPerformed(e);
+                AttachmentButtonActionPerformed(e);
             }
         });
         
-        ToolsButton.setText("Outils");
+        ToolsButton.setText("Matériel & Outils");
         ToolsButton.setForeground(Color.white);
         ToolsButton.addActionListener(new ActionListener() {
             @Override
@@ -309,7 +309,7 @@ public class Dashboard extends JFrame {
                     .addComponent(SuppliersButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(truckButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(AccountButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(MaterialButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(AttachmentButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(ToolsButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(usersButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(logsButton,GroupLayout.DEFAULT_SIZE,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -336,7 +336,7 @@ public class Dashboard extends JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(AccountButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(MaterialButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(AttachmentButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(ToolsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -476,8 +476,8 @@ public class Dashboard extends JFrame {
     private void AccountButtonActionPerformed(ActionEvent evt) {
         addAccountPage();
     }
-    private void MaterialButtonActionPerformed(ActionEvent evt) {
-        addMaterialPage();
+    private void AttachmentButtonActionPerformed(ActionEvent evt) {
+        addAttachmentPage();
     }
     private void ToolsButtonActionPerformed(ActionEvent evt) {
         addToolPage();

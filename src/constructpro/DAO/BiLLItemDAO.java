@@ -54,38 +54,38 @@ public class BiLLItemDAO {
         return items;
     }
 
-    public ResultSet getToolsInfo() throws SQLException {
+    public ResultSet getItemsInfo() throws SQLException {
         String sql = """
                 SELECT
                     bi.itemId,
                     bi.itemName AS name,
                     bi.quantity,
+                    bi.itemType,
                     bi.unitPrice,
                     cs.name AS site_name,
                     b.billDate
                 FROM billItems bi
                 JOIN bills b       ON bi.billId = b.id
-                JOIN constructionSite cs ON b.assignedSiteId = cs.id
-                WHERE bi.itemType = 'Outil';
+                JOIN constructionSite cs ON b.assignedSiteId = cs.id;
                 """;
         Statement st = connection.createStatement();
         return st.executeQuery(sql);
     }
 
-    public ResultSet searchToolByName(String searchTerm) throws SQLException {
+    public ResultSet searchItemByName(String searchTerm) throws SQLException {
         String sql = """
                     SELECT
                         bi.itemId,
                         bi.itemName AS name,
                         bi.quantity,
                         bi.unitPrice,
+                        bi.itemType,
                         cs.name AS site_name,
                         b.billDate
                     FROM billItems bi
                     JOIN bills b ON bi.billId = b.id
                     JOIN constructionSite cs ON b.assignedSiteId = cs.id
-                    WHERE bi.itemType = 'Outil'
-                      AND bi.itemName LIKE ?
+                    WHERE bi.itemName LIKE ?
                 """;
 
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -95,44 +95,4 @@ public class BiLLItemDAO {
         return ps.executeQuery();
     }
 
-    public ResultSet getMaterialInfo() throws SQLException {
-        String sql = """
-                SELECT
-                    bi.itemId,
-                    bi.itemName AS name,
-                    bi.quantity,
-                    bi.unitPrice,
-                    cs.name AS site_name,
-                    b.billDate
-                FROM billItems bi
-                JOIN bills b       ON bi.billId = b.id
-                JOIN constructionSite cs ON b.assignedSiteId = cs.id
-                WHERE bi.itemType = 'Matériel';
-                """;
-        Statement st = connection.createStatement();
-        return st.executeQuery(sql);
-    }
-
-    public ResultSet searchMaterialByName(String searchTerm) throws SQLException {
-        String sql = """
-                    SELECT
-                        bi.itemId,
-                        bi.itemName AS name,
-                        bi.quantity,
-                        bi.unitPrice,
-                        cs.name AS site_name,
-                        b.billDate
-                    FROM billItems bi
-                    JOIN bills b ON bi.billId = b.id
-                    JOIN constructionSite cs ON b.assignedSiteId = cs.id
-                    WHERE bi.itemType = 'Matériel'
-                      AND bi.itemName LIKE ?
-                """;
-
-        PreparedStatement ps = connection.prepareStatement(sql);
-        String likeTerm = "%" + searchTerm + "%";
-        ps.setString(1, likeTerm);
-
-        return ps.executeQuery();
-    }
 }

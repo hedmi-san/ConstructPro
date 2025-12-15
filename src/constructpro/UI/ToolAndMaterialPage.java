@@ -1,4 +1,5 @@
 package constructpro.UI;
+
 import constructpro.DAO.BiLLItemDAO;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -8,12 +9,10 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.swing.table.DefaultTableModel;
 
-public class MaterialPage  extends JPanel{
+public class ToolAndMaterialPage extends JPanel{
     
     private JButton deleteButton;
     private JButton editButton;
@@ -21,11 +20,11 @@ public class MaterialPage  extends JPanel{
     private JTextField searchText;
     private JLabel jLabel1;
     private JLabel jLabel2;
-    private JTable materialTable;
+    private JTable toolsTable;
     private JScrollPane jScrollPane1;
-    private BiLLItemDAO materialDAO;
+    private BiLLItemDAO toolDAO;
     public Connection conn;
-    public MaterialPage(Connection connection){
+    public ToolAndMaterialPage(Connection connection) {
         this.conn = connection;
         initDAO();
         initComponents();
@@ -33,7 +32,7 @@ public class MaterialPage  extends JPanel{
     }
     
     private void initDAO(){
-    materialDAO = new BiLLItemDAO(conn);
+        toolDAO = new BiLLItemDAO(conn);
     }
     
     private void initComponents(){
@@ -41,13 +40,12 @@ public class MaterialPage  extends JPanel{
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
-        jLabel1 = new JLabel("Matériel");
+        jLabel1 = new JLabel("Matériel & Outil");
         jLabel2 = new JLabel("Rechercher");
-        materialTable = new JTable();
-        jScrollPane1 = new JScrollPane(materialTable);
+        toolsTable = new JTable();
+        jScrollPane1 = new JScrollPane(toolsTable);
 
         setLayout(new BorderLayout());
-        
         // Header panel with BorderLayout to separate left and right sections
         JPanel headerPanel = new JPanel(new BorderLayout());
 
@@ -68,12 +66,12 @@ public class MaterialPage  extends JPanel{
         headerPanel.add(rightHeaderPanel, BorderLayout.EAST);
 
         // Table setup
-        materialTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        materialTable.setDefaultEditor(Object.class, null);
-        materialTable.setShowVerticalLines(true);
-        materialTable.setGridColor(Color.WHITE);
-        materialTable.getTableHeader().setReorderingAllowed(false);
-        materialTable.addMouseListener(new MouseAdapter() {
+        toolsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        toolsTable.setDefaultEditor(Object.class, null);
+        toolsTable.setShowVerticalLines(true);
+        toolsTable.setGridColor(Color.WHITE);
+        toolsTable.getTableHeader().setReorderingAllowed(false);
+        toolsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
@@ -111,9 +109,9 @@ public class MaterialPage  extends JPanel{
     
     private void loadDataSet(){
         try {
-            ResultSet rs = materialDAO.getMaterialInfo();
+            ResultSet rs = toolDAO.getItemsInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Chantier", "Date"}, 0
+                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Type", "Chantier", "Date"}, 0
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -127,28 +125,29 @@ public class MaterialPage  extends JPanel{
                     rs.getString("name"),
                     rs.getString("quantity"),
                     rs.getInt("unitPrice"),
+                    rs.getString("itemType"),
                     rs.getString("site_name"),
                     rs.getString("billDate")
                 });
             }
-            materialTable.setModel(model);
+            toolsTable.setModel(model);
 
             // Hide ID column if desired
-            materialTable.getColumnModel().getColumn(0).setMinWidth(0);
-            materialTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            materialTable.getColumnModel().getColumn(0).setWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setMinWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
-       
+        
     }
-    
+
     private void loadSearchResults(String searchTerm) {
         try {
-            ResultSet rs = materialDAO.searchMaterialByName(searchTerm);
+            ResultSet rs = toolDAO.searchItemByName(searchTerm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Chantier", "Date"}, 0
+                    new Object[]{"ID", "Nom", "Quantité", "Prix", "Type", "Chantier", "Date"}, 0
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -162,16 +161,17 @@ public class MaterialPage  extends JPanel{
                     rs.getString("name"),
                     rs.getString("quantity"),
                     rs.getInt("unitPrice"),
+                    rs.getString("itemType"),
                     rs.getString("site_name"),
                     rs.getString("billDate")
                 });
             }
-            materialTable.setModel(model);
+            toolsTable.setModel(model);
 
             // Hide ID column if desired
-            materialTable.getColumnModel().getColumn(0).setMinWidth(0);
-            materialTable.getColumnModel().getColumn(0).setMaxWidth(0);
-            materialTable.getColumnModel().getColumn(0).setWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setMinWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            toolsTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
