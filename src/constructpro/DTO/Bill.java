@@ -5,14 +5,13 @@ import java.time.LocalDate;
 public class Bill {
     private int Id;
     private String factureNumber;
-    private String facturePicturePath;
+
     private int supplierID;
     private int siteID;
     private LocalDate billDate;
     private double transferFee;
     private double cost;
     private double paidAmount;
-    
 
     public int getId() {
         return Id;
@@ -37,8 +36,6 @@ public class Bill {
     public void setPaidAmount(double paidAmount) {
         this.paidAmount = paidAmount;
     }
-    
-    
 
     public int getSupplierID() {
         return supplierID;
@@ -79,5 +76,5 @@ public class Bill {
     public void setCost(double cost) {
         this.cost = cost;
     }
-    
+
 }

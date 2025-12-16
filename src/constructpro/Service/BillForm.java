@@ -2,10 +2,10 @@ package constructpro.Service;
 
 import constructpro.DTO.Bill;
 import constructpro.DTO.BiLLItem;
-import constructpro.DAO.BillDAO;
+
 import constructpro.DAO.SupplierDAO;
 import constructpro.DAO.ConstructionSiteDAO;
-import constructpro.DTO.Supplier;
+
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -30,7 +30,7 @@ public class BillForm extends JDialog {
     private JLabel itemsTotalLabel, grandTotalLabel;
     private SupplierDAO supplierDAO;
     private ConstructionSiteDAO siteDAO;
-    private BillDAO billDAO;
+
     private Connection conn;
     private boolean confirmed = false;
     private List<BiLLItem> billItems;
@@ -40,7 +40,7 @@ public class BillForm extends JDialog {
         this.conn = connection;
         this.siteDAO = new ConstructionSiteDAO(connection);
         this.supplierDAO = new SupplierDAO(connection);
-        this.billDAO = new BillDAO(connection);
+
         this.billItems = new ArrayList<>();
 
         initComponents();

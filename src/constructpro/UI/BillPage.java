@@ -22,7 +22,7 @@ public class BillPage extends JPanel {
     private JScrollPane jScrollPane1;
     private JFrame parentFrame;
     private BillDAO billDAO;
-    private Bill bill;
+
     private Connection conn;
 
     public BillPage(Connection connection) {

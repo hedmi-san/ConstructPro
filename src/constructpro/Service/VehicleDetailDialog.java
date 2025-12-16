@@ -1,8 +1,7 @@
 package constructpro.Service;
 
 import constructpro.DTO.Vehicle;
-import constructpro.DTO.vehicleSystem.VehicleAssignment;
-import constructpro.DAO.vehicleSystem.VehicleAssignmentDAO;
+
 import constructpro.DTO.vehicleSystem.Maintainance;
 import constructpro.DAO.vehicleSystem.MaintenanceDAO;
 import constructpro.DTO.vehicleSystem.VehicleRental;
@@ -21,10 +20,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class VehicleDetailDialog extends JDialog {
 
     private Vehicle currentVehicle;
-    private VehicleAssignment vehicleAssignment;
-    private Maintainance maintainance;
-    private VehicleRental vehicleRental;
-    private VehicleAssignmentDAO vehicleAssignmentDAO;
+
     private MaintenanceDAO maintainanceDAO;
     private VehicleRentalDAO vehicleRentalDAO;
     private WorkerDAO workerDAO;
@@ -71,7 +67,7 @@ public class VehicleDetailDialog extends JDialog {
         this.conn = connection;
         this.maintainanceDAO = new MaintenanceDAO(connection);
         this.vehicleRentalDAO = new VehicleRentalDAO(connection);
-        this.vehicleAssignmentDAO = new VehicleAssignmentDAO(connection);
+
         this.workerDAO = new WorkerDAO(connection);
         this.siteDAO = new ConstructionSiteDAO(connection);
 
@@ -783,7 +779,7 @@ public class VehicleDetailDialog extends JDialog {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }

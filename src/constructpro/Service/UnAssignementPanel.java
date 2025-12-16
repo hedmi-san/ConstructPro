@@ -1,14 +1,14 @@
 package constructpro.Service;
 
 import constructpro.DAO.WorkerDAO;
-import constructpro.DAO.ConstructionSiteDAO;
+
 import constructpro.DTO.Worker;
 import constructpro.DTO.ConstructionSite;
 import java.time.LocalDate;
 import constructpro.DAO.WorkerAssignmentDAO;
 import java.sql.*;
 import java.util.List;
-import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -17,9 +17,9 @@ import java.awt.*;
 public class UnAssignementPanel extends JDialog {
 
     private ConstructionSite site;
-    private Connection conn;
+
     private WorkerDAO workerDAO;
-    private ConstructionSiteDAO siteDAO;
+
     private WorkerAssignmentDAO workerAssignmentDAO;
     private JTable assignedWorkersTable;
     private JButton unassignButton, cancelButton;
@@ -29,9 +29,9 @@ public class UnAssignementPanel extends JDialog {
             ShowSitesDetails parentDialog) throws SQLException {
         super(parent, "Désaffecter des Travailleurs", true);
         this.site = site;
-        this.conn = connection;
+
         this.workerDAO = new WorkerDAO(connection);
-        this.siteDAO = new ConstructionSiteDAO(connection);
+
         this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
         this.parentDialog = parentDialog;
 
@@ -92,18 +92,18 @@ public class UnAssignementPanel extends JDialog {
         List<Worker> workers = workerDAO.getWorkersBySiteId(site.getId());
         DefaultTableModel model = new DefaultTableModel(
                 new Object[] { "ID", "Prénom", "Nom", "Fonction", "Téléphone" }, 0) {
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                        return false;
-                    }
-                };
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         for (Worker w : workers) {
             model.addRow(new Object[] {
-                w.getId(),
-                w.getFirstName(),
-                w.getLastName(),
-                w.getRole(),
-                w.getPhoneNumber()
+                    w.getId(),
+                    w.getFirstName(),
+                    w.getLastName(),
+                    w.getRole(),
+                    w.getPhoneNumber()
             });
         }
         assignedWorkersTable.setModel(model);

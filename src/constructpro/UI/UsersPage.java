@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.*;
 
-public class UsersPage extends JPanel{
+public class UsersPage extends JPanel {
     private JButton addButton;
     private JButton clearButton;
     private JButton deleteButton;
@@ -31,8 +31,6 @@ public class UsersPage extends JPanel{
     private JTextField usernameText;
     String userType;;
 
-
-    
     public UsersPage(Connection connection) {
         initComponents();
         loadDataSet();
@@ -67,42 +65,49 @@ public class UsersPage extends JPanel{
         // --- Entry Panel (form) ---
         entryPanel.setBorder(BorderFactory.createTitledBorder("Enter User Details"));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); 
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Row 0 - Full Name
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         entryPanel.add(jLabel2, gbc);
         gbc.gridx = 1;
         entryPanel.add(nameText, gbc);
 
         // Row 1 - Location
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         entryPanel.add(jLabel3, gbc);
         gbc.gridx = 1;
         entryPanel.add(locationText, gbc);
 
         // Row 2 - Contact
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         entryPanel.add(jLabel4, gbc);
         gbc.gridx = 1;
         entryPanel.add(phoneText, gbc);
 
         // Row 3 - Username
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         entryPanel.add(jLabel5, gbc);
         gbc.gridx = 1;
         entryPanel.add(usernameText, gbc);
 
         // Row 4 - Password
-        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         entryPanel.add(jLabel6, gbc);
         gbc.gridx = 1;
         entryPanel.add(passText, gbc);
 
         // Row 5 - Combo
-        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
         entryPanel.add(userTypeCombo, gbc);
 
         // Row 6 - Buttons
@@ -110,22 +115,28 @@ public class UsersPage extends JPanel{
         buttonPanel.add(addButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(clearButton);
-        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
         entryPanel.add(buttonPanel, gbc);
+
+        // Add Listeners
+        addButton.addActionListener(e -> addButtonActionPerformed(e));
+        deleteButton.addActionListener(e -> deleteButtonActionPerformed(e));
+        clearButton.addActionListener(e -> clearButtonActionPerformed(e));
 
         // --- Table ---
         userTable.setBorder(BorderFactory.createEtchedBorder());
         userTable.setForeground(new Color(102, 102, 102));
         userTable.setDefaultEditor(Object.class, null);
         userTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] { "Title 1", "Title 2", "Title 3", "Title 4" }
-        ) {
+                new Object[][] {
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null }
+                },
+                new String[] { "Title 1", "Title 2", "Title 3", "Title 4" }) {
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return false;
             }
@@ -143,10 +154,13 @@ public class UsersPage extends JPanel{
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1; gbc.weighty = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
 
         // Row 0 - Header
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
         this.add(jLabel1, gbc);
 
         // Row 1 - Separator
@@ -154,17 +168,20 @@ public class UsersPage extends JPanel{
         this.add(jSeparator1, gbc);
 
         // Row 2 - Table + EntryPanel side by side
-        gbc.gridy = 2; gbc.gridwidth = 1; gbc.weighty = 1;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weighty = 1;
 
-        gbc.gridx = 0; gbc.weightx = 0.6;
+        gbc.gridx = 0;
+        gbc.weightx = 0.6;
         this.add(jScrollPane1, gbc);
 
-        gbc.gridx = 1; gbc.weightx = 0.4;
+        gbc.gridx = 1;
+        gbc.weightx = 0.4;
         this.add(entryPanel, gbc);
     }
 
-
-    public void loadDataSet(){
+    public void loadDataSet() {
         try {
             UserDAO userDAO = new UserDAO();
             userTable.setModel(userDAO.buildTableModel(userDAO.getQueryResult()));
@@ -178,7 +195,7 @@ public class UsersPage extends JPanel{
         int col = userTable.getColumnCount();
         Object[] val = new Object[col];
 
-        for(int i=0; i<col; i++) {
+        for (int i = 0; i < col; i++) {
             val[i] = userTable.getValueAt(row, i);
         }
         nameText.setText(val[1].toString());
@@ -189,24 +206,22 @@ public class UsersPage extends JPanel{
     }
 
     private void deleteButtonActionPerformed(ActionEvent evt) {
-        if (userTable.getSelectedRow()<0)
+        if (userTable.getSelectedRow() < 0)
             JOptionPane.showMessageDialog(null, "Please select an entry from the table");
-        else{
+        else {
             int opt = JOptionPane.showConfirmDialog(
                     null,
                     "Are you sure you want to delete this user?",
                     "Confirmation",
                     JOptionPane.YES_NO_OPTION);
-            if(opt==JOptionPane.YES_OPTION) {
+            if (opt == JOptionPane.YES_OPTION) {
                 new UserDAO().deleteUserDAO(
                         String.valueOf(
-                                userTable.getValueAt
-                                        (userTable.getSelectedRow(), 4)));
+                                userTable.getValueAt(userTable.getSelectedRow(), 4)));
                 loadDataSet();
             }
         }
     }
-
 
     private void addButtonActionPerformed(ActionEvent evt) {
         User userDTO = new User();
@@ -219,7 +234,7 @@ public class UsersPage extends JPanel{
             userDTO.setLocation(locationText.getText());
             userDTO.setPhone(phoneText.getText());
             userDTO.setUserName(usernameText.getText());
-            userDTO.setPassword(passText.getText());
+            userDTO.setPassword(new String(passText.getPassword()));
             userDTO.setUserType(userType);
             new UserDAO().addUserDAO(userDTO, userType);
             loadDataSet();

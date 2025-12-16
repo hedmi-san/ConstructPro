@@ -3,7 +3,7 @@ package constructpro.DTO;
 import java.time.LocalDate;
 
 public class Bureau {
-    private int Id;
+
     private String type; // "in" or "out"
     private double amount;
     private String description;
@@ -40,6 +40,5 @@ public class Bureau {
     public void setDate(LocalDate date) {
         this.date = date;
     }
-    
-    
+
 }

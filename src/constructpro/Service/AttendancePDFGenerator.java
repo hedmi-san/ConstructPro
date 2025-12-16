@@ -7,7 +7,7 @@ import constructpro.DTO.ConstructionSite;
 import constructpro.DTO.Worker;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.ArrayList;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -23,7 +23,7 @@ public class AttendancePDFGenerator {
 
     private static final Color HEADER_COLOR = new Color(70, 130, 180);
     private static final Color ALTERNATE_ROW_COLOR = new Color(240, 240, 240);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy");
 
     public static void generatePDF(

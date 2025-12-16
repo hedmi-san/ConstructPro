@@ -29,7 +29,7 @@ public class PaymentCheckPDFGenerator {
             PaymentCheckDAO checkDAO) throws Exception {
 
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputPath));
+        PdfWriter.getInstance(document, new FileOutputStream(outputPath));
 
         document.open();
 

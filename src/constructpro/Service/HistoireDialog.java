@@ -6,7 +6,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.sql.*;
 import java.util.List;
-import constructpro.DAO.WorkerDAO;
+
 import constructpro.DAO.SalaryRecordDAO;
 import constructpro.DAO.PaymentCheckDAO;
 import constructpro.DTO.Worker;
@@ -14,11 +14,10 @@ import constructpro.DTO.SalaryRecord;
 import constructpro.DTO.PaymentCheck;
 
 public class HistoireDialog extends JDialog {
-    private Connection conn;
-    private WorkerDAO workerDAO;
+
     private SalaryRecordDAO salaryRecordDAO;
     private PaymentCheckDAO paymentCheckDAO;
-    private Worker worker;
+
     private SalaryRecord salaryRecord;
 
     private JTable historyTable;
@@ -30,9 +29,7 @@ public class HistoireDialog extends JDialog {
 
     public HistoireDialog(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "History", true);
-        this.conn = connection;
-        this.worker = worker;
-        this.workerDAO = new WorkerDAO(connection);
+
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
 
@@ -219,7 +216,7 @@ public class HistoireDialog extends JDialog {
             // Update the fixed totals panel
             double totalEarned = salaryRecord.getTotalEarned();
             double totalPaid = salaryRecord.getAmountPaid();
-            double totalRemaining =  totalPaid - totalEarned;
+            double totalRemaining = totalPaid - totalEarned;
             updateTotalsPanel(totalEarned, totalPaid, Math.abs(totalRemaining));
 
         } catch (SQLException e) {

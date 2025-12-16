@@ -16,7 +16,7 @@ import java.util.List;
 public class RentalRecordFormDialog extends JDialog {
     private VehicleRental rental;
     private int vehicleId;
-    private Connection conn;
+
     private boolean saved = false;
 
     private VehicleRentalDAO rentalDAO;
@@ -25,7 +25,7 @@ public class RentalRecordFormDialog extends JDialog {
     // Color scheme
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     private static final Color DARKER_BACKGROUND = new Color(35, 35, 35);
-    private static final Color ACCENT_COLOR = new Color(0, 120, 215);
+
     private static final Color TEXT_COLOR = new Color(220, 220, 220);
     private static final Color LABEL_COLOR = new Color(180, 180, 180);
 
@@ -48,7 +48,7 @@ public class RentalRecordFormDialog extends JDialog {
                 ModalityType.APPLICATION_MODAL);
         this.rental = rental;
         this.vehicleId = vehicleId;
-        this.conn = conn;
+
         this.rentalDAO = new VehicleRentalDAO(conn);
         this.siteDAO = new ConstructionSiteDAO(conn);
 

@@ -62,8 +62,4 @@ public class AttachmentPage extends JPanel {
         });
     }
 
-    private void loadSearchResults(String searchTerm) {
-
-    }
-
 }

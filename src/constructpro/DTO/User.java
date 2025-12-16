@@ -2,7 +2,7 @@
 package constructpro.DTO;
 
 public class User {
-    private int ID;
+
     private String fullName, location, phone, userName, password, userType, inTime, outTime;
 
     public String getInTime() {
@@ -68,6 +68,5 @@ public class User {
     public void setUserType(String userType) {
         this.userType = userType;
     }
-    
-    
+
 }

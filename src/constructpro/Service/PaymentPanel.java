@@ -5,9 +5,9 @@ import java.sql.*;
 import constructpro.DTO.SalaryRecord;
 import constructpro.DAO.PaymentCheckDAO;
 import constructpro.DAO.SalaryRecordDAO;
-import constructpro.DAO.WorkerDAO;
+
 import constructpro.DTO.Worker;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +17,6 @@ public class PaymentPanel extends JDialog {
 
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
 
-    private WorkerDAO workerDAO;
     private PaymentCheckDAO paymentCheckDAO;
     private SalaryRecordDAO salaryRecordDAO;
     private JTextField dailySalaryField, workDaysField, paymentAmountField, paidAmountField;
@@ -31,7 +30,7 @@ public class PaymentPanel extends JDialog {
 
     public PaymentPanel(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "Paiement", true);
-        this.workerDAO = new WorkerDAO(connection);
+
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
         this.worker = worker;
@@ -51,7 +50,7 @@ public class PaymentPanel extends JDialog {
         titleLabel.setForeground(Color.WHITE);
 
         // Payment type combo
-        paymentTypeCombo = new JComboBox<>(new String[]{"Par Jour", "Par Tâche"});
+        paymentTypeCombo = new JComboBox<>(new String[] { "Par Jour", "Par Tâche" });
         paymentTypeCombo.setBackground(DARK_BACKGROUND);
         paymentTypeCombo.setForeground(Color.WHITE);
         paymentTypeCombo.setFont(new Font("SansSerif", Font.PLAIN, 14));
@@ -65,7 +64,7 @@ public class PaymentPanel extends JDialog {
         // Buttons
         saveButton = createButton("Enregistrer");
         calculateButton = createButton("Calculer");
-        
+
         // Initialize isDaily based on default selection
         isDaily = true; // "Par Jour" is default
     }
@@ -160,7 +159,7 @@ public class PaymentPanel extends JDialog {
     }
 
     private void setupActions(int workerId) {
-        
+
         // Fix: Update isDaily when combo box selection changes
         paymentTypeCombo.addActionListener(e -> {
             String type = (String) paymentTypeCombo.getSelectedItem();
@@ -170,7 +169,7 @@ public class PaymentPanel extends JDialog {
             paymentAmountField.setText("");
             paymentDate = null; // Reset payment date when changing type
         });
-        
+
         calculateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -186,30 +185,31 @@ public class PaymentPanel extends JDialog {
                     JOptionPane.showMessageDialog(this, "Veuillez saisir le montant payé !");
                     return;
                 }
-                
+
                 // Validation based on payment type
                 if (isDaily) {
-                    if (dailySalaryField.getText().trim().isEmpty() || 
-                        workDaysField.getText().trim().isEmpty() ||
-                        paymentAmountField.getText().trim().isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs pour le paiement par jour !");
+                    if (dailySalaryField.getText().trim().isEmpty() ||
+                            workDaysField.getText().trim().isEmpty() ||
+                            paymentAmountField.getText().trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(this,
+                                "Veuillez remplir tous les champs pour le paiement par jour !");
                         return;
                     }
-                    
+
                     // Ensure calculate was clicked for daily payment
                     if (paymentDate == null) {
                         JOptionPane.showMessageDialog(this, "Veuillez cliquer sur 'Calculer' avant d'enregistrer !");
                         return;
                     }
                 }
-                
+
                 // Validate numeric values
                 double paidAmt = getPaidAmount();
                 if (paidAmt <= 0) {
                     JOptionPane.showMessageDialog(this, "Le montant payé doit être supérieur à zéro !");
                     return;
                 }
-                
+
                 // Set payment date if not already set (for task-based payment)
                 if (paymentDate == null) {
                     paymentDate = LocalDate.now();
@@ -223,16 +223,18 @@ public class PaymentPanel extends JDialog {
                 if (isDaily) {
                     paymentAmt = getPaymentAmount();
                     if (paymentAmt <= 0) {
-                        JOptionPane.showMessageDialog(this, "Le montant du paiement calculé doit être supérieur à zéro !");
+                        JOptionPane.showMessageDialog(this,
+                                "Le montant du paiement calculé doit être supérieur à zéro !");
                         return;
                     }
                 } else {
                     // For task-based payment, payment amount equals paid amount
                     paymentAmt = 0;
                 }
-                
+
                 // Insert PaymentCheck
-                paymentCheckDAO.insertPaymentCheck(record.getId(),worker.getAssignedSiteID(), paymentDate,paymentAmt,paidAmt);
+                paymentCheckDAO.insertPaymentCheck(record.getId(), worker.getAssignedSiteID(), paymentDate, paymentAmt,
+                        paidAmt);
 
                 // Update totals in salary record
                 record.setTotalEarned(record.getTotalEarned() + paymentAmt);
@@ -254,7 +256,7 @@ public class PaymentPanel extends JDialog {
     private void updateFieldAvailability() {
         dailySalaryField.setEnabled(isDaily);
         workDaysField.setEnabled(isDaily);
-        
+
         // Clear fields when disabling them
         if (!isDaily) {
             dailySalaryField.setText("");
@@ -268,17 +270,18 @@ public class PaymentPanel extends JDialog {
             if (type.equals("Par Jour")) {
                 double daily = Double.parseDouble(dailySalaryField.getText().trim());
                 int days = Integer.parseInt(workDaysField.getText().trim());
-                
+
                 if (daily <= 0 || days <= 0) {
                     JOptionPane.showMessageDialog(this, "Le salaire et les jours doivent être supérieurs à zéro !");
                     return;
                 }
-                
+
                 paymentAmount = daily * days;
                 paymentAmountField.setText(String.format("%.2f", paymentAmount));
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Veuillez entrer des valeurs valides !", "Erreur", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez entrer des valeurs valides !", "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -307,4 +310,3 @@ public class PaymentPanel extends JDialog {
         }
     }
 }
-

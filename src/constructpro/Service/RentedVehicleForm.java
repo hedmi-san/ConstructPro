@@ -1,8 +1,7 @@
 package constructpro.Service;
 
-import java.awt.Color;
 import constructpro.DAO.ConstructionSiteDAO;
-import constructpro.DAO.WorkerDAO;
+
 import constructpro.DAO.VehicleDAO;
 import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 import javax.swing.*;
@@ -24,14 +23,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RentedVehicleForm extends JDialog {
-    private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
+
     private JTextField vehicleNameField, vehiclePlateNumberField, ownerNameField, ownerPhoneField, dailyRateField,
             depositAmountFielf, TransferFeeField;
     private JDateChooser startDateChooser, endDateChooser;
     private JButton saveButton, cancelButton;
     private JComboBox<String> siteComboBox;
     private ConstructionSiteDAO siteDAO;
-    private WorkerDAO workerDAO;
+
     private VehicleDAO vehicleDAO;
     private VehiclesPage parentframe;
     private VehicleRentalDAO vehicleRentalDAO;
@@ -39,7 +38,7 @@ public class RentedVehicleForm extends JDialog {
     public RentedVehicleForm(JFrame parent, Connection connection, VehiclesPage parentframe) throws SQLException {
         super(parent, "Loué", true);
         this.siteDAO = new ConstructionSiteDAO(connection);
-        this.workerDAO = new WorkerDAO(connection);
+
         this.vehicleDAO = new VehicleDAO(connection);
         this.vehicleRentalDAO = new VehicleRentalDAO(connection);
         this.parentframe = parentframe;

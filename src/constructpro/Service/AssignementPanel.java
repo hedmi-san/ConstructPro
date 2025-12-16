@@ -1,13 +1,12 @@
 package constructpro.Service;
 
-import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerAssignmentDAO;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
 import constructpro.DTO.ConstructionSite;
 import java.awt.*;
 import java.util.List;
-import java.util.ArrayList;
+
 import java.sql.*;
 import java.time.LocalDate;
 import javax.swing.*;
@@ -17,10 +16,9 @@ import javax.swing.table.DefaultTableModel;
 public class AssignementPanel extends JDialog {
 
     private ConstructionSite site;
-    private ConstructionSiteDAO siteDAO;
+
     private WorkerDAO workerDAO;
     private WorkerAssignmentDAO workerAssignmentDAO;
-    private Connection conn;
 
     private JTable workersTable;
     private JButton assignBtn, cancelBtn;
@@ -36,8 +34,7 @@ public class AssignementPanel extends JDialog {
             throws SQLException {
         super(parent, "Affecter des Travailleurs", true);
         this.site = site;
-        this.conn = connection;
-        this.siteDAO = new ConstructionSiteDAO(connection);
+
         this.workerDAO = new WorkerDAO(connection);
         this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
         this.parentDialog = parentDialog;

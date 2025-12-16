@@ -6,10 +6,10 @@ import constructpro.DTO.Worker;
 import constructpro.DTO.ConstructionSite;
 import java.sql.Connection;
 import java.util.List;
-import java.util.ArrayList;
+
 import java.sql.SQLException;
 import java.awt.*;
-import java.sql.ResultSet;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
 public class ShowSitesDetails extends JDialog {
 
     private Connection conn;
-    private ConstructionSiteDAO siteDao;
+
     private WorkerDAO workerDao;
     private ConstructionSite site;
     private JFrame parentFrame;
@@ -37,7 +37,7 @@ public class ShowSitesDetails extends JDialog {
     public ShowSitesDetails(JFrame parent, ConstructionSite site, Connection connection) throws SQLException {
         super(parent, "Détails du chantier", true);
         this.site = site;
-        this.siteDao = new ConstructionSiteDAO(connection);
+
         this.workerDao = new WorkerDAO(connection);
         this.conn = connection;
 
@@ -129,11 +129,11 @@ public class ShowSitesDetails extends JDialog {
     }
 
     private void unassignWorkers() throws SQLException {
-        UnAssignementPanel unAssignementPanel = new UnAssignementPanel(parentFrame, site, conn, this);
+        new UnAssignementPanel(parentFrame, site, conn, this);
     }
 
     private void assignWorkers() throws SQLException {
-        AssignementPanel assignementPanel = new AssignementPanel(parentFrame, site, conn, this);
+        new AssignementPanel(parentFrame, site, conn, this);
     }
 
     private JPanel createWorkersPanel() {
@@ -246,19 +246,19 @@ public class ShowSitesDetails extends JDialog {
         List<Worker> workers = workerDao.getWorkersBySiteId(site.getId());
         DefaultTableModel model = new DefaultTableModel(
                 new Object[] { "ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone" }, 0) {
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                        return false;
-                    }
-                };
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         for (Worker w : workers) {
             model.addRow(new Object[] {
-                w.getId(),
-                w.getFirstName(),
-                w.getLastName(),
-                w.getAge(),
-                w.getRole(),
-                w.getPhoneNumber()
+                    w.getId(),
+                    w.getFirstName(),
+                    w.getLastName(),
+                    w.getAge(),
+                    w.getRole(),
+                    w.getPhoneNumber()
             });
         }
         workersTable.setModel(model);

@@ -2,8 +2,7 @@ package constructpro.DAO;
 
 import constructpro.DTO.Insurance;
 import java.sql.*;
-import constructpro.DTO.Insurance;
-import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

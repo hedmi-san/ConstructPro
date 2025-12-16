@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.PaymentCheckDAO;
-import constructpro.DAO.WorkerDAO;
+
 import constructpro.DTO.ConstructionSite;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -31,14 +31,14 @@ public class PaySlip extends JDialog {
     private JButton confirmButton, cancelButton;
     private ConstructionSiteDAO siteDAO;
     private PaymentCheckDAO checkDAO;
-    private WorkerDAO workerDAO;
+
     private List<String> siteNames;
 
     public PaySlip(Connection connection, JFrame owner) throws SQLException {
         super(owner, "Fiche de paie", true);
         this.siteDAO = new ConstructionSiteDAO(connection);
         this.checkDAO = new PaymentCheckDAO(connection);
-        this.workerDAO = new WorkerDAO(connection);
+
         this.conn = connection;
 
         initializeComponents();

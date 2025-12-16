@@ -48,7 +48,6 @@ public class LoginPage extends JFrame {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void initComponents() {
 
         jLabel1 = new JLabel();
@@ -56,7 +55,7 @@ public class LoginPage extends JFrame {
         jLabel3 = new JLabel();
         userText = new JTextField();
         passText = new JPasswordField();
-        comboBox = new JComboBox();
+        comboBox = new JComboBox<>();
         loginButton = new JButton();
 
         this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);

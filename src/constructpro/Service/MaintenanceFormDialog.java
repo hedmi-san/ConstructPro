@@ -15,7 +15,7 @@ import java.util.List;
 public class MaintenanceFormDialog extends JDialog {
     private Maintainance maintainance;
     private int vehicleId;
-    private Connection conn;
+
     private boolean saved = false;
 
     private MaintenanceDAO maintainanceDAO;
@@ -44,7 +44,7 @@ public class MaintenanceFormDialog extends JDialog {
                 ModalityType.APPLICATION_MODAL);
         this.maintainance = maintainance;
         this.vehicleId = vehicleId;
-        this.conn = conn;
+
         this.maintainanceDAO = new MaintenanceDAO(conn);
         this.siteDAO = new ConstructionSiteDAO(conn);
 

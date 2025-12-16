@@ -2,12 +2,12 @@ package constructpro.Service;
 
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerDAO;
-import java.awt.Color;
+
 import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.VehicleDAO;
 import constructpro.DTO.Vehicle;
-import com.toedter.calendar.JDateChooser;
+
 import constructpro.UI.VehiclesPage;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -19,18 +19,18 @@ import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class OwnedVehicleForm extends JDialog  {
-    private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
+public class OwnedVehicleForm extends JDialog {
+
     private JButton saveButton, cancelButton;
     private JTextField vehicleNameField, vehiclePlateNumberField;
     private JComboBox<String> siteComboBox, driverComboBox;
-    private JDateChooser startDateChooser, endDateChooser;
+
     private ConstructionSiteDAO siteDAO;
     private WorkerDAO workerDAO;
     private VehicleDAO vehicleDAO;
     private VehiclesPage parentframe;
-    
-    public OwnedVehicleForm(JFrame parent, Connection connection,VehiclesPage parentframe) throws SQLException {
+
+    public OwnedVehicleForm(JFrame parent, Connection connection, VehiclesPage parentframe) throws SQLException {
         super(parent, "Possédé", true);
         this.siteDAO = new ConstructionSiteDAO(connection);
         this.workerDAO = new WorkerDAO(connection);
@@ -42,8 +42,8 @@ public class OwnedVehicleForm extends JDialog  {
         pack();
         setLocationRelativeTo(parent);
     }
-    
-    private void initComponents(){
+
+    private void initComponents() {
         vehicleNameField = new JTextField(20);
         vehiclePlateNumberField = new JTextField(20);
         siteComboBox = new JComboBox<>();
@@ -53,8 +53,8 @@ public class OwnedVehicleForm extends JDialog  {
         saveButton = new JButton("Sauvegarder");
         cancelButton = new JButton("Annuler");
     }
-    
-    private void setupLayout(){
+
+    private void setupLayout() {
         setLayout(new BorderLayout());
 
         JPanel formPanel = new JPanel(new GridBagLayout());
@@ -116,7 +116,7 @@ public class OwnedVehicleForm extends JDialog  {
         buttonPanel.add(cancelButton);
         add(buttonPanel, BorderLayout.SOUTH);
     }
-    
+
     private boolean validateFields() {
         if (vehicleNameField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Le Nom est obligatoire !");
@@ -132,8 +132,8 @@ public class OwnedVehicleForm extends JDialog  {
 
         return true;
     }
-    
-    private void setupActions(){
+
+    private void setupActions() {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -157,7 +157,7 @@ public class OwnedVehicleForm extends JDialog  {
             }
         });
     }
-    
+
     private void loadSites() {
         try {
             java.util.List<String> siteNames = siteDAO.getAllConstructionSitesNames();
@@ -171,7 +171,7 @@ public class OwnedVehicleForm extends JDialog  {
             JOptionPane.showMessageDialog(this, "Erreur lors du chargement des chantiers : " + e.getMessage());
         }
     }
-    
+
     private void loadDrivers() {
         try {
             java.util.List<String> siteNames = workerDAO.getAllDriversNames();
@@ -191,8 +191,8 @@ public class OwnedVehicleForm extends JDialog  {
             parentframe.loadDataSet();
         }
     }
-    
-    private Vehicle createNewVehicle(){
+
+    private Vehicle createNewVehicle() {
         Vehicle vehicle = new Vehicle();
 
         vehicle.setName(vehicleNameField.getText().trim());

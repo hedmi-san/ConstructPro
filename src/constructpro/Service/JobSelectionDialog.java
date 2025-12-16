@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 public class JobSelectionDialog extends JDialog {
 
     private WorkerDAO workerDAO;
-    private Connection conn;
+
     private List<String> selectedJobs;
     private boolean confirmed = false;
 
@@ -28,7 +28,7 @@ public class JobSelectionDialog extends JDialog {
 
     public JobSelectionDialog(Window parent, Connection connection) {
         super(parent, "Sélectionner des Appellations (Jobs)", ModalityType.APPLICATION_MODAL);
-        this.conn = connection;
+
         try {
             this.workerDAO = new WorkerDAO(connection);
         } catch (SQLException e) {
