@@ -15,11 +15,10 @@ import java.util.Date;
 import java.util.List;
 
 public class WorkerForm extends JDialog {
-    private JTextField firstNameField, lastNameField, birthPlaceField, fatherNameField, motherNameField;
+    private JTextField firstNameField, lastNameField, birthPlaceField, fatherNameField, motherNameField,roleField;
     private JTextField identityCardNumberField, accountNumberField, phoneNumberField;
     private JDateChooser birthDateChooser, startDateChooser, identityCardDateChooser;
     private JComboBox<String> familySituationComboBox;
-    private JComboBox<String> roleComboBox;
     private JComboBox<String> siteComboBox;
     private JButton saveButton, cancelButton;
     private boolean confirmed = false;
@@ -71,27 +70,8 @@ public class WorkerForm extends JDialog {
         familySituationComboBox = new JComboBox<>(new String[]{
             "Célibataire", "Marié(e)", "Divorcé(e)", "Veuf(ve)"
         });
-        // Role combo box
-        roleComboBox = new JComboBox<>(new String[]{
-            "Chauffeur",
-            "Chef Chantier",
-            "Comptable",
-            "Electrician",
-            "Garde",
-            "Grutier",
-            "Manoeuvre",
-            "Mason",
-            "Mason Brick",
-            "Mason Chemini",
-            "Mason Dalle de Sol",
-            "Mason Fasade",
-            "Mason Placoplatre",
-            "Mason Telbas",
-            "Menuisier",
-            "Peinteur",
-            "Plombier",
-            "Soudeur"
-        });
+        // Role Text Field
+        roleField = new JTextField(20);
         // Site combo box
         siteComboBox = new JComboBox<>();
         loadSites();
@@ -211,7 +191,7 @@ public class WorkerForm extends JDialog {
         gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
         formPanel.add(new JLabel("Poste:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(roleComboBox, gbc);
+        formPanel.add(roleField, gbc);
         
         row++;
         // Site
@@ -255,7 +235,7 @@ public class WorkerForm extends JDialog {
         familySituationComboBox.setSelectedItem(worker.getFamilySituation());
         accountNumberField.setText(worker.getAccountNumber());
         phoneNumberField.setText(worker.getPhoneNumber());
-        roleComboBox.setSelectedItem(worker.getRole());
+        roleField.setText(worker.getRole());
         
         if (worker.getAssignedSiteID() > 0) {
             try {
@@ -365,7 +345,7 @@ public class WorkerForm extends JDialog {
         worker.setFamilySituation((String) familySituationComboBox.getSelectedItem());
         worker.setAccountNumber(accountNumberField.getText().trim());
         worker.setPhoneNumber(phoneNumberField.getText().trim());
-        worker.setRole((String) roleComboBox.getSelectedItem());
+        worker.setRole((String) roleField.getText().trim());
         try {
             String selectedSiteName = (String) siteComboBox.getSelectedItem();
             if (selectedSiteName != null && !selectedSiteName.equals("Sélectionner un chantier")) {

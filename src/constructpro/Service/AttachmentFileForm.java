@@ -2,6 +2,7 @@ package constructpro.Service;
 
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
+import constructpro.DTO.Worker;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -17,9 +18,9 @@ public class AttachmentFileForm extends JDialog {
 
     private JTextField titleField;
     private JComboBox<String> siteComboBox;
-    private JTable jobsTable;
-    private DefaultTableModel jobsModel;
-    private List<String> selectedJobs = new ArrayList<>();
+    private JTable workersTable;
+    private DefaultTableModel workersModel;
+    private List<Worker> selectedWorkers = new ArrayList<>();
 
     // Colors (Consistent with other dialogs)
     private static final Color DARK_BG = new Color(45, 45, 45);
@@ -64,25 +65,25 @@ public class AttachmentFileForm extends JDialog {
         formPanel.add(siteLabel);
         formPanel.add(siteComboBox);
 
-        // Jobs/Workers Section
-        JPanel jobsPanel = new JPanel(new BorderLayout(5, 5));
-        jobsPanel.setBackground(DARK_BG);
-        jobsPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.GRAY), "Jobs / Rôles Responsables",
+        // Workers Section
+        JPanel workersPanel = new JPanel(new BorderLayout(5, 5));
+        workersPanel.setBackground(DARK_BG);
+        workersPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY), "Travailleurs Responsables",
                 0, 0, new Font("Arial", Font.BOLD, 12), TEXT_COLOR));
 
-        jobsModel = new DefaultTableModel(new Object[] { "Job / Fonction" }, 0);
-        jobsTable = new JTable(jobsModel);
-        jobsTable.setBackground(INPUT_BG);
-        jobsTable.setForeground(TEXT_COLOR);
-        jobsTable.setFillsViewportHeight(true);
+        workersModel = new DefaultTableModel(new Object[] { "Nom", "Fonction" }, 0);
+        workersTable = new JTable(workersModel);
+        workersTable.setBackground(INPUT_BG);
+        workersTable.setForeground(TEXT_COLOR);
+        workersTable.setFillsViewportHeight(true);
 
-        JButton selectJobsBtn = new JButton("Sélectionner Jobs");
-        styleButton(selectJobsBtn);
-        selectJobsBtn.addActionListener(e -> openJobSelection());
+        JButton selectWorkersBtn = new JButton("Sélectionner Travailleurs");
+        styleButton(selectWorkersBtn);
+        selectWorkersBtn.addActionListener(e -> openWorkerSelection());
 
-        jobsPanel.add(new JScrollPane(jobsTable), BorderLayout.CENTER);
-        jobsPanel.add(selectJobsBtn, BorderLayout.SOUTH);
+        workersPanel.add(new JScrollPane(workersTable), BorderLayout.CENTER);
+        workersPanel.add(selectWorkersBtn, BorderLayout.SOUTH);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -102,7 +103,7 @@ public class AttachmentFileForm extends JDialog {
 
         // Assembly
         mainPanel.add(formPanel, BorderLayout.NORTH);
-        mainPanel.add(jobsPanel, BorderLayout.CENTER);
+        mainPanel.add(workersPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
@@ -136,31 +137,39 @@ public class AttachmentFileForm extends JDialog {
         }
     }
 
-    private void openJobSelection() {
-        JobSelectionDialog dialog = new JobSelectionDialog(this, conn);
+    private void openWorkerSelection() {
+        WorkerSelectionDialog dialog = new WorkerSelectionDialog(this, conn);
         dialog.setVisible(true);
         if (dialog.isConfirmed()) {
-            List<String> newJobs = dialog.getSelectedJobs();
-            for (String job : newJobs) {
-                if (!selectedJobs.contains(job)) {
-                    selectedJobs.add(job);
+            List<Worker> newWorkers = dialog.getSelectedWorkers();
+            // Append only new workers
+            for (Worker w : newWorkers) {
+                boolean exists = false;
+                for (Worker existing : selectedWorkers) {
+                    if (existing.getId() == w.getId()) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    selectedWorkers.add(w);
                 }
             }
-            refreshJobsTable();
+            refreshWorkersTable();
         }
     }
 
-    private void refreshJobsTable() {
-        jobsModel.setRowCount(0);
-        for (String job : selectedJobs) {
-            jobsModel.addRow(new Object[] { job });
+    private void refreshWorkersTable() {
+        workersModel.setRowCount(0);
+        for (Worker w : selectedWorkers) {
+            workersModel.addRow(new Object[] { w.getFirstName() + " " + w.getLastName(), w.getRole() });
         }
     }
 
     private void onGenerate() {
         if (titleField.getText().trim().isEmpty() || siteComboBox.getSelectedItem() == null
-                || selectedJobs.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs et sélectionner des jobs.");
+                || selectedWorkers.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs et sélectionner des travailleurs.");
             return;
         }
 
@@ -185,7 +194,7 @@ public class AttachmentFileForm extends JDialog {
                 AttachmentPDFGenerator.generatePDF(
                         titleField.getText(),
                         site,
-                        selectedJobs,
+                        selectedWorkers,
                         file.getAbsolutePath());
                 confirmed = true;
                 JOptionPane.showMessageDialog(this,

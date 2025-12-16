@@ -3,6 +3,7 @@ package constructpro.Service;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import constructpro.DTO.ConstructionSite;
+import constructpro.DTO.Worker;
 import java.awt.Color;
 import java.io.FileOutputStream;
 import java.util.List;
@@ -12,7 +13,7 @@ public class AttachmentPDFGenerator {
 
     private static final Color SECTION_HEADER_COLOR = new Color(230, 230, 230);
 
-    public static void generatePDF(String titleStr, ConstructionSite site, List<String> roles, String outputPath)
+    public static void generatePDF(String titleStr, ConstructionSite site, List<Worker> workers, String outputPath)
             throws Exception {
 
         Document document = new Document(PageSize.A4.rotate(), 20, 20, 20, 20);
@@ -23,12 +24,8 @@ public class AttachmentPDFGenerator {
         // 1. Header
         addHeader(document, titleStr, site);
 
-        // 2. Determine Roles (Columns)
-        // Check if roles need sorting? Maybe default sort is fine.
-        List<String> sortedRoles = roles.stream().distinct().sorted().collect(Collectors.toList());
-
-        // 3. Build Table
-        addAttachmentTable(document, sortedRoles);
+        // 2. Build Table
+        addAttachmentTable(document, workers);
 
         // 4. Worker List removed as requested for Job selection flow
 
@@ -73,9 +70,9 @@ public class AttachmentPDFGenerator {
         document.add(new Paragraph("\n"));
     }
 
-    private static void addAttachmentTable(Document document, List<String> roles) throws DocumentException {
-        // Columns: Date (1) + Roles * 3 (Nom, Acompt, Obs)
-        int numColumns = 1 + (roles.size() * 3);
+    private static void addAttachmentTable(Document document, List<Worker> workers) throws DocumentException {
+        // Columns: Date (1) + Workers * 3 (Nom, Acompt, Obs)
+        int numColumns = 1 + (workers.size() * 3);
         PdfPTable table = new PdfPTable(numColumns);
         table.setWidthPercentage(100);
 
@@ -97,9 +94,10 @@ public class AttachmentPDFGenerator {
         dateHeader.setVerticalAlignment(Element.ALIGN_MIDDLE);
         table.addCell(dateHeader);
 
-        // Role Headers (Colspan 3)
-        for (String role : roles) {
-            PdfPCell roleCell = new PdfPCell(new Phrase(role, new Font(Font.HELVETICA, 10, Font.BOLD)));
+        // Worker Headers (Colspan 3)
+        for (Worker worker : workers) {
+            String role = (worker.getRole() != null ? worker.getRole() : "TRAVAILLEUR");
+            PdfPCell roleCell = new PdfPCell(new Phrase(role.toUpperCase(), new Font(Font.HELVETICA, 10, Font.BOLD)));
             roleCell.setColspan(3);
             roleCell.setBackgroundColor(SECTION_HEADER_COLOR);
             roleCell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -110,14 +108,14 @@ public class AttachmentPDFGenerator {
 
         // --- ROW 2: Sub-headers ---
         Font subHeaderFont = new Font(Font.HELVETICA, 8, Font.BOLD);
-        for (String role : roles) { // Repeat for each role
+        for (int i = 0; i < workers.size(); i++) {
             addCell(table, "NOM", subHeaderFont, SECTION_HEADER_COLOR);
             addCell(table, "ACOMPT", subHeaderFont, SECTION_HEADER_COLOR);
             addCell(table, "OBS", subHeaderFont, SECTION_HEADER_COLOR);
         }
 
-        // --- ROWS: Empty Rows for Manual Entry ---
-        int numRows = 15; // Generate 25 empty rows
+        // --- ROWS: Data Rows ---
+        int numRows = 15; // Generate 25 rows
         Font cellFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
 
         for (int i = 0; i < numRows; i++) {
@@ -127,11 +125,29 @@ public class AttachmentPDFGenerator {
             dateCell.setMinimumHeight(20f);
             table.addCell(dateCell);
 
-            // Role Columns
-            for (int j = 0; j < roles.size() * 3; j++) {
-                PdfPCell cell = new PdfPCell(new Phrase(" ", cellFont));
-                cell.setMinimumHeight(20f);
-                table.addCell(cell);
+            // Worker Columns
+            for (Worker worker : workers) {
+                // NOM Column (Pre-filled with worker name ONLY for first row)
+                String nameText = " ";
+                if (i == 0) {
+                    nameText = (worker.getFirstName() + " " + worker.getLastName()).toUpperCase();
+                }
+
+                PdfPCell nameCell = new PdfPCell(new Phrase(nameText, cellFont));
+                nameCell.setMinimumHeight(20f);
+                nameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                nameCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(nameCell);
+
+                // ACOMPT Column (Empty)
+                PdfPCell acomptCell = new PdfPCell(new Phrase(" ", cellFont));
+                acomptCell.setMinimumHeight(20f);
+                table.addCell(acomptCell);
+
+                // OBS Column (Empty)
+                PdfPCell obsCell = new PdfPCell(new Phrase(" ", cellFont));
+                obsCell.setMinimumHeight(20f);
+                table.addCell(obsCell);
             }
         }
 
