@@ -172,22 +172,24 @@ public class WorkersPage extends JPanel {
                         if (dialog.isConfirmed()) {
                             Worker updatedWorker = dialog.getWorkerFromForm();
                             updatedWorker.setId(workerId);
-                            workerDAO.updateWorker(updatedWorker);
-                            loadDataSet();
-                            if (existingWorker.getAssignedSiteID() != 1) {
-                                if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
+
+                            // Check if site has changed
+                            if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
+                                // Close the old assignment if worker was assigned to a site (not site ID 1)
+                                if (existingWorker.getAssignedSiteID() != 1) {
                                     workerAssignmentDAO.updateWorkerAssignment(workerId,
                                             existingWorker.getAssignedSiteID(), LocalDate.now());
+                                }
+
+                                // Create new assignment if worker is being assigned to a site (not site ID 1)
+                                if (updatedWorker.getAssignedSiteID() != 1) {
                                     workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(),
                                             LocalDate.now());
                                 }
                             }
-                            if (existingWorker.getAssignedSiteID() == 1) {
-                                if (existingWorker.getAssignedSiteID() != updatedWorker.getAssignedSiteID()) {
-                                    workerAssignmentDAO.insertAssignment(workerId, updatedWorker.getAssignedSiteID(),
-                                            LocalDate.now());
-                                }
-                            }
+
+                            workerDAO.updateWorker(updatedWorker);
+                            loadDataSet();
                             JOptionPane.showMessageDialog(this, "Ouvrier modifié avec succès!");
                         }
                     }

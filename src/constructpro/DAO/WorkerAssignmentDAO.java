@@ -25,7 +25,7 @@ public class WorkerAssignmentDAO {
     }
 
     public void updateWorkerAssignment(int workerId, int siteId, LocalDate unAssignmentDate) throws SQLException {
-        String sql = "UPDATE workerAssignment SET unassignmentDate = ? WHERE workerId = ? AND siteId = ?  AND assignmentDate is not null";
+        String sql = "UPDATE workerAssignment SET unassignmentDate = ? WHERE workerId = ? AND siteId = ? AND unassignmentDate IS NULL";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDate(1, Date.valueOf(unAssignmentDate));
             stmt.setInt(2, workerId);
