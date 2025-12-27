@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.BillDAO;
 import constructpro.DTO.Bill;
+import constructpro.Service.BillDetailDialog;
 
 import constructpro.Service.BillForm;
 import java.awt.*;
@@ -116,7 +117,25 @@ public class BillPage extends JPanel {
     }
 
     private void showBillDetails() {
-        // TODO: Implement bill details dialog
+        int selectedRow = billsTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                DefaultTableModel model = (DefaultTableModel) billsTable.getModel();
+                int billId = (Integer) model.getValueAt(selectedRow, 0); // Get worker ID from hidden column
+
+                Bill bill = billDAO.getBillById(billId);
+                if (bill != null) {
+                    BillDetailDialog detailDialog = new BillDetailDialog(parentFrame, bill, conn);
+                    detailDialog.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Facture non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement des détails de la facture : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void loadSearchResults(String searchTerm) {

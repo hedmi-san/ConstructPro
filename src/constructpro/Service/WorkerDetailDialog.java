@@ -75,7 +75,7 @@ public class WorkerDetailDialog extends JDialog {
     private Connection conn;
 
     public WorkerDetailDialog(JFrame parent, Worker worker, Connection connection) throws SQLException {
-        super(parent, "Worker Details", true);
+        super(parent, "Détails de Travailleur", true);
         this.currentWorker = worker;
         this.siteDAO = new ConstructionSiteDAO(connection);
         this.insurance = new Insurance();

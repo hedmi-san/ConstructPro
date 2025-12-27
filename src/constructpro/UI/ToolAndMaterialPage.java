@@ -124,7 +124,7 @@ public class ToolAndMaterialPage extends JPanel{
                     rs.getInt("itemId"),
                     rs.getString("name"),
                     rs.getString("quantity"),
-                    rs.getInt("unitPrice"),
+                    rs.getDouble("unitPrice"),
                     rs.getString("itemType"),
                     rs.getString("site_name"),
                     rs.getString("billDate")
@@ -160,7 +160,7 @@ public class ToolAndMaterialPage extends JPanel{
                     rs.getInt("itemId"),
                     rs.getString("name"),
                     rs.getString("quantity"),
-                    rs.getInt("unitPrice"),
+                    rs.getDouble("unitPrice"),
                     rs.getString("itemType"),
                     rs.getString("site_name"),
                     rs.getString("billDate")
