@@ -18,7 +18,7 @@ public class MaintenanceDAO {
      */
     public List<Maintainance> getAllMaintainanceRecords(int vehicleId) throws SQLException {
         List<Maintainance> records = new ArrayList<>();
-        String sql = "SELECT * FROM maintenanceTicket WHERE vehicleId = ? ORDER BY repairDate DESC";
+        String sql = "SELECT * FROM maintenanceTicket WHERE vehicleId = ? ORDER BY repaireDate DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, vehicleId);
@@ -30,7 +30,7 @@ public class MaintenanceDAO {
                 maintainance.setVehicle_id(rs.getInt("vehicleId"));
                 maintainance.setMaintainanceType(rs.getString("maintenanceType"));
                 maintainance.setAssignedSiteId(rs.getInt("assignedSiteId"));
-                java.sql.Date rDate = rs.getDate("repairDate");
+                java.sql.Date rDate = rs.getDate("repaireDate");
                 if (rDate != null)
                     maintainance.setRepair_date(rDate.toLocalDate());
                 maintainance.setRepairCost(rs.getDouble("cost"));
@@ -44,7 +44,7 @@ public class MaintenanceDAO {
      * Add a new maintenance record
      */
     public void addMaintainance(Maintainance maintainance) throws SQLException {
-        String sql = "INSERT INTO maintenanceTicket (maintenanceType, vehicleId, assignedSiteId, repairDate, cost) "
+        String sql = "INSERT INTO maintenanceTicket (maintenanceType, vehicleId, assignedSiteId, repaireDate, cost) "
                 +
                 "VALUES (?, ?, ?, ?, ?)";
 
@@ -63,7 +63,7 @@ public class MaintenanceDAO {
      */
     public void updateMaintainance(Maintainance maintainance) throws SQLException {
         String sql = "UPDATE maintenanceTicket SET maintenanceType = ?, assignedSiteId = ?, " +
-                "repairDate = ?, cost = ? WHERE id = ?";
+                "repaireDate = ?, cost = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, maintainance.getMaintainanceType());

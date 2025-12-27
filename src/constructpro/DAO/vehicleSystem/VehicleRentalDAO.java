@@ -13,7 +13,7 @@ public class VehicleRentalDAO {
     }
 
     public void insertNewRentedVehicle(VehicleRental rentedVehicle) throws SQLException {
-        String sql = "INSERT INTO vehicleRental (vehicleId, assignedSiteId, ownerCompany, ownerPhone, dailyRate, startDate, endDate, daysWorked, depositAmount, transferFee) VALUES(?,?,?,?,?,?,?,?,?,?) ";
+        String sql = "INSERT INTO vehicleRental (vehicleId, assignedSiteId, ownerCompany, ownerPhone, dailyRate, startDate, endDate, daysWorked, depositeAmount, transferFee) VALUES(?,?,?,?,?,?,?,?,?,?) ";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, rentedVehicle.getVehicle_id());
             stmt.setInt(2, rentedVehicle.getAssignedSiteId());
@@ -58,7 +58,7 @@ public class VehicleRentalDAO {
                 }
 
                 rental.setDaysWorked(rs.getInt("daysWorked"));
-                rental.setDepositAmount(rs.getDouble("depositAmount"));
+                rental.setDepositAmount(rs.getDouble("depositeAmount"));
                 rental.setTransferFee(rs.getDouble("transferFee"));
                 records.add(rental);
             }
@@ -90,7 +90,7 @@ public class VehicleRentalDAO {
      */
     public void addRentalRecord(VehicleRental rental) throws SQLException {
         String sql = "INSERT INTO vehicleRental (vehicleId, assignedSiteId, ownerCompany, ownerPhone, " +
-                "dailyRate, startDate, endDate, daysWorked, depositAmount, transferFee) " +
+                "dailyRate, startDate, endDate, daysWorked, depositeAmount, transferFee) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -155,7 +155,7 @@ public class VehicleRentalDAO {
                 }
 
                 rental.setDaysWorked(rs.getInt("daysWorked"));
-                rental.setDepositAmount(rs.getDouble("depositAmount"));
+                rental.setDepositAmount(rs.getDouble("depositeAmount"));
                 rental.setTransferFee(rs.getDouble("transferFee"));
                 return rental;
             }
