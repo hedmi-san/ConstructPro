@@ -11,10 +11,11 @@ import javax.swing.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import javax.swing.table.DefaultTableModel;
 
-public class SupplierPage extends JPanel{
-    
+public class SupplierPage extends JPanel {
+
     private JButton addButton;
     private JButton deleteButton;
     private JButton editButton;
@@ -27,18 +28,20 @@ public class SupplierPage extends JPanel{
     private SupplierDAO supplierDAO;
     private JFrame parentFrame;
     public Connection conn;
-    public SupplierPage(Connection connection){
+
+    public SupplierPage(Connection connection) {
         this.conn = connection;
         initDAO();
         initComponents();
         loadDataSet();
     }
-    
-    private void initDAO(){
+
+    private void initDAO() {
         supplierDAO = new SupplierDAO(conn);
     }
-    private void initComponents(){
-        addButton =  new JButton("Ajouter");
+
+    private void initComponents() {
+        addButton = new JButton("Ajouter");
         editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
@@ -78,7 +81,7 @@ public class SupplierPage extends JPanel{
             @Override
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
-                    //showWorkerDetails();
+                    // showWorkerDetails();
                 }
             }
         });
@@ -92,7 +95,7 @@ public class SupplierPage extends JPanel{
         addButton.setForeground(Color.WHITE);
         deleteButton.setForeground(Color.WHITE);
         editButton.setForeground(Color.WHITE);
-        
+
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
@@ -110,10 +113,10 @@ public class SupplierPage extends JPanel{
         add(headerPanel, BorderLayout.NORTH);
         add(jScrollPane1, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-        
+
         setupButtonActions();
     }
-    
+
     private void setupButtonActions() {
         // Add button action
         addButton.addActionListener(e -> {
@@ -128,7 +131,8 @@ public class SupplierPage extends JPanel{
                     JOptionPane.showMessageDialog(this, "Fournisseur ajouté avec succès!");
                 }
             } catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -142,7 +146,8 @@ public class SupplierPage extends JPanel{
 
                     Supplier existingWorker = supplierDAO.getSupplierById(supplierId);
                     if (existingWorker != null) {
-                        SupplierForm dialog = new SupplierForm(parentFrame, "Modifier le Fournisseur", existingWorker, conn);
+                        SupplierForm dialog = new SupplierForm(parentFrame, "Modifier le Fournisseur", existingWorker,
+                                conn);
                         dialog.setVisible(true);
 
                         if (dialog.isConfirmed()) {
@@ -154,7 +159,8 @@ public class SupplierPage extends JPanel{
                         }
                     }
                 } catch (HeadlessException | SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la modification: " + ex.getMessage(), "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner un fournisseur à modifier.");
@@ -180,7 +186,8 @@ public class SupplierPage extends JPanel{
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Ouvrier supprimé avec succès!");
                     } catch (HeadlessException | SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " + ex.getMessage(),
+                                "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else {
@@ -188,27 +195,27 @@ public class SupplierPage extends JPanel{
             }
         });
     }
-    
-    private void loadDataSet(){
+
+    private void loadDataSet() {
         try {
             ResultSet rs = supplierDAO.getSuppliersInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
-            ) {
+                    new Object[] { "ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Make table non-editable
                 }
             };
 
+            DecimalFormat df = new DecimalFormat("#,##0.00");
             while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("supplierName"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    rs.getDouble("totalSpent"),
-                    rs.getDouble("totalPaid")
+                model.addRow(new Object[] {
+                        rs.getInt("id"),
+                        rs.getString("supplierName"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        df.format(rs.getDouble("totalSpent")),
+                        df.format(rs.getDouble("totalPaid"))
                 });
             }
             suppliersTable.setModel(model);
@@ -219,30 +226,31 @@ public class SupplierPage extends JPanel{
             suppliersTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    private void loadSearchResults(String searchterm){
+
+    private void loadSearchResults(String searchterm) {
         try {
             ResultSet rs = supplierDAO.searchSupplierByName(searchterm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[]{"ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé"}, 0
-            ) {
+                    new Object[] { "ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
                 }
             };
 
+            DecimalFormat df = new DecimalFormat("#,##0.00");
             while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("supplierName"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    rs.getDouble("totalSpent"),
-                    rs.getDouble("totalPaid")
+                model.addRow(new Object[] {
+                        rs.getInt("id"),
+                        rs.getString("supplierName"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        df.format(rs.getDouble("totalSpent")),
+                        df.format(rs.getDouble("totalPaid"))
                 });
             }
             suppliersTable.setModel(model);
@@ -253,7 +261,7 @@ public class SupplierPage extends JPanel{
         } catch (SQLException e) {
         }
     }
-    
+
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }

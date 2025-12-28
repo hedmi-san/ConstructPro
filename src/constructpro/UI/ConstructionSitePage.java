@@ -12,6 +12,7 @@ import constructpro.Service.ShowSitesDetails;
 import constructpro.Service.SiteForm;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DecimalFormat;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -219,6 +220,7 @@ public class ConstructionSitePage extends JPanel {
             }
         };
 
+        DecimalFormat df = new DecimalFormat("#,##0.00");
         for (ConstructionSite site : sites) {
             model.addRow(new Object[] {
                     site.getId(),
@@ -227,7 +229,7 @@ public class ConstructionSitePage extends JPanel {
                     site.getStatus(),
                     site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
                     site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
-                    site.getTotalCost()
+                    df.format(site.getTotalCost())
             });
         }
         sitesTable.setModel(model);
@@ -268,6 +270,7 @@ public class ConstructionSitePage extends JPanel {
             }
         };
 
+        DecimalFormat df = new DecimalFormat("#,##0.00");
         for (ConstructionSite site : sites) {
             model.addRow(new Object[] {
                     site.getId(),
@@ -276,7 +279,7 @@ public class ConstructionSitePage extends JPanel {
                     site.getStatus(),
                     site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
                     site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
-                    site.getTotalCost()
+                    df.format(site.getTotalCost())
             });
         }
         sitesTable.setModel(model);
