@@ -11,7 +11,7 @@ public class BillDAO {
     }
 
     public int insertBill(Bill bill) throws SQLException {
-        String sql = "INSERT INTO bills(billDate,factureNumber,supplierId,assignedSiteId,transferFee,totalCost,paidAmount) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO bills(billDate,factureNumber,supplierId,assignedSiteId,transferFee,totalCost,paidAmount,imagePath) VALUES(?,?,?,?,?,?,?,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setDate(1, Date.valueOf(bill.getBillDate()));
             stmt.setString(2, bill.getFactureNumber());
@@ -20,6 +20,7 @@ public class BillDAO {
             stmt.setDouble(5, bill.getTransferFee());
             stmt.setDouble(6, bill.getCost());
             stmt.setDouble(7, bill.getPaidAmount());
+            stmt.setString(8, bill.getImagePath());
 
             stmt.executeUpdate();
 
@@ -70,6 +71,7 @@ public class BillDAO {
                 bill.setTransferFee(rs.getDouble("transferFee"));
                 bill.setCost(rs.getDouble("totalCost"));
                 bill.setPaidAmount(rs.getDouble("paidAmount"));
+                bill.setImagePath(rs.getString("imagePath"));
                 return bill;
             }
         }
@@ -77,7 +79,7 @@ public class BillDAO {
     }
 
     public void updateBill(Bill bill) throws SQLException {
-        String sql = "UPDATE bills SET factureNumber=?, supplierId=?, assignedSiteId=?, billDate=?, transferFee=?, totalCost=?, paidAmount=? WHERE id=?";
+        String sql = "UPDATE bills SET factureNumber=?, supplierId=?, assignedSiteId=?, billDate=?, transferFee=?, totalCost=?, paidAmount=?, imagePath=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, bill.getFactureNumber());
             ps.setInt(2, bill.getSupplierID());
@@ -86,7 +88,8 @@ public class BillDAO {
             ps.setDouble(5, bill.getTransferFee());
             ps.setDouble(6, bill.getCost());
             ps.setDouble(7, bill.getPaidAmount());
-            ps.setInt(8, bill.getId());
+            ps.setString(8, bill.getImagePath());
+            ps.setInt(9, bill.getId());
             ps.executeUpdate();
         }
     }

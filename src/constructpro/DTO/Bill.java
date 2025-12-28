@@ -12,6 +12,7 @@ public class Bill {
     private double transferFee;
     private double cost;
     private double paidAmount;
+    private String imagePath;
 
     public int getId() {
         return Id;
@@ -75,6 +76,14 @@ public class Bill {
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
 }

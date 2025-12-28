@@ -57,8 +57,8 @@ public class BillDetailDialog extends JDialog {
         infoPanel = new JPanel(new BorderLayout(10, 10));
         infoPanel.setBackground(DARK_BACKGROUND);
 
-        // Initialize image panel (for later)
-        imagePanel = new JPanel();
+        // Initialize image panel
+        imagePanel = new JPanel(new BorderLayout(10, 10));
         imagePanel.setBackground(DARK_BACKGROUND);
 
         // Initialize bill items table
@@ -155,12 +155,178 @@ public class BillDetailDialog extends JDialog {
 
         // Setup info panel
         setupInfoPanel();
+        // Setup image panel
+        setupImagePanel();
 
         // Add tabs
         tabbedPane.addTab("Informations", infoPanel);
         tabbedPane.addTab("Images", imagePanel);
 
         add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    private void setupImagePanel() {
+        imagePanel.removeAll();
+
+        // Title panel with upload button
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setBackground(DARK_BACKGROUND);
+
+        JLabel titleLabel = new JLabel("Image de la facture");
+        titleLabel.setForeground(TEXT_COLOR);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JButton uploadButton = new JButton("Choisir l'image");
+        uploadButton.setBackground(ACCENT_COLOR);
+        uploadButton.setForeground(Color.WHITE);
+        uploadButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        uploadButton.setFocusPainted(false);
+        uploadButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        uploadButton.addActionListener(e -> uploadImage());
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(DARK_BACKGROUND);
+        buttonPanel.add(uploadButton);
+
+        titlePanel.add(titleLabel, BorderLayout.WEST);
+        titlePanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Image display panel
+        JPanel imageDisplayPanel = new JPanel(new BorderLayout());
+        imageDisplayPanel.setBackground(DARK_BACKGROUND);
+        imageDisplayPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        imagePanel.add(titlePanel, BorderLayout.NORTH);
+        imagePanel.add(imageDisplayPanel, BorderLayout.CENTER);
+
+        // Load and display image if exists
+        displayImage(imageDisplayPanel);
+    }
+
+    private void displayImage(JPanel displayPanel) {
+        displayPanel.removeAll();
+
+        if (currentBill.getImagePath() == null || currentBill.getImagePath().isEmpty()) {
+            // Show placeholder message
+            JLabel noImageLabel = new JLabel("Aucune image n'a été sélectionnée pour le moment");
+            noImageLabel.setForeground(LABEL_COLOR);
+            noImageLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
+            noImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            displayPanel.add(noImageLabel, BorderLayout.CENTER);
+        } else {
+            // Display the image
+            try {
+                java.io.File imageFile = new java.io.File(currentBill.getImagePath());
+                if (imageFile.exists()) {
+                    ImageIcon originalIcon = new ImageIcon(currentBill.getImagePath());
+
+                    // Scale image to fit panel while maintaining aspect ratio
+                    int maxWidth = 700;
+                    int maxHeight = 500;
+                    Image scaledImage = scaleImage(originalIcon.getImage(), maxWidth, maxHeight);
+
+                    JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+                    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                    JScrollPane scrollPane = new JScrollPane(imageLabel);
+                    scrollPane.setBackground(DARK_BACKGROUND);
+                    scrollPane.getViewport().setBackground(DARK_BACKGROUND);
+                    scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
+
+                    displayPanel.add(scrollPane, BorderLayout.CENTER);
+                } else {
+                    JLabel errorLabel = new JLabel("Image introuvable: " + currentBill.getImagePath());
+                    errorLabel.setForeground(Color.RED);
+                    errorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                    errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    displayPanel.add(errorLabel, BorderLayout.CENTER);
+                }
+            } catch (Exception e) {
+                JLabel errorLabel = new JLabel("Erreur lors du chargement de l'image");
+                errorLabel.setForeground(Color.RED);
+                errorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                displayPanel.add(errorLabel, BorderLayout.CENTER);
+            }
+        }
+
+        displayPanel.revalidate();
+        displayPanel.repaint();
+    }
+
+    private Image scaleImage(Image originalImage, int maxWidth, int maxHeight) {
+        int originalWidth = originalImage.getWidth(null);
+        int originalHeight = originalImage.getHeight(null);
+
+        double widthRatio = (double) maxWidth / originalWidth;
+        double heightRatio = (double) maxHeight / originalHeight;
+        double ratio = Math.min(widthRatio, heightRatio);
+
+        int scaledWidth = (int) (originalWidth * ratio);
+        int scaledHeight = (int) (originalHeight * ratio);
+
+        return originalImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+    }
+
+    private void uploadImage() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Sélectionner une image de facture");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(
+                "Images (*.jpg, *.jpeg, *.png)", "jpg", "jpeg", "png"));
+
+        int result = fileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            java.io.File selectedFile = fileChooser.getSelectedFile();
+
+            try {
+                // Create data/bills directory if it doesn't exist
+                java.io.File billsDir = new java.io.File("data/bills");
+                if (!billsDir.exists()) {
+                    billsDir.mkdirs();
+                }
+
+                // Create unique filename using bill ID and timestamp
+                String fileExtension = getFileExtension(selectedFile.getName());
+                String newFileName = "bill_" + currentBill.getId() + "_" + System.currentTimeMillis() + fileExtension;
+                java.io.File destFile = new java.io.File(billsDir, newFileName);
+
+                // Copy file to destination
+                java.nio.file.Files.copy(selectedFile.toPath(), destFile.toPath(),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+                // Update bill with image path
+                String imagePath = destFile.getPath();
+                currentBill.setImagePath(imagePath);
+
+                // Update database
+                billDAO.updateBill(currentBill);
+
+                // Refresh image display
+                JPanel imageDisplayPanel = (JPanel) imagePanel.getComponent(1);
+                displayImage(imageDisplayPanel);
+
+                JOptionPane.showMessageDialog(this,
+                        "Image téléchargée avec succès!",
+                        "Succès",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du téléchargement de l'image: " + e.getMessage(),
+                        "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private String getFileExtension(String fileName) {
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot > 0) {
+            return fileName.substring(lastDot);
+        }
+        return "";
     }
 
     private void setupInfoPanel() {
