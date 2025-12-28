@@ -46,7 +46,7 @@ public class SiteForm extends JDialog {
 
         // Status dropdown
         statusComboBox = new JComboBox<>(new String[] {
-            "Active","Terminé", "Non Spécifié"
+                "Active", "Terminé", "Non Spécifié"
         });
 
         // Date choosers
@@ -75,44 +75,58 @@ public class SiteForm extends JDialog {
         int row = 0;
 
         // Name
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(new JLabel("Site Name:"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(nameField, gbc);
         row++;
 
         // Location
-        gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.fill = GridBagConstraints.NONE;
         formPanel.add(new JLabel("Location:"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(locationField, gbc);
         row++;
 
         // Status
-        gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.fill = GridBagConstraints.NONE;
         formPanel.add(new JLabel("Status:"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(statusComboBox, gbc);
         row++;
 
         // Start Date
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(new JLabel("Start Date:"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(startDateChooser, gbc);
         row++;
 
         // End Date
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(new JLabel("End Date:"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(endDateChooser, gbc);
         row++;
 
         // Total Cost
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         formPanel.add(new JLabel("Total Cost (DA):"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(totalCostField, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -153,12 +167,9 @@ public class SiteForm extends JDialog {
             return false;
         }
 
-        if (endDateChooser.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "End date is required!");
-            return false;
-        }
-
-        if (endDateChooser.getDate().before(startDateChooser.getDate())) {
+        // End date is optional (for ongoing sites)
+        // Only validate date order if end date is provided
+        if (endDateChooser.getDate() != null && endDateChooser.getDate().before(startDateChooser.getDate())) {
             JOptionPane.showMessageDialog(this, "End date cannot be before start date!");
             return false;
         }
@@ -190,7 +201,8 @@ public class SiteForm extends JDialog {
     }
 
     private LocalDate convertToLocalDate(Date date) {
-        if (date == null) return null;
+        if (date == null)
+            return null;
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 

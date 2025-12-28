@@ -23,7 +23,13 @@ public class ConstructionSiteDAO {
             ps.setString(2, site.getLocation());
             ps.setString(3, site.getStatus());
             ps.setDate(4, Date.valueOf(site.getStartDate()));
-            ps.setDate(5, Date.valueOf(site.getEndDate()));
+
+            // Handle null end date for ongoing sites
+            if (site.getEndDate() != null) {
+                ps.setDate(5, Date.valueOf(site.getEndDate()));
+            } else {
+                ps.setNull(5, Types.DATE);
+            }
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
@@ -149,7 +155,8 @@ public class ConstructionSiteDAO {
                 FROM
                     constructionSite s
                 WHERE
-                    s.status is not null
+                    s.status is not null AND s.id > 1
+
                 """;
         try (Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(query)) {
@@ -259,7 +266,14 @@ public class ConstructionSiteDAO {
             ps.setString(2, site.getLocation());
             ps.setString(3, site.getStatus());
             ps.setDate(4, Date.valueOf(site.getStartDate()));
-            ps.setDate(5, Date.valueOf(site.getEndDate()));
+
+            // Handle null end date for ongoing sites
+            if (site.getEndDate() != null) {
+                ps.setDate(5, Date.valueOf(site.getEndDate()));
+            } else {
+                ps.setNull(5, Types.DATE);
+            }
+
             ps.setInt(6, site.getId());
 
             int rowsAffected = ps.executeUpdate();
