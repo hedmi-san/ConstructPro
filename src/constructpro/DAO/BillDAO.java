@@ -115,4 +115,13 @@ public class BillDAO {
         ps.setString(1, "%" + searchTerm + "%");
         return ps.executeQuery();
     }
+    
+    public void deleteBill(int id) throws SQLException{
+        String sql = "DELETE FROM bills WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+    
 }

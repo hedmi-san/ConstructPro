@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.BillDAO;
 import constructpro.DTO.Bill;
+import constructpro.DAO.BiLLItemDAO;
 import constructpro.Service.BillDetailDialog;
 
 import constructpro.Service.BillForm;
@@ -23,6 +24,7 @@ public class BillPage extends JPanel {
     private JScrollPane jScrollPane1;
     private JFrame parentFrame;
     private BillDAO billDAO;
+    private BiLLItemDAO itemDAO;
 
     private Connection conn;
 
@@ -35,7 +37,10 @@ public class BillPage extends JPanel {
     }
 
     private void initDAO() {
-        billDAO = new BillDAO(conn);
+        if(billDAO == null && itemDAO == null){
+            billDAO = new BillDAO(conn);
+            itemDAO = new BiLLItemDAO(conn);
+        }
     }
 
     private void initComponents() {
@@ -250,34 +255,34 @@ public class BillPage extends JPanel {
         });
 
         // Delete button action
-        // deleteButton.addActionListener(e -> {
-        // int selectedRow = sitesTable.getSelectedRow();
-        // if (selectedRow >= 0) {
-        // DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
-        // String chantierName = model.getValueAt(selectedRow, 1) + " " +
-        // model.getValueAt(selectedRow, 2);
-        //
-        // int confirm = JOptionPane.showConfirmDialog(this,
-        // "Êtes-vous sûr de vouloir supprimer le chantier " + chantierName + "?",
-        // "Confirmer la suppression",
-        // JOptionPane.YES_NO_OPTION);
-        //
-        // if (confirm == JOptionPane.YES_OPTION) {
-        // try {
-        // int siteId = (Integer) model.getValueAt(selectedRow, 0);
-        // siteDAO.deleteConstructionSite(siteId);
-        // loadDataSet();
-        // JOptionPane.showMessageDialog(this, "Chantier supprimé avec succès!");
-        // } catch (HeadlessException | SQLException ex) {
-        // JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: " +
-        // ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-        // }
-        // }
-        // } else {
-        // JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à
-        // supprimer.");
-        // }
-        // });
+        deleteButton.addActionListener(e -> {
+            int selectedRow = billsTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                DefaultTableModel model = (DefaultTableModel) billsTable.getModel();
+                String factureNumber = model.getValueAt(selectedRow, 1) + " "
+                        + model.getValueAt(selectedRow, 2);
+
+                int confirm = JOptionPane.showConfirmDialog(this,
+                        "Êtes-vous sûr de vouloir supprimer le chantier " + factureNumber + "?",
+                        "Confirmer la suppression",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        int billId = (Integer) model.getValueAt(selectedRow, 0);
+                        itemDAO.deleteBillItems(billId);
+                        billDAO.deleteBill(billId);
+                        loadDataSet();
+                        JOptionPane.showMessageDialog(this, "Chantier supprimé avec succès!");
+                    } catch (HeadlessException | SQLException ex) {
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression: "
+                                + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à supprimer.");
+         }
+         });
     }
 
     private void loadDataSet() {
