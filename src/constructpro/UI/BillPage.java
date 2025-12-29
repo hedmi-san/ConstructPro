@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.BillDAO;
 import constructpro.DTO.Bill;
-import constructpro.DAO.BiLLItemDAO;
 import constructpro.Service.BillDetailDialog;
-
 import constructpro.Service.BillForm;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,7 +22,6 @@ public class BillPage extends JPanel {
     private JScrollPane jScrollPane1;
     private JFrame parentFrame;
     private BillDAO billDAO;
-    private BiLLItemDAO itemDAO;
 
     private Connection conn;
 
@@ -37,9 +34,8 @@ public class BillPage extends JPanel {
     }
 
     private void initDAO() {
-        if(billDAO == null && itemDAO == null){
+        if(billDAO == null){
             billDAO = new BillDAO(conn);
-            itemDAO = new BiLLItemDAO(conn);
         }
     }
 
@@ -270,7 +266,6 @@ public class BillPage extends JPanel {
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         int billId = (Integer) model.getValueAt(selectedRow, 0);
-                        itemDAO.deleteBillItems(billId);
                         billDAO.deleteBill(billId);
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Chantier supprimé avec succès!");
