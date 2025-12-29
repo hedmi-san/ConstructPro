@@ -2,6 +2,7 @@ package constructpro.UI;
 
 import constructpro.DAO.SupplierDAO;
 import constructpro.DTO.Supplier;
+import constructpro.Service.SupplierDetailDialog;
 import constructpro.Service.SupplierForm;
 import java.awt.*;
 import java.awt.HeadlessException;
@@ -81,7 +82,7 @@ public class SupplierPage extends JPanel {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
-                    // showWorkerDetails();
+                    showSupplierDetails();
                 }
             }
         });
@@ -115,6 +116,27 @@ public class SupplierPage extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
 
         setupButtonActions();
+    }
+    
+    private void showSupplierDetails(){
+        int selectedRow = suppliersTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
+                int supplierId = (Integer) model.getValueAt(selectedRow, 0);
+                Supplier supplier = supplierDAO.getSupplierById(supplierId);
+                if (supplier != null) {
+                    SupplierDetailDialog detailDialog = new SupplierDetailDialog(parentFrame, supplier, conn);
+                    detailDialog.setVisible(true);
+                }else {
+                    JOptionPane.showMessageDialog(this, "Facture non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            }catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement des détails de la facture : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void setupButtonActions() {
