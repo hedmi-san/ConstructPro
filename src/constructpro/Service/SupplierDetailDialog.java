@@ -1,11 +1,19 @@
 package constructpro.Service;
 
-import java.awt.Color;
+import java.awt.*;
 import constructpro.DTO.Supplier;
 import constructpro.DAO.SupplierDAO;
+import constructpro.DAO.BillDAO;
+import constructpro.DTO.FinancialTransaction;
+import constructpro.DAO.FinancialTransactionDAO;
 import javax.swing.*;
 import java.sql.*;
+import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class SupplierDetailDialog extends JDialog {
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
@@ -13,42 +21,283 @@ public class SupplierDetailDialog extends JDialog {
     private static final Color ACCENT_COLOR = new Color(0, 120, 215);
     private static final Color TEXT_COLOR = new Color(220, 220, 220);
     private static final Color LABEL_COLOR = new Color(180, 180, 180);
-    
+
     private Supplier currentSupplier;
     private SupplierDAO supplierDAO;
+    private BillDAO billDAO;
+    private FinancialTransactionDAO transactionDAO;
+
     private JTabbedPane tabbedPane;
     private JPanel infoPanel;
     private JPanel financeOperationPanel;
-    private JTable billsTable,financeOperationTable;
-    private DefaultTableModel tableModel1,tableModel2;
-    private JButton addButton,deleteButton;
-    
+
+    // Tab 1 Components
+    private JTable billsTable;
+    private DefaultTableModel tableModel1;
+    private JLabel totalSpentLabel, totalPaidLabel, debtLabel;
+
+    // Tab 2 Components
+    private JTable financeOperationTable;
+    private DefaultTableModel tableModel2;
+    private JButton addTransactionButton, deleteTransactionButton;
+
     private Connection conn;
-    
-    public SupplierDetailDialog(JFrame parent,Supplier supplier, Connection connection){
-        super(parent, "Détails de Fournisseure", true);
+
+    public SupplierDetailDialog(JFrame parent, Supplier supplier, Connection connection) {
+        super(parent, "Détails de Fournisseur", true);
         this.conn = connection;
-        
+        this.currentSupplier = supplier;
+        this.supplierDAO = new SupplierDAO(connection);
+        this.billDAO = new BillDAO(connection);
+        this.transactionDAO = new FinancialTransactionDAO(connection);
+
         initializeComponents();
         setupLayout();
         setupStyling();
         populateData();
+        populateTransactions();
 
-        setSize(900, 650);
+        setSize(1000, 700);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
-    
-    private void initializeComponents(){
-        
+
+    private void initializeComponents() {
+        tabbedPane = new JTabbedPane();
+
+        // --- Info Panel Components ---
+        infoPanel = new JPanel(new BorderLayout());
+
+        String[] columns = { "N° Facture", "Chantier", "Date", "Coût Total", "Montant Payé" };
+        tableModel1 = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        billsTable = new JTable(tableModel1);
+
+        totalSpentLabel = new JLabel("Total Dépensé: 0.00");
+        totalPaidLabel = new JLabel("Total Payé: 0.00");
+        debtLabel = new JLabel("Dette (Reste): 0.00");
+
+        // --- Finance/Operations Panel Components ---
+        financeOperationPanel = new JPanel(new BorderLayout());
+
+        String[] columns2 = { "ID", "Date", "Montant", "Méthode", "Preuve (Image)" };
+        tableModel2 = new DefaultTableModel(columns2, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        financeOperationTable = new JTable(tableModel2);
+
+        addTransactionButton = new JButton("Ajouter Transaction");
+        deleteTransactionButton = new JButton("Supprimer Transaction");
     }
-    private void setupLayout(){
-        
+
+    private void setupLayout() {
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(DARK_BACKGROUND);
+
+        // --- Setup Info Panel Layout ---
+        JScrollPane tableScroll = new JScrollPane(billsTable);
+        tableScroll.setBorder(BorderFactory.createEmptyBorder());
+        tableScroll.getViewport().setBackground(DARK_BACKGROUND);
+
+        JPanel totalsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
+        totalsPanel.setBackground(DARKER_BACKGROUND);
+        totalsPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(60, 60, 60)));
+        totalsPanel.add(totalSpentLabel);
+        totalsPanel.add(totalPaidLabel);
+        totalsPanel.add(debtLabel);
+
+        infoPanel.add(tableScroll, BorderLayout.CENTER);
+        infoPanel.add(totalsPanel, BorderLayout.SOUTH);
+
+        // --- Setup Finance Panel Layout ---
+        JScrollPane transactionScroll = new JScrollPane(financeOperationTable);
+        transactionScroll.setBorder(BorderFactory.createEmptyBorder());
+        transactionScroll.getViewport().setBackground(DARK_BACKGROUND);
+
+        JPanel transactionButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        transactionButtonsPanel.setBackground(DARK_BACKGROUND);
+        transactionButtonsPanel.add(addTransactionButton);
+        transactionButtonsPanel.add(deleteTransactionButton);
+
+        financeOperationPanel.add(transactionScroll, BorderLayout.CENTER);
+        financeOperationPanel.add(transactionButtonsPanel, BorderLayout.SOUTH);
+
+        // Add tabs
+        tabbedPane.addTab("Informations", infoPanel);
+        tabbedPane.addTab("Opérations Financières", financeOperationPanel);
+
+        add(tabbedPane, BorderLayout.CENTER);
+
+        setupTransactionActions();
     }
-    private void setupStyling(){
-        
+
+    private void setupTransactionActions() {
+        addTransactionButton.addActionListener(e -> {
+            FinanceTransactionForm form = new FinanceTransactionForm(this, "Ajouter une Transaction");
+            form.setVisible(true);
+
+            if (form.isConfirmed()) {
+                FinancialTransaction ft = form.getTransaction();
+                ft.setSupplierId(currentSupplier.getId());
+                try {
+                    transactionDAO.insertTransaction(ft);
+                    populateTransactions();
+                    JOptionPane.showMessageDialog(this, "Transaction ajoutée avec succès!");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage());
+                }
+            }
+        });
+
+        deleteTransactionButton.addActionListener(e -> {
+            int selectedRow = financeOperationTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                int id = (int) tableModel2.getValueAt(selectedRow, 0);
+                int confirm = JOptionPane.showConfirmDialog(this, "Voulez-vous vraiment supprimer cette transaction ?",
+                        "Confirmer", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        transactionDAO.deleteTransaction(id);
+                        populateTransactions();
+                        JOptionPane.showMessageDialog(this, "Transaction supprimée.");
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une transaction.");
+            }
+        });
     }
-    private void populateData(){
-        
+
+    private void setupStyling() {
+        // TabbedPane Styling
+        tabbedPane.setBackground(DARK_BACKGROUND);
+        tabbedPane.setForeground(TEXT_COLOR);
+
+        // Panels
+        infoPanel.setBackground(DARK_BACKGROUND);
+        financeOperationPanel.setBackground(DARK_BACKGROUND);
+
+        // Tables
+        styleTable(billsTable);
+        styleTable(financeOperationTable);
+
+        // Labels
+        Font labelFont = new Font("Segoe UI", Font.BOLD, 14);
+        totalSpentLabel.setFont(labelFont);
+        totalSpentLabel.setForeground(TEXT_COLOR);
+        totalPaidLabel.setFont(labelFont);
+        totalPaidLabel.setForeground(new Color(100, 255, 100));
+        debtLabel.setFont(labelFont);
+        debtLabel.setForeground(new Color(255, 100, 100));
+
+        // Buttons
+        styleButton(addTransactionButton, ACCENT_COLOR);
+        styleButton(deleteTransactionButton, new Color(200, 50, 50));
+    }
+
+    private void styleButton(JButton btn, Color bgColor) {
+        btn.setBackground(bgColor);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    }
+
+    private void styleTable(JTable table) {
+        table.setBackground(DARK_BACKGROUND);
+        table.setForeground(TEXT_COLOR);
+        table.setGridColor(new Color(60, 60, 60));
+        table.setRowHeight(30);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        table.setFillsViewportHeight(true);
+        table.setSelectionBackground(ACCENT_COLOR);
+        table.setSelectionForeground(Color.WHITE);
+
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(DARKER_BACKGROUND);
+        header.setForeground(TEXT_COLOR);
+        header.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(60, 60, 60)));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
+
+    private void populateData() {
+        tableModel1.setRowCount(0);
+        double totalSpent = 0;
+        double totalPaid = 0;
+        DecimalFormat currencyFormat = new DecimalFormat("#,##0.00");
+
+        try {
+            ResultSet rs = billDAO.getBillsBySupplierId(currentSupplier.getId());
+            while (rs.next()) {
+                String factureNum = rs.getString("factureNumber");
+                String siteName = rs.getString("site_name");
+                Date date = rs.getDate("billDate");
+                double cost = rs.getDouble("totalCost");
+                double paid = rs.getDouble("paidAmount");
+
+                totalSpent += cost;
+                totalPaid += paid;
+
+                tableModel1.addRow(new Object[] {
+                        factureNum,
+                        siteName,
+                        date,
+                        currencyFormat.format(cost),
+                        currencyFormat.format(paid)
+                });
+            }
+
+            totalSpentLabel.setText("Total Dépensé: " + currencyFormat.format(totalSpent) + " DA");
+            totalPaidLabel.setText("Total Payé: " + currencyFormat.format(totalPaid) + " DA");
+            double debt = totalSpent - totalPaid;
+            debtLabel.setText("Dette (Reste): " + currencyFormat.format(debt) + " DA");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void populateTransactions() {
+        tableModel2.setRowCount(0);
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        try {
+            List<FinancialTransaction> transactions = transactionDAO
+                    .getTransactionsBySupplierId(currentSupplier.getId());
+            for (FinancialTransaction ft : transactions) {
+                tableModel2.addRow(new Object[] {
+                        ft.getId(),
+                        ft.getPaymentDate().format(formatter),
+                        df.format(ft.getAmount()) + " DA",
+                        ft.getMethod(),
+                        (ft.getImagePath() != null && !ft.getImagePath().isEmpty()) ? "Oui" : "Non"
+                });
+            }
+
+            // Hide ID column
+            financeOperationTable.getColumnModel().getColumn(0).setMinWidth(0);
+            financeOperationTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            financeOperationTable.getColumnModel().getColumn(0).setWidth(0);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

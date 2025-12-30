@@ -117,27 +117,6 @@ public class SupplierPage extends JPanel {
 
         setupButtonActions();
     }
-    
-    private void showSupplierDetails(){
-        int selectedRow = suppliersTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            try {
-                DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
-                int supplierId = (Integer) model.getValueAt(selectedRow, 0);
-                Supplier supplier = supplierDAO.getSupplierById(supplierId);
-                if (supplier != null) {
-                    SupplierDetailDialog detailDialog = new SupplierDetailDialog(parentFrame, supplier, conn);
-                    detailDialog.setVisible(true);
-                }else {
-                    JOptionPane.showMessageDialog(this, "Facture non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
-                }
-            }catch (HeadlessException | SQLException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "Erreur lors du chargement des détails de la facture : " + ex.getMessage(), "Erreur",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
 
     private void setupButtonActions() {
         // Add button action
@@ -281,6 +260,29 @@ public class SupplierPage extends JPanel {
             suppliersTable.getColumnModel().getColumn(0).setWidth(0);
 
         } catch (SQLException e) {
+        }
+    }
+
+    private void showSupplierDetails() {
+        int selectedRow = suppliersTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                DefaultTableModel model = (DefaultTableModel) suppliersTable.getModel();
+                int supplierId = (Integer) model.getValueAt(selectedRow, 0);
+
+                Supplier supplier = supplierDAO.getSupplierById(supplierId);
+                if (supplier != null) {
+                    SupplierDetailDialog detailDialog = new SupplierDetailDialog(parentFrame, supplier, conn);
+                    detailDialog.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Fournisseur non trouvé !", "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement des détails du fournisseur : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

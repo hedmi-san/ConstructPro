@@ -45,37 +45,52 @@ public class SupplierDAO {
         }
     }
 
-    public ResultSet getSuppliersInfo() throws SQLException {
+    // Sync method to update all supplier totals from bills
+    private void updateAllSupplierTotals() throws SQLException {
         String sql = """
-                    SELECT
-                        s.id,
-                        s.supplierName,
-                        s.phone,
-                        s.address,
-                        COALESCE(SUM(b.totalCost), 0) as totalSpent,
-                        COALESCE(SUM(b.paidAmount), 0) as totalPaid
-                    FROM suppliers s
-                    LEFT JOIN bills b ON s.id = b.supplierId
-                    GROUP BY s.id, s.supplierName, s.phone, s.address
+                    UPDATE suppliers s
+                    LEFT JOIN (
+                        SELECT supplierId, SUM(totalCost) as tc, SUM(paidAmount) as pa
+                        FROM bills
+                        GROUP BY supplierId
+                    ) b ON s.id = b.supplierId
+                    SET s.totalSpent = COALESCE(b.tc, 0), s.totalPaid = COALESCE(b.pa, 0)
                 """;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);
+        }
+    }
+
+    // Sync method for a specific supplier (optimization)
+    private void updateSupplierTotals(int supplierId) throws SQLException {
+        String sql = """
+                    UPDATE suppliers s
+                    LEFT JOIN (
+                        SELECT supplierId, SUM(totalCost) as tc, SUM(paidAmount) as pa
+                        FROM bills
+                        WHERE supplierId = ?
+                        GROUP BY supplierId
+                    ) b ON s.id = b.supplierId
+                    SET s.totalSpent = COALESCE(b.tc, 0), s.totalPaid = COALESCE(b.pa, 0)
+                    WHERE s.id = ?
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, supplierId);
+            ps.setInt(2, supplierId);
+            ps.executeUpdate();
+        }
+    }
+
+    public ResultSet getSuppliersInfo() throws SQLException {
+        updateAllSupplierTotals(); // Sync before fetch
+        String sql = "SELECT * FROM suppliers";
         Statement st = connection.createStatement();
         return st.executeQuery(sql);
     }
 
     public Supplier getSupplierById(int id) throws SQLException {
-        String sql = """
-                    SELECT
-                        s.id,
-                        s.supplierName,
-                        s.phone,
-                        s.address,
-                        COALESCE(SUM(b.totalCost), 0) as totalSpent,
-                        COALESCE(SUM(b.paidAmount), 0) as totalPaid
-                    FROM suppliers s
-                    LEFT JOIN bills b ON s.id = b.supplierId
-                    WHERE s.id = ?
-                    GROUP BY s.id, s.supplierName, s.phone, s.address
-                """;
+        updateSupplierTotals(id); // Sync specific supplier before fetch
+        String sql = "SELECT * FROM suppliers WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -95,19 +110,8 @@ public class SupplierDAO {
 
     public ResultSet searchSupplierByName(String searchTerm) {
         try {
-            String query = """
-                        SELECT
-                            s.id,
-                            s.supplierName,
-                            s.phone,
-                            s.address,
-                            COALESCE(SUM(b.totalCost), 0) as totalSpent,
-                            COALESCE(SUM(b.paidAmount), 0) as totalPaid
-                        FROM suppliers s
-                        LEFT JOIN bills b ON s.id = b.supplierId
-                        WHERE s.supplierName LIKE ?
-                        GROUP BY s.id, s.supplierName, s.phone, s.address
-                    """;
+            updateAllSupplierTotals(); // Sync all before search to ensure accuracy
+            String query = "SELECT * FROM suppliers WHERE supplierName LIKE ?";
             PreparedStatement ps = connection.prepareStatement(query);
             String likeTerm = "%" + searchTerm + "%";
             ps.setString(1, likeTerm);

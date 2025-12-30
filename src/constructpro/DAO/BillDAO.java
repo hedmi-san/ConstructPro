@@ -34,7 +34,44 @@ public class BillDAO {
         return -1; // Return -1 if insertion failed
     }
 
+    // Sync method: Calculate totalCost from billItems + transferFee and update
+    // bills table
+    private void updateAllBillTotals() throws SQLException {
+        String sql = """
+                    UPDATE bills b
+                    LEFT JOIN (
+                        SELECT billId, SUM(quantity * unitPrice) as itemsTotal
+                        FROM billItems
+                        GROUP BY billId
+                    ) bi ON b.id = bi.billId
+                    SET b.totalCost = COALESCE(bi.itemsTotal, 0) + COALESCE(b.transferFee, 0)
+                """;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);
+        }
+    }
+
+    private void updateBillTotal(int billId) throws SQLException {
+        String sql = """
+                    UPDATE bills b
+                    LEFT JOIN (
+                        SELECT billId, SUM(quantity * unitPrice) as itemsTotal
+                        FROM billItems
+                        WHERE billId = ?
+                        GROUP BY billId
+                    ) bi ON b.id = bi.billId
+                    SET b.totalCost = COALESCE(bi.itemsTotal, 0) + COALESCE(b.transferFee, 0)
+                    WHERE b.id = ?
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, billId);
+            ps.setInt(2, billId);
+            ps.executeUpdate();
+        }
+    }
+
     public ResultSet getBillsInfo() throws SQLException {
+        updateAllBillTotals(); // Sync before fetch
         String sql = """
                 SELECT
                     b.id,
@@ -55,6 +92,7 @@ public class BillDAO {
     }
 
     public Bill getBillById(int id) throws SQLException {
+        updateBillTotal(id); // Sync specific bill before fetch
         String sql = "SELECT * FROM bills WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -95,6 +133,7 @@ public class BillDAO {
     }
 
     public ResultSet searchBillsByFactureNumber(String searchTerm) throws SQLException {
+        updateAllBillTotals(); // Sync before search
         String sql = """
                 SELECT
                     b.id,
@@ -115,13 +154,37 @@ public class BillDAO {
         ps.setString(1, "%" + searchTerm + "%");
         return ps.executeQuery();
     }
-    
-    public void deleteBill(int id) throws SQLException{
+
+    public void deleteBill(int id) throws SQLException {
         String sql = "DELETE FROM bills WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
         }
     }
-    
+
+    public ResultSet getBillsBySupplierId(int supplierId) throws SQLException {
+        updateAllBillTotals(); // Sync before fetch (could be optimized to filter by supplier)
+        String sql = """
+                SELECT
+                    b.id,
+                    b.factureNumber,
+                    s.supplierName,
+                    cs.name AS site_name,
+                    b.billDate,
+                    b.totalCost,
+                    b.paidAmount,
+                    b.transferFee,
+                    b.imagePath
+                FROM bills b
+                JOIN suppliers s ON b.supplierId = s.id
+                JOIN constructionSite cs ON b.assignedSiteId = cs.id
+                WHERE b.supplierId = ?
+                ORDER BY b.billDate DESC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, supplierId);
+        return ps.executeQuery();
+    }
+
 }
