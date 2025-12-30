@@ -5,7 +5,6 @@ import java.time.LocalDate;
 public class Bill {
     private int Id;
     private String factureNumber;
-
     private int supplierID;
     private int siteID;
     private LocalDate billDate;
