@@ -3,26 +3,17 @@ package constructpro.Service;
 import com.toedter.calendar.JDateChooser;
 import constructpro.DTO.FinancialTransaction;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.ZoneId;
 import java.util.Date;
 
 public class FinanceTransactionForm extends JDialog {
     private JDateChooser dateChooser;
     private JTextField amountField;
-    private JComboBox<String> methodBox;
-    private JButton uploadButton;
-    private JLabel imageLabel;
+    private JTextField methodField;
     private JButton saveButton;
     private JButton cancelButton;
     private boolean confirmed = false;
-    private File selectedImageFile;
-    private String uploadedImagePath;
 
     private FinancialTransaction transaction;
 
@@ -42,10 +33,7 @@ public class FinanceTransactionForm extends JDialog {
 
         amountField = new JTextField(15);
 
-        methodBox = new JComboBox<>(new String[] { "Espèces", "Chèque", "Virement" });
-
-        uploadButton = new JButton("Choisir Image");
-        imageLabel = new JLabel("Aucune image sélectionnée");
+        methodField = new JTextField(15);
 
         saveButton = new JButton("Enregistrer");
         cancelButton = new JButton("Annuler");
@@ -83,19 +71,8 @@ public class FinanceTransactionForm extends JDialog {
         gbc.gridy = row;
         formPanel.add(new JLabel("Méthode:"), gbc);
         gbc.gridx = 1;
-        formPanel.add(methodBox, gbc);
+        formPanel.add(methodField, gbc);
         row++;
-
-        // Image
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel("Preuve (Image):"), gbc);
-        gbc.gridx = 1;
-        JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        imagePanel.add(uploadButton);
-        imagePanel.add(Box.createHorizontalStrut(10));
-        imagePanel.add(imageLabel);
-        formPanel.add(imagePanel, gbc);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -107,18 +84,8 @@ public class FinanceTransactionForm extends JDialog {
     }
 
     private void setupActions() {
-        uploadButton.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "jpeg"));
-            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                selectedImageFile = fileChooser.getSelectedFile();
-                imageLabel.setText(selectedImageFile.getName());
-            }
-        });
-
         saveButton.addActionListener(e -> {
             if (validateFields()) {
-                uploadImage();
                 populateTransaction();
                 confirmed = true;
                 dispose();
@@ -142,29 +109,10 @@ public class FinanceTransactionForm extends JDialog {
         return true;
     }
 
-    private void uploadImage() {
-        if (selectedImageFile != null) {
-            try {
-                File destDir = new File("data/transactions/");
-                if (!destDir.exists())
-                    destDir.mkdirs();
-
-                String fileName = "trans_" + System.currentTimeMillis() + "_" + selectedImageFile.getName();
-                File destFile = new File(destDir, fileName);
-
-                Files.copy(selectedImageFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                uploadedImagePath = destFile.getPath();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void populateTransaction() {
         transaction.setPaymentDate(dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         transaction.setAmount(Double.parseDouble(amountField.getText()));
-        transaction.setMethod((String) methodBox.getSelectedItem());
-        transaction.setImagePath(uploadedImagePath);
+        transaction.setMethod(methodField.getText());
     }
 
     public boolean isConfirmed() {

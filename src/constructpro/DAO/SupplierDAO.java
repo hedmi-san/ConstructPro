@@ -45,7 +45,8 @@ public class SupplierDAO {
         }
     }
 
-    // Sync method to update all supplier totals from bills
+    // Sync method to update all supplier totals from bills and financial
+    // transactions
     private void updateAllSupplierTotals() throws SQLException {
         String sql = """
                     UPDATE suppliers s
@@ -54,7 +55,13 @@ public class SupplierDAO {
                         FROM bills
                         GROUP BY supplierId
                     ) b ON s.id = b.supplierId
-                    SET s.totalSpent = COALESCE(b.tc, 0), s.totalPaid = COALESCE(b.pa, 0)
+                    LEFT JOIN (
+                        SELECT supplierId, SUM(amount) as fa
+                        FROM financialTransaction
+                        GROUP BY supplierId
+                    ) f ON s.id = f.supplierId
+                    SET s.totalSpent = COALESCE(b.tc, 0),
+                        s.totalPaid = COALESCE(b.pa, 0) + COALESCE(f.fa, 0)
                 """;
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(sql);
@@ -71,12 +78,20 @@ public class SupplierDAO {
                         WHERE supplierId = ?
                         GROUP BY supplierId
                     ) b ON s.id = b.supplierId
-                    SET s.totalSpent = COALESCE(b.tc, 0), s.totalPaid = COALESCE(b.pa, 0)
+                    LEFT JOIN (
+                        SELECT supplierId, SUM(amount) as fa
+                        FROM financialTransaction
+                        WHERE supplierId = ?
+                        GROUP BY supplierId
+                    ) f ON s.id = f.supplierId
+                    SET s.totalSpent = COALESCE(b.tc, 0),
+                        s.totalPaid = COALESCE(b.pa, 0) + COALESCE(f.fa, 0)
                     WHERE s.id = ?
                 """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, supplierId);
             ps.setInt(2, supplierId);
+            ps.setInt(3, supplierId);
             ps.executeUpdate();
         }
     }

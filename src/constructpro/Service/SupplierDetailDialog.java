@@ -40,6 +40,7 @@ public class SupplierDetailDialog extends JDialog {
     private JTable financeOperationTable;
     private DefaultTableModel tableModel2;
     private JButton addTransactionButton, deleteTransactionButton;
+    private JFrame parentFrame;
 
     private Connection conn;
 
@@ -84,7 +85,7 @@ public class SupplierDetailDialog extends JDialog {
         // --- Finance/Operations Panel Components ---
         financeOperationPanel = new JPanel(new BorderLayout());
 
-        String[] columns2 = { "ID", "Date", "Montant", "Méthode", "Preuve (Image)" };
+        String[] columns2 = { "ID", "Date", "Montant", "Méthode" };
         tableModel2 = new DefaultTableModel(columns2, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -157,6 +158,15 @@ public class SupplierDetailDialog extends JDialog {
             }
         });
 
+        financeOperationTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    uploadImage();
+                }
+            }
+        });
+
         deleteTransactionButton.addActionListener(e -> {
             int selectedRow = financeOperationTable.getSelectedRow();
             if (selectedRow >= 0) {
@@ -176,6 +186,27 @@ public class SupplierDetailDialog extends JDialog {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner une transaction.");
             }
         });
+    }
+
+    private void uploadImage() {
+        int selectedRow = financeOperationTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                DefaultTableModel model = (DefaultTableModel) financeOperationTable.getModel();
+                int transactionId = (Integer) model.getValueAt(selectedRow, 0); // Get worker ID from hidden column
+                FinancialTransaction transaction = transactionDAO.getTransactionById(transactionId);
+                if (transaction != null) {
+                    FinanceTransactionDetail detailDialog = new FinanceTransactionDetail(parentFrame, transaction, conn);
+                    detailDialog.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Employé non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (HeadlessException | SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors du chargement des détails de l'employé : " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void setupStyling() {
@@ -286,8 +317,7 @@ public class SupplierDetailDialog extends JDialog {
                         ft.getId(),
                         ft.getPaymentDate().format(formatter),
                         df.format(ft.getAmount()) + " DA",
-                        ft.getMethod(),
-                        (ft.getImagePath() != null && !ft.getImagePath().isEmpty()) ? "Oui" : "Non"
+                        ft.getMethod()
                 });
             }
 
@@ -299,5 +329,9 @@ public class SupplierDetailDialog extends JDialog {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 }
