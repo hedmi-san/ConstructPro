@@ -7,7 +7,7 @@ import constructpro.DTO.Worker;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class salaryOption extends JDialog{
+public class SalaryOption extends JDialog{
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     private Connection conn;
     private Worker worker;
@@ -15,7 +15,7 @@ public class salaryOption extends JDialog{
     private JButton salaireBtn;
     private JFrame parentFrame;
     
-    public salaryOption(JFrame parent, Worker worker, Connection connection) throws SQLException {
+    public SalaryOption(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "Choisissez une action", true);
         this.worker = worker;
         initializeComponents();
@@ -41,7 +41,7 @@ public class salaryOption extends JDialog{
                 // Open Histoire window
                 new HistoireDialog(parentFrame, worker, conn).setVisible(true);
             } catch (SQLException ex) {
-                Logger.getLogger(salaryOption.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SalaryOption.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         
@@ -51,7 +51,7 @@ public class salaryOption extends JDialog{
                 // Open Salaire window
                 new PaymentPanel(parentFrame, worker, conn).setVisible(true);
             } catch (SQLException ex) {
-                Logger.getLogger(salaryOption.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SalaryOption.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

@@ -46,13 +46,36 @@ public class SupplierDAO {
     }
 
     public ResultSet getSuppliersInfo() throws SQLException {
-        String sql = "SELECT * FROM suppliers";
+        String sql = """
+                    SELECT
+                        s.id,
+                        s.supplierName,
+                        s.phone,
+                        s.address,
+                        COALESCE(SUM(b.totalCost), 0) as totalSpent,
+                        COALESCE(SUM(b.paidAmount), 0) as totalPaid
+                    FROM suppliers s
+                    LEFT JOIN bills b ON s.id = b.supplierId
+                    GROUP BY s.id, s.supplierName, s.phone, s.address
+                """;
         Statement st = connection.createStatement();
         return st.executeQuery(sql);
     }
 
     public Supplier getSupplierById(int id) throws SQLException {
-        String sql = "SELECT * FROM suppliers WHERE id = ?";
+        String sql = """
+                    SELECT
+                        s.id,
+                        s.supplierName,
+                        s.phone,
+                        s.address,
+                        COALESCE(SUM(b.totalCost), 0) as totalSpent,
+                        COALESCE(SUM(b.paidAmount), 0) as totalPaid
+                    FROM suppliers s
+                    LEFT JOIN bills b ON s.id = b.supplierId
+                    WHERE s.id = ?
+                    GROUP BY s.id, s.supplierName, s.phone, s.address
+                """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -72,7 +95,19 @@ public class SupplierDAO {
 
     public ResultSet searchSupplierByName(String searchTerm) {
         try {
-            String query = "SELECT * FROM suppliers WHERE supplierName LIKE ?";
+            String query = """
+                        SELECT
+                            s.id,
+                            s.supplierName,
+                            s.phone,
+                            s.address,
+                            COALESCE(SUM(b.totalCost), 0) as totalSpent,
+                            COALESCE(SUM(b.paidAmount), 0) as totalPaid
+                        FROM suppliers s
+                        LEFT JOIN bills b ON s.id = b.supplierId
+                        WHERE s.supplierName LIKE ?
+                        GROUP BY s.id, s.supplierName, s.phone, s.address
+                    """;
             PreparedStatement ps = connection.prepareStatement(query);
             String likeTerm = "%" + searchTerm + "%";
             ps.setString(1, likeTerm);
