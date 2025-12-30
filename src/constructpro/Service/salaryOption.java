@@ -38,7 +38,6 @@ public class SalaryOption extends JDialog{
         histoireBtn.addActionListener(e -> {
             dispose();
             try {
-                // Open Histoire window
                 new HistoireDialog(parentFrame, worker, conn).setVisible(true);
             } catch (SQLException ex) {
                 Logger.getLogger(SalaryOption.class.getName()).log(Level.SEVERE, null, ex);
@@ -79,7 +78,6 @@ public class SalaryOption extends JDialog{
     private void setupLayout(){
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        
         // Title label
         JLabel titleLabel = new JLabel("Choisissez une action");
         titleLabel.setForeground(Color.WHITE);
