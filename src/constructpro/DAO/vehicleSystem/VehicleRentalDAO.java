@@ -71,7 +71,7 @@ public class VehicleRentalDAO {
      */
     public void updateRentalRecord(VehicleRental rental) throws SQLException {
         String sql = "UPDATE vehicleRental SET startDate = ?, endDate = ?, daysWorked = ?, " +
-                "transferFee = ?, assignedSiteId = ?, dailyRate = ? WHERE id = ?";
+                "transferFee = ?, assignedSiteId = ?, dailyRate = ?, depositeAmount = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDate(1, Date.valueOf(rental.getStartDate()));
@@ -80,7 +80,8 @@ public class VehicleRentalDAO {
             stmt.setDouble(4, rental.getTransferFee());
             stmt.setInt(5, rental.getAssignedSiteId());
             stmt.setDouble(6, rental.getDailyRate());
-            stmt.setInt(7, rental.getId());
+            stmt.setDouble(7, rental.getDepositAmount());
+            stmt.setInt(8, rental.getId());
             stmt.executeUpdate();
         }
     }

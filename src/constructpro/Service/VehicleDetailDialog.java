@@ -159,7 +159,7 @@ public class VehicleDetailDialog extends JDialog {
         dailyRateField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
         // Create table with columns
-        String[] columns = { "Date de début", "Date de fin", "Chantier", "Tarif quotidien", "Jours travaillés",
+        String[] columns = { "Date Début", "Date Fin", "Tarif", "Jours travaillés",
                 "Dépôt", "Frais de transport", "Coût", "Reste à payer" };
         rentTableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -583,21 +583,12 @@ public class VehicleDetailDialog extends JDialog {
                 List<VehicleRental> records = vehicleRentalDAO.getAllRentalRecords(currentVehicle.getId());
 
                 for (VehicleRental record : records) {
-                    // Get site name from rental record's assigned site
-                    String siteName = "N/A";
-                    if (record.getAssignedSiteId() > 0) {
-                        siteName = siteDAO.getSiteNameById(record.getAssignedSiteId());
-                        if (siteName == null)
-                            siteName = "N/A";
-                    }
-
                     double cost = (record.getDailyRate() * record.getDaysWorked()) + record.getTransferFee();
                     double restToPay = cost - record.getDepositAmount();
-
+                    
                     Object[] row = {
                             record.getStartDate().toString(),
                             record.getEndDate() != null ? record.getEndDate().toString() : "En cours",
-                            siteName,
                             String.format("%.2f", record.getDailyRate()),
                             record.getDaysWorked(),
                             String.format("%.2f", record.getDepositAmount()),
@@ -752,7 +743,7 @@ public class VehicleDetailDialog extends JDialog {
     private void editVehicle() {
         try {
             VehicleForm dialog = new VehicleForm(parentFrame,
-                    "Modifier la Véhicule", currentVehicle, conn);
+                "Modifier la Véhicule", currentVehicle, conn);
             dialog.setVisible(true);
 
             if (dialog.isConfirmed()) {

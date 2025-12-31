@@ -244,7 +244,7 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Tarif quotidien (DA):"), gbc);
+        formPanel.add(createLabel("Tarif (DA):"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -255,7 +255,7 @@ public class RentalRecordFormDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
-        formPanel.add(createLabel("Montant de dépôt (DA):"), gbc);
+        formPanel.add(createLabel("Le montant payé (DA):"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
