@@ -70,4 +70,14 @@ public class FinancialTransactionDAO {
         }
         return ft;
     }
+    
+    public void updateTransactionImageInDB(FinancialTransaction ft) throws SQLException{
+        String sql = "UPDATE financialTransaction SET imagePath = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, ft.getImagePath());
+            ps.setInt(2, ft.getId());
+            ps.executeUpdate();
+        }
+    }
+    
 }

@@ -199,11 +199,11 @@ public class SupplierDetailDialog extends JDialog {
                     FinanceTransactionDetail detailDialog = new FinanceTransactionDetail(parentFrame, transaction, conn);
                     detailDialog.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Employé non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Transaction non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (HeadlessException | SQLException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Erreur lors du chargement des détails de l'employé : " + ex.getMessage(), "Erreur",
+                        "Erreur lors du chargement des détails de transaction : " + ex.getMessage(), "Erreur",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
