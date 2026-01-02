@@ -163,4 +163,14 @@ public class VehicleRentalDAO {
         }
         return null;
     }
+    
+    
+    public void updatePaidAmount(double amount, int id) throws SQLException{
+        String sql = "UPDATE vehicleRental SET depositeAmount = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setDouble(1, amount);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+        }
+    }
 }

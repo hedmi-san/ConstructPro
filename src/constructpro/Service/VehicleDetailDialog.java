@@ -53,7 +53,7 @@ public class VehicleDetailDialog extends JDialog {
     private JPanel rentPanel;
     private JLabel ownerNameValue, ownerPhoneValue;
     private JTextField dailyRateField;
-    private JButton addRentButton, editRentButton;
+    private JButton addRentButton, editRentButton, paymentButton;
     private JTable rentTable;
     private DefaultTableModel rentTableModel;
     private JPanel rentTotalsPanel;
@@ -177,6 +177,7 @@ public class VehicleDetailDialog extends JDialog {
         // Create buttons
         addRentButton = createStyledButton("Ajouter", new Color(0, 123, 255));
         editRentButton = createStyledButton("Modifier", new Color(255, 193, 7));
+        paymentButton = createStyledButton("Payment", new Color(66, 191, 36));
 
         // Add action listeners
         addRentButton.addActionListener(e -> {
@@ -188,6 +189,7 @@ public class VehicleDetailDialog extends JDialog {
             }
         });
         editRentButton.addActionListener(e -> editRentalRecord());
+        paymentButton.addActionListener(e -> payRest());
 
         // Create rent panel
         rentPanel = new JPanel(new BorderLayout(10, 10));
@@ -421,6 +423,7 @@ public class VehicleDetailDialog extends JDialog {
             buttonsPanel.setBackground(DARK_BACKGROUND);
             buttonsPanel.add(addRentButton);
             buttonsPanel.add(editRentButton);
+            buttonsPanel.add(paymentButton);
 
             mainPanel.add(ownerInfoPanel, BorderLayout.NORTH);
             mainPanel.add(recordsPanel, BorderLayout.CENTER);
@@ -585,7 +588,7 @@ public class VehicleDetailDialog extends JDialog {
                 for (VehicleRental record : records) {
                     double cost = (record.getDailyRate() * record.getDaysWorked()) + record.getTransferFee();
                     double restToPay = cost - record.getDepositAmount();
-                    
+
                     Object[] row = {
                             record.getStartDate().toString(),
                             record.getEndDate() != null ? record.getEndDate().toString() : "En cours",
@@ -740,10 +743,44 @@ public class VehicleDetailDialog extends JDialog {
         }
     }
 
+    private void payRest() {
+        int selectedRow = rentTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez sélectionner un enregistrement de location pour payer.",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            List<VehicleRental> records = vehicleRentalDAO.getAllRentalRecords(currentVehicle.getId());
+            if (selectedRow < records.size()) {
+                VehicleRental selectedRecord = records.get(selectedRow);
+
+                PayRestForm dialog = new PayRestForm(
+                        this,
+                        selectedRecord,
+                        currentVehicle.getId(),
+                        conn);
+                dialog.setVisible(true);
+
+                if (dialog.isSaved()) {
+                    loadRentalInformation(); // Refresh table
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors du paiement du dossier de location :" + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void editVehicle() {
         try {
             VehicleForm dialog = new VehicleForm(parentFrame,
-                "Modifier la Véhicule", currentVehicle, conn);
+                    "Modifier la Véhicule", currentVehicle, conn);
             dialog.setVisible(true);
 
             if (dialog.isConfirmed()) {

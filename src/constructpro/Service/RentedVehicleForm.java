@@ -289,7 +289,6 @@ public class RentedVehicleForm extends JDialog {
 
     private VehicleRental createRentedVehicle(int vehicleId) {
         VehicleRental rented = new VehicleRental();
-
         rented.setVehicle_id(vehicleId);
         rented.setOwnerName(ownerNameField.getText().trim());
         rented.setOwnerPhone(ownerPhoneField.getText().trim());
