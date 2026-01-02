@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class SiteForm extends JDialog {
 
-    private JTextField nameField, locationField, totalCostField;
+    private JTextField nameField, locationField;
     private JComboBox<String> statusComboBox;
     private JDateChooser startDateChooser, endDateChooser;
     private JButton saveButton, cancelButton;
@@ -42,7 +42,6 @@ public class SiteForm extends JDialog {
     private void initComponents() {
         nameField = new JTextField(20);
         locationField = new JTextField(20);
-        totalCostField = new JTextField(20);
 
         // Status dropdown
         statusComboBox = new JComboBox<>(new String[] {
@@ -121,14 +120,6 @@ public class SiteForm extends JDialog {
         formPanel.add(endDateChooser, gbc);
         row++;
 
-        // Total Cost
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel("Total Cost (DA):"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(totalCostField, gbc);
-
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
@@ -174,15 +165,6 @@ public class SiteForm extends JDialog {
             return false;
         }
 
-        try {
-            if (!totalCostField.getText().trim().isEmpty()) {
-                Double.valueOf(totalCostField.getText().trim());
-            }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Total cost must be a valid number!");
-            return false;
-        }
-
         return true;
     }
 
@@ -197,7 +179,6 @@ public class SiteForm extends JDialog {
         if (site.getEndDate() != null)
             endDateChooser.setDate(Date.from(site.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        totalCostField.setText(String.valueOf(site.getTotalCost()));
     }
 
     private LocalDate convertToLocalDate(Date date) {
@@ -214,16 +195,6 @@ public class SiteForm extends JDialog {
         site.setStartDate(convertToLocalDate(startDateChooser.getDate()));
         site.setEndDate(convertToLocalDate(endDateChooser.getDate()));
 
-        String totalCostStr = totalCostField.getText().trim();
-        if (!totalCostStr.isEmpty()) {
-            try {
-                site.setTotalCost(Double.parseDouble(totalCostStr));
-            } catch (NumberFormatException ex) {
-                site.setTotalCost(0);
-            }
-        } else {
-            site.setTotalCost(0);
-        }
         return site;
     }
 
