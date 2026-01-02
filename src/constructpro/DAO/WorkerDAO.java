@@ -19,11 +19,11 @@ public class WorkerDAO {
         this.connection = connection;
     }
 
-    public void insertWorker(Worker worker) throws SQLException {
+    public int insertWorker(Worker worker) throws SQLException {
         String sql = "INSERT INTO worker (firstName, lastName, birthPlace, birthDate, fatherName, motherName, " +
                 "startDate, identityCardNumber, identityCardDate, familySituation, accountNumber, " +
                 "phoneNumber, job, siteId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, worker.getFirstName());
             ps.setString(2, worker.getLastName());
             ps.setString(3, worker.getBirthPlace());
@@ -39,6 +39,15 @@ public class WorkerDAO {
             ps.setString(13, worker.getRole());
             ps.setInt(14, worker.getAssignedSiteID());
             ps.executeUpdate();
+
+            // Retrieve the auto-generated worker ID
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Creating worker failed, no ID obtained.");
+                }
+            }
         }
     }
 

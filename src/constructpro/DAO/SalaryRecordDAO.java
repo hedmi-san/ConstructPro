@@ -39,7 +39,70 @@ public class SalaryRecordDAO {
         }
     }
 
+    // Sync method to update all salary record totals from paymentCheck
+    private void updateAllSalaryRecordTotals() throws SQLException {
+        String sql = """
+                    UPDATE salaryRecord sr
+                    LEFT JOIN (
+                        SELECT salaryRecordId, SUM(baseSalary) as te, SUM(paidAmount) as tp
+                        FROM paymentCheck
+                        GROUP BY salaryRecordId
+                    ) pc ON sr.id = pc.salaryRecordId
+                    SET sr.totalEarned = COALESCE(pc.te, 0),
+                        sr.totalPaid = COALESCE(pc.tp, 0)
+                """;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);
+        }
+    }
+
+    // Sync method for a specific salary record (optimization)
+    private void updateSalaryRecordTotals(int salaryRecordId) throws SQLException {
+        String sql = """
+                    UPDATE salaryRecord sr
+                    LEFT JOIN (
+                        SELECT salaryRecordId, SUM(baseSalary) as te, SUM(paidAmount) as tp
+                        FROM paymentCheck
+                        WHERE salaryRecordId = ?
+                        GROUP BY salaryRecordId
+                    ) pc ON sr.id = pc.salaryRecordId
+                    SET sr.totalEarned = COALESCE(pc.te, 0),
+                        sr.totalPaid = COALESCE(pc.tp, 0)
+                    WHERE sr.id = ?
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, salaryRecordId);
+            ps.setInt(2, salaryRecordId);
+            ps.executeUpdate();
+        }
+    }
+
     public SalaryRecord getSalaryRecordByWorkerId(int workerId) throws SQLException {
+        // First sync the totals for this worker's salary record
+        SalaryRecord existingRecord = getSalaryRecordByWorkerIdWithoutSync(workerId);
+        if (existingRecord != null) {
+            updateSalaryRecordTotals(existingRecord.getId());
+        }
+
+        String sql = "SELECT id, workerId, totalEarned, totalPaid FROM salaryRecord WHERE workerId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, workerId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    SalaryRecord record = new SalaryRecord();
+                    record.setId(rs.getInt("id"));
+                    record.setWorkerId(rs.getInt("workerId"));
+                    record.setTotalEarned(rs.getDouble("totalEarned"));
+                    record.setAmountPaid(rs.getDouble("totalPaid"));
+                    return record;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Helper method to get record without syncing (used internally)
+    private SalaryRecord getSalaryRecordByWorkerIdWithoutSync(int workerId) throws SQLException {
         String sql = "SELECT id, workerId, totalEarned, totalPaid FROM salaryRecord WHERE workerId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, workerId);

@@ -140,12 +140,16 @@ public class WorkersPage extends JPanel {
 
                 if (dialog.isConfirmed()) {
                     Worker newWorker = dialog.getWorkerFromForm();
-                    workerDAO.insertWorker(newWorker);
-                    loadDataSet();
+                    // insertWorker now returns the generated worker ID
+                    int workerId = workerDAO.insertWorker(newWorker);
+
+                    // Create worker assignment if assigned to a site (not site ID 1)
                     if (newWorker.getAssignedSiteID() != 1) {
-                        workerAssignmentDAO.insertAssignment(newWorker.getId(), newWorker.getAssignedSiteID(),
+                        workerAssignmentDAO.insertAssignment(workerId, newWorker.getAssignedSiteID(),
                                 LocalDate.now());
                     }
+
+                    loadDataSet();
                     JOptionPane.showMessageDialog(this, "Ouvrier ajouté avec succès!");
                 }
             } catch (HeadlessException | SQLException ex) {

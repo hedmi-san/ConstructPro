@@ -146,10 +146,12 @@ public class HistoireDialog extends JDialog {
         button.setFont(new Font("Arial", Font.PLAIN, 14));
 
         button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.DARK_GRAY);
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.BLACK);
             }
@@ -282,9 +284,6 @@ public class HistoireDialog extends JDialog {
         }
 
         // TODO: Implement modification dialog
-        JOptionPane.showMessageDialog(this,
-                "Fonctionnalité de modification à implémenter",
-                "Information",
-                JOptionPane.INFORMATION_MESSAGE);
+        
     }
 }
