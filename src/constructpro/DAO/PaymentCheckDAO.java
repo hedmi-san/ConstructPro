@@ -58,10 +58,6 @@ public class PaymentCheckDAO {
         }
     }
 
-    /**
-     * Get all payment checks for a specific site and date with worker information
-     * Used for generating payment check PDF reports
-     */
     public ResultSet getPaymentChecksBySiteAndDate(int siteId, LocalDate paymentDate) throws SQLException {
         String sql = """
                 SELECT
@@ -86,5 +82,42 @@ public class PaymentCheckDAO {
         stmt.setInt(1, siteId);
         stmt.setDate(2, Date.valueOf(paymentDate));
         return stmt.executeQuery();
+    }
+
+    public PaymentCheck getPaymentCheckById(int id) throws SQLException {
+        PaymentCheck paymentCheck = null;
+        String sql = "SELECT id, salaryRecordId, siteId, paymentDate, baseSalary, paidAmount FROM paymentCheck WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    paymentCheck = new PaymentCheck();
+                    paymentCheck.setId(rs.getInt("id"));
+                    paymentCheck.setSalaryrecordId(rs.getInt("salaryRecordId"));
+                    paymentCheck.setSiteId(rs.getInt("siteId"));
+                    java.sql.Date pDate = rs.getDate("paymentDate");
+                    if (pDate != null) {
+                        paymentCheck.setPaymentDay(pDate.toLocalDate());
+                    }
+                    paymentCheck.setBaseSalary(rs.getDouble("baseSalary"));
+                    paymentCheck.setPaidAmount(rs.getDouble("paidAmount"));
+                }
+            }
+        }
+
+        return paymentCheck;
+    }
+
+    public void updatePaymentCheck(PaymentCheck paymentCheck) throws SQLException {
+        String sql = "UPDATE paymentCheck SET paymentDate = ?, baseSalary = ?, paidAmount = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setDate(1, Date.valueOf(paymentCheck.getPaymentDay()));
+            stmt.setDouble(2, paymentCheck.getBaseSalary());
+            stmt.setDouble(3, paymentCheck.getPaidAmount());
+            stmt.setInt(4, paymentCheck.getId());
+            stmt.executeUpdate();
+        }
     }
 }

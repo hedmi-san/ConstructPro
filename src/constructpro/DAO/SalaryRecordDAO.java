@@ -57,7 +57,7 @@ public class SalaryRecordDAO {
     }
 
     // Sync method for a specific salary record (optimization)
-    private void updateSalaryRecordTotals(int salaryRecordId) throws SQLException {
+    public void updateSalaryRecordTotals(int salaryRecordId) throws SQLException {
         String sql = """
                     UPDATE salaryRecord sr
                     LEFT JOIN (
@@ -133,5 +133,24 @@ public class SalaryRecordDAO {
             insertSalaryRecord(record);
         }
         return record;
+    }
+
+    public SalaryRecord getSalaryRecordById(int id) throws SQLException {
+        updateSalaryRecordTotals(id); // Sync totals before fetching
+        String sql = "SELECT id, workerId, totalEarned, totalPaid FROM salaryRecord WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    SalaryRecord record = new SalaryRecord();
+                    record.setId(rs.getInt("id"));
+                    record.setWorkerId(rs.getInt("workerId"));
+                    record.setTotalEarned(rs.getDouble("totalEarned"));
+                    record.setAmountPaid(rs.getDouble("totalPaid"));
+                    return record;
+                }
+            }
+        }
+        return null;
     }
 }

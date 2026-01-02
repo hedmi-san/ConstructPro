@@ -25,11 +25,13 @@ public class HistoireDialog extends JDialog {
     private JButton supprimerBtn;
     private JButton modifierBtn;
     private JPanel totalsPanel;
+    private Connection conn;
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
 
     public HistoireDialog(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "History", true);
 
+        this.conn = connection;
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
 
@@ -274,6 +276,7 @@ public class HistoireDialog extends JDialog {
     }
 
     private void modifySelectedPayment() {
+
         int selectedRow = historyTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
@@ -283,7 +286,28 @@ public class HistoireDialog extends JDialog {
             return;
         }
 
-        // TODO: Implement modification dialog
-        
+        try {
+            // Get the payment check from the selected row
+            List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
+            PaymentCheck selectedPaymentCheck = checks.get(selectedRow);
+
+            ModifyPaymentCheck dialog = new ModifyPaymentCheck(
+                    this,
+                    selectedPaymentCheck,
+                    conn);
+            dialog.setVisible(true);
+
+            if (dialog.isSaved()) {
+                // Refresh the salary record from database
+                salaryRecord = salaryRecordDAO.getSalaryRecordById(salaryRecord.getId());
+                // Refresh table
+                loadPaymentHistory();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors de la modification: " + e.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
