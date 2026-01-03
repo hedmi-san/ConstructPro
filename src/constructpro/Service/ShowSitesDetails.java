@@ -1,8 +1,11 @@
 package constructpro.Service;
 
-import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
+import constructpro.DAO.PaymentCheckDAO;
+import constructpro.DAO.BillDAO;
+import constructpro.DAO.vehicleSystem.MaintenanceDAO;
+import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 import constructpro.DTO.ConstructionSite;
 import java.sql.Connection;
 import java.util.List;
@@ -27,10 +30,10 @@ public class ShowSitesDetails extends JDialog {
 
     // Panels
     private JPanel mainPanel, headerPanel, tabPanel, contentPanel;
-    private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel;
+    private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel,attachmentPanel;
 
     // Tab buttons
-    private JButton workersTab, costTab, billsTab, vehiclesTab, supprimerBtn, ajouterBtn;
+    private JButton workersTab, costTab, billsTab, attachmentTab, vehiclesTab, supprimerBtn, ajouterBtn;
     private JTable workersTable;
     private CardLayout cardLayout;
 
@@ -76,18 +79,21 @@ public class ShowSitesDetails extends JDialog {
         costPanel = createCostPanel();
         billsPanel = createBillsPanel();
         vehiclesPanel = createVehiclesPanel();
+        attachmentPanel = createAttachmentPanel();
 
         // Create tab buttons
         workersTab = createTabButton("Travailleurs");
         costTab = createTabButton("Coût");
         billsTab = createTabButton("Factures");
         vehiclesTab = createTabButton("Véhicules");
+        attachmentTab = createTabButton("Attachment");
 
         // Add action listeners to tabs
         workersTab.addActionListener(e -> switchTab("Travailleurs", workersTab));
         costTab.addActionListener(e -> switchTab("Coût", costTab));
         billsTab.addActionListener(e -> switchTab("Factures", billsTab));
         vehiclesTab.addActionListener(e -> switchTab("Véhicules", vehiclesTab));
+        attachmentTab.addActionListener(e -> switchTab("Attachment", attachmentTab));
 
         // Add action listeners to buttons
         supprimerBtn.addActionListener(e -> {
@@ -123,6 +129,7 @@ public class ShowSitesDetails extends JDialog {
         costTab.setForeground(Color.GRAY);
         billsTab.setForeground(Color.GRAY);
         vehiclesTab.setForeground(Color.GRAY);
+        attachmentTab.setForeground(Color.GRAY);
 
         // Highlight selected tab
         selectedButton.setForeground(Color.ORANGE);
@@ -167,6 +174,18 @@ public class ShowSitesDetails extends JDialog {
 
         return panel;
     }
+    
+    private JPanel createAttachmentPanel(){
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(DARK_BACKGROUND);
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel label = new JLabel("Attachment information will be displayed here");
+        label.setForeground(Color.WHITE);
+        panel.add(label, BorderLayout.NORTH);
+
+        return panel;
+    }
 
     private JPanel createBillsPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -206,16 +225,18 @@ public class ShowSitesDetails extends JDialog {
         tabPanel.setBackground(DARK_BACKGROUND);
         tabPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
         tabPanel.add(workersTab);
-        tabPanel.add(costTab);
         tabPanel.add(billsTab);
         tabPanel.add(vehiclesTab);
+        tabPanel.add(attachmentTab);
+        tabPanel.add(costTab);
 
         // Add panels to card layout
         contentPanel.add(workersPanel, "Travailleurs");
-        contentPanel.add(costPanel, "Coût");
         contentPanel.add(billsPanel, "Factures");
         contentPanel.add(vehiclesPanel, "Véhicules");
-
+        contentPanel.add(attachmentPanel,"Attachment");
+        contentPanel.add(costPanel, "Coût");
+        
         // Add border to content panel
         contentPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
 
