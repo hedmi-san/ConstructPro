@@ -36,6 +36,7 @@ public class ShowSitesDetails extends JDialog {
     private JButton workersTab, costTab, billsTab, attachmentTab, vehiclesTab, supprimerBtn, ajouterBtn;
     private JTable workersTable, vehiclesTable, billsTable;
     private JLabel totalWorkersLabel, totalPaidLabel;
+    private JLabel totalBillsLabel, totalBillsCostLabel;
     private CardLayout cardLayout;
 
     public ShowSitesDetails(JFrame parent, ConstructionSite site, Connection connection) throws SQLException {
@@ -220,9 +221,31 @@ public class ShowSitesDetails extends JDialog {
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JLabel label = new JLabel("Bills information will be displayed here");
-        label.setForeground(Color.WHITE);
-        panel.add(label, BorderLayout.NORTH);
+        // Stats Panel (Left)
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        statsPanel.setBackground(DARK_BACKGROUND);
+
+        totalBillsLabel = new JLabel("Total Bills: 0");
+        totalBillsLabel.setForeground(Color.WHITE);
+        totalBillsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        totalBillsCostLabel = new JLabel("Total Cost: 0.0");
+        totalBillsCostLabel.setForeground(Color.WHITE);
+        totalBillsCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        statsPanel.add(totalBillsLabel);
+        statsPanel.add(totalBillsCostLabel);
+
+        billsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        billsTable.setDefaultEditor(Object.class, null);
+        billsTable.setShowVerticalLines(true);
+        billsTable.setGridColor(Color.WHITE);
+        billsTable.getTableHeader().setReorderingAllowed(false);
+        JScrollPane scrollPane = new JScrollPane(billsTable);
+        scrollPane.setBackground(DARK_BACKGROUND);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(statsPanel, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -333,7 +356,46 @@ public class ShowSitesDetails extends JDialog {
     }
 
     private void populateBillsData() {
-        // TODO: Fetch and display bills data from database
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Numéro de facture", "Fournisseur", "Date", "Coût Total" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        BillDAO billDAO = new BillDAO(conn);
+        double totalCost = 0;
+        int billCount = 0;
+
+        try (java.sql.ResultSet rs = billDAO.getBillsBySiteId(site.getId())) {
+            while (rs.next()) {
+                double cost = rs.getDouble("totalCost");
+                totalCost += cost;
+                billCount++;
+
+                model.addRow(new Object[] {
+                        rs.getInt("id"),
+                        rs.getString("factureNumber"),
+                        rs.getString("supplierName"),
+                        rs.getDate("billDate"),
+                        cost
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        billsTable.setModel(model);
+
+        // Hide ID column
+        billsTable.getColumnModel().getColumn(0).setMinWidth(0);
+        billsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        billsTable.getColumnModel().getColumn(0).setWidth(0);
+
+        // Update totals
+        totalBillsLabel.setText("Total Bills: " + billCount);
+        totalBillsCostLabel.setText(String.format("Total Cost: %.2f", totalCost));
     }
 
     private void updateWorkerStats() {

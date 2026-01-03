@@ -187,4 +187,22 @@ public class BillDAO {
         return ps.executeQuery();
     }
 
+    public ResultSet getBillsBySiteId(int siteId) throws SQLException {
+        updateAllBillTotals();
+        String sql = """
+                SELECT
+                    b.id,
+                    b.factureNumber,
+                    s.supplierName,
+                    b.billDate,
+                    b.totalCost
+                FROM bills b
+                JOIN suppliers s ON b.supplierId = s.id
+                WHERE b.assignedSiteId = ?
+                ORDER BY b.billDate DESC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        return ps.executeQuery();
+    }
 }
