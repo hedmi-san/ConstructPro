@@ -30,11 +30,12 @@ public class ShowSitesDetails extends JDialog {
 
     // Panels
     private JPanel mainPanel, headerPanel, tabPanel, contentPanel;
-    private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel,attachmentPanel;
+    private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel, attachmentPanel;
 
     // Tab buttons
     private JButton workersTab, costTab, billsTab, attachmentTab, vehiclesTab, supprimerBtn, ajouterBtn;
-    private JTable workersTable;
+    private JTable workersTable, vehiclesTable, billsTable;
+    private JLabel totalWorkersLabel, totalPaidLabel;
     private CardLayout cardLayout;
 
     public ShowSitesDetails(JFrame parent, ConstructionSite site, Connection connection) throws SQLException {
@@ -66,8 +67,10 @@ public class ShowSitesDetails extends JDialog {
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
 
-        // Initialize the table
+        // Initialize the tables
         workersTable = new JTable();
+        vehiclesTable = new JTable();
+        billsTable = new JTable();
 
         // Create Buttons
         supprimerBtn = new JButton("Supprimer");
@@ -147,8 +150,34 @@ public class ShowSitesDetails extends JDialog {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
+
+        JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(DARK_BACKGROUND);
+
+        // Stats Panel (Left)
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        statsPanel.setBackground(DARK_BACKGROUND);
+
+        totalWorkersLabel = new JLabel("Total Workers: 0");
+        totalWorkersLabel.setForeground(Color.WHITE);
+        totalWorkersLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        totalPaidLabel = new JLabel("Total Paid: 0.0");
+        totalPaidLabel.setForeground(Color.WHITE);
+        totalPaidLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        statsPanel.add(totalWorkersLabel);
+        statsPanel.add(totalPaidLabel);
+
+        // Buttons Panel (Right)
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
+        buttonsPanel.setBackground(DARK_BACKGROUND);
+        buttonsPanel.add(supprimerBtn);
+        buttonsPanel.add(ajouterBtn);
+
+        bottomPanel.add(statsPanel, BorderLayout.WEST);
+        bottomPanel.add(buttonsPanel, BorderLayout.EAST);
+
         workersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workersTable.setDefaultEditor(Object.class, null);
         workersTable.setShowVerticalLines(true);
@@ -156,8 +185,7 @@ public class ShowSitesDetails extends JDialog {
         workersTable.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane = new JScrollPane(workersTable);
         scrollPane.setBackground(DARK_BACKGROUND);
-        bottomPanel.add(supprimerBtn);
-        bottomPanel.add(ajouterBtn);
+
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
         return panel;
@@ -174,8 +202,8 @@ public class ShowSitesDetails extends JDialog {
 
         return panel;
     }
-    
-    private JPanel createAttachmentPanel(){
+
+    private JPanel createAttachmentPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -234,9 +262,9 @@ public class ShowSitesDetails extends JDialog {
         contentPanel.add(workersPanel, "Travailleurs");
         contentPanel.add(billsPanel, "Factures");
         contentPanel.add(vehiclesPanel, "Véhicules");
-        contentPanel.add(attachmentPanel,"Attachment");
+        contentPanel.add(attachmentPanel, "Attachment");
         contentPanel.add(costPanel, "Coût");
-        
+
         // Add border to content panel
         contentPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY));
 
@@ -266,20 +294,29 @@ public class ShowSitesDetails extends JDialog {
     private void populateWorkersData() {
         List<Worker> workers = workerDao.getWorkersBySiteId(site.getId());
         DefaultTableModel model = new DefaultTableModel(
-                new Object[] { "ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone" }, 0) {
+                new Object[] { "ID", "Prénom", "Nom", "Fonction", "Total Payé" }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
+
+        PaymentCheckDAO paymentCheckDAO = new PaymentCheckDAO(conn);
+
         for (Worker w : workers) {
+            double totalPaid = 0;
+            try {
+                totalPaid = paymentCheckDAO.getTotalPaidForWorkerOnSite(w.getId(), site.getId());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
             model.addRow(new Object[] {
                     w.getId(),
                     w.getFirstName(),
                     w.getLastName(),
-                    w.getAge(),
                     w.getRole(),
-                    w.getPhoneNumber()
+                    totalPaid
             });
         }
         workersTable.setModel(model);
@@ -288,6 +325,7 @@ public class ShowSitesDetails extends JDialog {
         workersTable.getColumnModel().getColumn(0).setMaxWidth(0);
         workersTable.getColumnModel().getColumn(0).setWidth(0);
 
+        updateWorkerStats();
     }
 
     private void populateCostData() {
@@ -296,6 +334,21 @@ public class ShowSitesDetails extends JDialog {
 
     private void populateBillsData() {
         // TODO: Fetch and display bills data from database
+    }
+
+    private void updateWorkerStats() {
+        int rowCount = workersTable.getRowCount();
+        double totalPaid = 0;
+
+        for (int i = 0; i < rowCount; i++) {
+            Object value = workersTable.getValueAt(i, 4); // "Total Payé" column
+            if (value instanceof Number) {
+                totalPaid += ((Number) value).doubleValue();
+            }
+        }
+
+        totalWorkersLabel.setText("Total Workers: " + rowCount);
+        totalPaidLabel.setText(String.format("Total Paid: %.2f", totalPaid));
     }
 
     private void populateVehiclesData() {

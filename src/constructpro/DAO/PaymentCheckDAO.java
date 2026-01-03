@@ -120,4 +120,20 @@ public class PaymentCheckDAO {
             stmt.executeUpdate();
         }
     }
+
+    public double getTotalPaidForWorkerOnSite(int workerId, int siteId) throws SQLException {
+        String sql = "SELECT SUM(pc.paidAmount) FROM paymentCheck pc " +
+                "JOIN salaryRecord sr ON pc.salaryRecordId = sr.id " +
+                "WHERE sr.workerId = ? AND pc.siteId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, workerId);
+            stmt.setInt(2, siteId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+            }
+        }
+        return 0.0;
+    }
 }
