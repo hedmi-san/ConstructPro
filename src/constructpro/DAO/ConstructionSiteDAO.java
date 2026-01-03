@@ -3,7 +3,9 @@ package constructpro.DAO;
 import constructpro.DTO.ConstructionSite;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ConstructionSiteDAO {
 
@@ -477,5 +479,68 @@ public class ConstructionSiteDAO {
             }
         }
         return list;
+    }
+
+    public Map<String, Double> getSiteCostBreakdown(int siteId) throws SQLException {
+        Map<String, Double> breakdown = new HashMap<>();
+        String sql = """
+                SELECT
+                    COALESCE((SELECT SUM(paidAmount) FROM paymentCheck WHERE siteId = ?), 0) as workers,
+                    COALESCE((SELECT SUM(totalCost) FROM bills WHERE assignedSiteId = ?), 0) as bills,
+                    COALESCE((SELECT SUM(cost) FROM maintenanceTicket WHERE assignedSiteId = ?), 0) as maintenance,
+                    COALESCE((SELECT SUM((dailyRate * daysWorked) + transferFee) FROM vehicleRental WHERE assignedSiteId = ?), 0) as rental
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, siteId);
+            ps.setInt(2, siteId);
+            ps.setInt(3, siteId);
+            ps.setInt(4, siteId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    breakdown.put("workers", rs.getDouble("workers"));
+                    breakdown.put("bills", rs.getDouble("bills"));
+                    breakdown.put("vehicles", rs.getDouble("maintenance") + rs.getDouble("rental"));
+                }
+            }
+        }
+        return breakdown;
+    }
+
+    public void syncAllSitesTotalCosts() throws SQLException {
+        String sql = """
+                UPDATE constructionSite s
+                SET totalCost = (
+                    SELECT
+                        COALESCE((SELECT SUM(paidAmount) FROM paymentCheck WHERE siteId = s.id), 0) +
+                        COALESCE((SELECT SUM(totalCost) FROM bills WHERE assignedSiteId = s.id), 0) +
+                        COALESCE((SELECT SUM(cost) FROM maintenanceTicket WHERE assignedSiteId = s.id), 0) +
+                        COALESCE((SELECT SUM((dailyRate * daysWorked) + transferFee) FROM vehicleRental WHERE assignedSiteId = s.id), 0)
+                )
+                """;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);
+        }
+    }
+
+    public void syncSiteTotalCost(int siteId) throws SQLException {
+        String sql = """
+                UPDATE constructionSite
+                SET totalCost = (
+                    SELECT
+                        COALESCE((SELECT SUM(paidAmount) FROM paymentCheck WHERE siteId = ?), 0) +
+                        COALESCE((SELECT SUM(totalCost) FROM bills WHERE assignedSiteId = ?), 0) +
+                        COALESCE((SELECT SUM(cost) FROM maintenanceTicket WHERE assignedSiteId = ?), 0) +
+                        COALESCE((SELECT SUM((dailyRate * daysWorked) + transferFee) FROM vehicleRental WHERE assignedSiteId = ?), 0)
+                )
+                WHERE id = ?
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, siteId);
+            ps.setInt(2, siteId);
+            ps.setInt(3, siteId);
+            ps.setInt(4, siteId);
+            ps.setInt(5, siteId);
+            ps.executeUpdate();
+        }
     }
 }

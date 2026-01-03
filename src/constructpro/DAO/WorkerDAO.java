@@ -294,6 +294,43 @@ public class WorkerDAO {
         return null;
     }
 
+    public List<Worker> getWorkersWithActivityOnSite(int siteId) {
+        List<Worker> list = new ArrayList<>();
+        String sql = """
+                SELECT DISTINCT
+                    w.id,
+                    w.firstName,
+                    w.lastName,
+                    TIMESTAMPDIFF(YEAR, w.birthDate, CURDATE()) AS age,
+                    w.job,
+                    w.phoneNumber
+                FROM worker w
+                LEFT JOIN salaryRecord sr ON w.id = sr.workerId
+                LEFT JOIN paymentCheck pc ON sr.id = pc.salaryRecordId
+                WHERE w.siteId = ? OR pc.siteId = ?
+                 """;
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, siteId);
+            stmt.setInt(2, siteId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Worker w = new Worker();
+                    w.setId(rs.getInt("id"));
+                    w.setFirstName(rs.getString("firstName"));
+                    w.setLastName(rs.getString("lastName"));
+                    w.setAge(rs.getInt("age"));
+                    w.setRole(rs.getString("job"));
+                    w.setPhoneNumber(rs.getString("phoneNumber"));
+                    list.add(w);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     public List<Worker> getWorkersBySiteId(int siteId) {
         List<Worker> list = new ArrayList<>();
         String sql = """

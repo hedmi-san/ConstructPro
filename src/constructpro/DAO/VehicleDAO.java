@@ -131,4 +131,27 @@ public class VehicleDAO {
         }
         return -1;
     }
+
+    public ResultSet getVehiclesWithCostsBySiteId(int siteId) throws SQLException {
+        String sql = """
+                SELECT DISTINCT
+                    v.id,
+                    v.name,
+                    v.plateNumber,
+                    v.ownershipType,
+                    (SELECT COALESCE(SUM(cost), 0) FROM maintenanceTicket WHERE vehicleId = v.id AND assignedSiteId = ?) as maintenanceCost,
+                    (SELECT COALESCE(SUM((dailyRate * daysWorked) + transferFee), 0) FROM vehicleRental WHERE vehicleId = v.id AND assignedSiteId = ?) as rentCost
+                FROM vehicle v
+                LEFT JOIN maintenanceTicket mt ON v.id = mt.vehicleId
+                LEFT JOIN vehicleRental vr ON v.id = vr.vehicleId
+                WHERE v.assignedSiteId = ? OR mt.assignedSiteId = ? OR vr.assignedSiteId = ?
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setInt(2, siteId);
+        ps.setInt(3, siteId);
+        ps.setInt(4, siteId);
+        ps.setInt(5, siteId);
+        return ps.executeQuery();
+    }
 }

@@ -1,14 +1,14 @@
 package constructpro.Service;
 
+import constructpro.DAO.BillDAO;
+import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
 import constructpro.DAO.PaymentCheckDAO;
-import constructpro.DAO.BillDAO;
-import constructpro.DAO.vehicleSystem.MaintenanceDAO;
-import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 import constructpro.DTO.ConstructionSite;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 import java.sql.SQLException;
 import java.awt.*;
@@ -37,6 +37,8 @@ public class ShowSitesDetails extends JDialog {
     private JTable workersTable, vehiclesTable, billsTable;
     private JLabel totalWorkersLabel, totalPaidLabel;
     private JLabel totalBillsLabel, totalBillsCostLabel;
+    private JLabel totalVehiclesLabel, totalMaintenanceCostLabel, totalRentCostLabel;
+    private JLabel totalCostWorkersLabel, totalCostBillsLabel, totalCostVehiclesLabel, grandTotalCostLabel;
     private CardLayout cardLayout;
 
     public ShowSitesDetails(JFrame parent, ConstructionSite site, Connection connection) throws SQLException {
@@ -50,9 +52,9 @@ public class ShowSitesDetails extends JDialog {
         setupLayout();
         setupStyling();
         populateWorkersData();
-        populateCostData();
         populateBillsData();
         populateVehiclesData();
+        populateCostData();
         setSize(800, 600);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -137,6 +139,11 @@ public class ShowSitesDetails extends JDialog {
 
         // Highlight selected tab
         selectedButton.setForeground(Color.ORANGE);
+
+        // Refresh cost data if switching to Cost tab
+        if (tabName.equals("Coût")) {
+            populateCostData();
+        }
     }
 
     private void unassignWorkers() throws SQLException {
@@ -193,15 +200,39 @@ public class ShowSitesDetails extends JDialog {
     }
 
     private JPanel createCostPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(DARK_BACKGROUND);
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        panel.setBorder(new EmptyBorder(40, 40, 40, 40));
 
-        JLabel label = new JLabel("Cost information will be displayed here");
-        label.setForeground(Color.WHITE);
-        panel.add(label, BorderLayout.NORTH);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+
+        totalCostWorkersLabel = createDashboardLabel("Coût Travailleurs (Total Payé): 0.0");
+        totalCostBillsLabel = createDashboardLabel("Coût Factures: 0.0");
+        totalCostVehiclesLabel = createDashboardLabel("Coût Véhicules (Maint. + Loc.): 0.0");
+
+        grandTotalCostLabel = new JLabel("COÛT TOTAL DU CHANTIER: 0.0");
+        grandTotalCostLabel.setForeground(Color.ORANGE);
+        grandTotalCostLabel.setFont(new Font("Arial", Font.BOLD, 22));
+
+        panel.add(totalCostWorkersLabel, gbc);
+        panel.add(totalCostBillsLabel, gbc);
+        panel.add(totalCostVehiclesLabel, gbc);
+
+        gbc.insets = new Insets(30, 0, 10, 0);
+        panel.add(grandTotalCostLabel, gbc);
 
         return panel;
+    }
+
+    private JLabel createDashboardLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Arial", Font.PLAIN, 18));
+        return label;
     }
 
     private JPanel createAttachmentPanel() {
@@ -255,9 +286,36 @@ public class ShowSitesDetails extends JDialog {
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JLabel label = new JLabel("Véhicules information will be displayed here");
-        label.setForeground(Color.WHITE);
-        panel.add(label, BorderLayout.NORTH);
+        // Stats Panel (Left)
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        statsPanel.setBackground(DARK_BACKGROUND);
+
+        totalVehiclesLabel = new JLabel("Total Vehicles: 0");
+        totalVehiclesLabel.setForeground(Color.WHITE);
+        totalVehiclesLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        totalMaintenanceCostLabel = new JLabel("Total Maintenance: 0.0");
+        totalMaintenanceCostLabel.setForeground(Color.WHITE);
+        totalMaintenanceCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        totalRentCostLabel = new JLabel("Total Rent: 0.0");
+        totalRentCostLabel.setForeground(Color.WHITE);
+        totalRentCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        statsPanel.add(totalVehiclesLabel);
+        statsPanel.add(totalMaintenanceCostLabel);
+        statsPanel.add(totalRentCostLabel);
+
+        vehiclesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        vehiclesTable.setDefaultEditor(Object.class, null);
+        vehiclesTable.setShowVerticalLines(true);
+        vehiclesTable.setGridColor(Color.WHITE);
+        vehiclesTable.getTableHeader().setReorderingAllowed(false);
+        JScrollPane scrollPane = new JScrollPane(vehiclesTable);
+        scrollPane.setBackground(DARK_BACKGROUND);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(statsPanel, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -315,7 +373,7 @@ public class ShowSitesDetails extends JDialog {
     }
 
     private void populateWorkersData() {
-        List<Worker> workers = workerDao.getWorkersBySiteId(site.getId());
+        List<Worker> workers = workerDao.getWorkersWithActivityOnSite(site.getId());
         DefaultTableModel model = new DefaultTableModel(
                 new Object[] { "ID", "Prénom", "Nom", "Fonction", "Total Payé" }, 0) {
             @Override
@@ -352,7 +410,26 @@ public class ShowSitesDetails extends JDialog {
     }
 
     private void populateCostData() {
-        // TODO: Fetch and display cost data from database
+        try {
+            ConstructionSiteDAO siteDAO = new ConstructionSiteDAO(conn);
+            siteDAO.syncSiteTotalCost(site.getId());
+
+            // Get accurate breakdown from DAO
+            Map<String, Double> breakdown = siteDAO.getSiteCostBreakdown(site.getId());
+
+            // Re-fetch site to get updated totalCost
+            ConstructionSite updatedSite = siteDAO.getConstructionSiteById(site.getId());
+
+            totalCostWorkersLabel.setText(
+                    String.format("Coût Travailleurs (Total Payé): %.2f", breakdown.getOrDefault("workers", 0.0)));
+            totalCostBillsLabel.setText(String.format("Coût Factures: %.2f", breakdown.getOrDefault("bills", 0.0)));
+            totalCostVehiclesLabel.setText(
+                    String.format("Coût Véhicules (Maint. + Loc.): %.2f", breakdown.getOrDefault("vehicles", 0.0)));
+            grandTotalCostLabel.setText(String.format("COÛT TOTAL DU CHANTIER: %.2f", updatedSite.getTotalCost()));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void populateBillsData() {
@@ -414,7 +491,54 @@ public class ShowSitesDetails extends JDialog {
     }
 
     private void populateVehiclesData() {
-        // TODO: Fetch and display vehicles data from database
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Nom", "Numéro de plaque", "Type de Propriété", "Coût de maintenance",
+                        "Cout de location" },
+                0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        constructpro.DAO.VehicleDAO vehicleDAO = new constructpro.DAO.VehicleDAO(conn);
+        int vehicleCount = 0;
+        double totalMaintenance = 0;
+        double totalRent = 0;
+
+        try (java.sql.ResultSet rs = vehicleDAO.getVehiclesWithCostsBySiteId(site.getId())) {
+            while (rs.next()) {
+                double mCost = rs.getDouble("maintenanceCost");
+                double rCost = rs.getDouble("rentCost");
+
+                totalMaintenance += mCost;
+                totalRent += rCost;
+                vehicleCount++;
+
+                model.addRow(new Object[] {
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("plateNumber"),
+                        rs.getString("ownershipType"),
+                        mCost,
+                        rCost
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        vehiclesTable.setModel(model);
+
+        // Hide ID column
+        vehiclesTable.getColumnModel().getColumn(0).setMinWidth(0);
+        vehiclesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        vehiclesTable.getColumnModel().getColumn(0).setWidth(0);
+
+        // Update totals
+        totalVehiclesLabel.setText("Total Vehicles: " + vehicleCount);
+        totalMaintenanceCostLabel.setText(String.format("Total Maintenance: %.2f", totalMaintenance));
+        totalRentCostLabel.setText(String.format("Total Rent: %.2f", totalRent));
     }
 
     public void setParentFrame(JFrame parent) {

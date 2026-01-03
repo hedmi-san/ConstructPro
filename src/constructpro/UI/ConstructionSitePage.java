@@ -211,6 +211,11 @@ public class ConstructionSitePage extends JPanel {
     }
 
     private void loadSearchResults(String searchTerm) {
+        try {
+            siteDAO.syncAllSitesTotalCosts();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         List<ConstructionSite> sites = siteDAO.searchsitesByName(searchTerm);
         DefaultTableModel model = new DefaultTableModel(
                 new Object[] { "ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total" }, 0) {
@@ -261,6 +266,11 @@ public class ConstructionSitePage extends JPanel {
     }
 
     private void loadDataSet() {
+        try {
+            siteDAO.syncAllSitesTotalCosts();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         List<ConstructionSite> sites = siteDAO.getConstructionSiteInfo();
         DefaultTableModel model = new DefaultTableModel(
                 new Object[] { "ID", "Nom", "Lieu", "Etat", "Date de début", "Date de fin", "Coût Total" }, 0) {
