@@ -2,6 +2,7 @@ package constructpro.UI;
 
 import constructpro.Service.AttachmentFileForm;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.sql.Connection;
 import javax.swing.*;
@@ -28,8 +29,9 @@ public class AttachmentPage extends JPanel {
         setLayout(new BorderLayout());
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setBorder(new EmptyBorder(10, 10, 50, 20)); // Added bottom padding to lift button up
+        bottomPanel.setBorder(new EmptyBorder(10, 10, 50, 20)); 
         attachmentFileButton = new JButton("Fiche Attachement");
+        attachmentFileButton.setForeground(Color.WHITE);
         bottomPanel.add(attachmentFileButton);
         add(bottomPanel, BorderLayout.SOUTH);
     }
