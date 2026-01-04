@@ -17,8 +17,20 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
+import com.toedter.calendar.JDateChooser;
+import constructpro.DAO.vehicleSystem.MaintenanceDAO;
+import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 
 import javax.swing.*;
+import java.awt.Desktop;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Map;
 import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -287,8 +299,10 @@ public class ShowSitesDetails extends JDialog {
         // Bottom right button
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(DARK_BACKGROUND);
-        JButton extraBtn = new JButton("Action Spéciale");
+        JButton extraBtn = new JButton("Générer Rapport PDF");
         extraBtn.setForeground(Color.WHITE);
+        extraBtn.setBackground(new Color(0, 102, 204));
+        extraBtn.addActionListener(e -> showDateRangeDialog());
         bottomPanel.add(extraBtn);
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -622,5 +636,93 @@ public class ShowSitesDetails extends JDialog {
 
     public void refreshWorkersTable() {
         populateWorkersData();
+    }
+
+    private void showDateRangeDialog() {
+        JDialog dialog = new JDialog(parentFrame, "Sélectionner la période", true);
+        dialog.setLayout(new GridBagLayout());
+        dialog.getContentPane().setBackground(DARK_BACKGROUND);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JLabel startLabel = new JLabel("Date début:");
+        startLabel.setForeground(Color.WHITE);
+        JDateChooser startChooser = new JDateChooser();
+        startChooser.setPreferredSize(new Dimension(150, 25));
+
+        JLabel endLabel = new JLabel("Date fin:");
+        endLabel.setForeground(Color.WHITE);
+        JDateChooser endChooser = new JDateChooser();
+        endChooser.setPreferredSize(new Dimension(150, 25));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        dialog.add(startLabel, gbc);
+        gbc.gridx = 1;
+        dialog.add(startChooser, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        dialog.add(endLabel, gbc);
+        gbc.gridx = 1;
+        dialog.add(endChooser, gbc);
+
+        JButton confirmBtn = new JButton("Générer PDF");
+        confirmBtn.addActionListener(e -> {
+            if (startChooser.getDate() == null || endChooser.getDate() == null) {
+                JOptionPane.showMessageDialog(dialog, "Veuillez choisir les deux dates.");
+                return;
+            }
+            LocalDate start = startChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate end = endChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            dialog.dispose();
+            generatePDFReport(start, end);
+        });
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        dialog.add(confirmBtn, gbc);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(parentFrame);
+        dialog.setVisible(true);
+    }
+
+    private void generatePDFReport(LocalDate start, LocalDate end) {
+        try {
+            String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";
+            String fileName = "Rapport_" + site.getName().replaceAll("[^a-zA-Z0-9]", "_") + "_" + start.toString()
+                    + ".pdf";
+            String outputPath = desktopPath + File.separator + fileName;
+
+            PaymentCheckDAO pcDAO = new PaymentCheckDAO(conn);
+            BillDAO billDAO = new BillDAO(conn);
+            MaintenanceDAO maintDAO = new MaintenanceDAO(conn);
+            VehicleRentalDAO rentDAO = new VehicleRentalDAO(conn);
+
+            ResultSet workersRS = pcDAO.getPaymentChecksSummaryReport(site.getId(), start, end);
+            ResultSet billsRS = billDAO.getBillsReport(site.getId(), start, end);
+            ResultSet maintenanceRS = maintDAO.getMaintenanceReport(site.getId(), start, end);
+            ResultSet rentalsRS = rentDAO.getRentalsReport(site.getId(), start, end);
+
+            SiteReportPDFGenerator.generateReport(site, start, end, outputPath, workersRS, billsRS, maintenanceRS,
+                    rentalsRS);
+
+            JOptionPane.showMessageDialog(parentFrame, "Rapport PDF généré avec succès :\n" + outputPath);
+
+            // Open the file automatically
+            File pdfFile = new File(outputPath);
+            if (pdfFile.exists() && Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(pdfFile);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(parentFrame, "Erreur lors de la génération du PDF: " + e.getMessage());
+        }
     }
 }

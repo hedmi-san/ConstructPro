@@ -140,7 +140,7 @@ public class VehicleDAO {
                     v.plateNumber,
                     v.ownershipType,
                     (SELECT COALESCE(SUM(cost), 0) FROM maintenanceTicket WHERE vehicleId = v.id AND assignedSiteId = ?) as maintenanceCost,
-                    (SELECT COALESCE(SUM((dailyRate * daysWorked) + transferFee), 0) FROM vehicleRental WHERE vehicleId = v.id AND assignedSiteId = ?) as rentCost
+                    (SELECT COALESCE(SUM(depositeAmount), 0) FROM vehicleRental WHERE vehicleId = v.id AND assignedSiteId = ?) as rentCost
                 FROM vehicle v
                 LEFT JOIN maintenanceTicket mt ON v.id = mt.vehicleId
                 LEFT JOIN vehicleRental vr ON v.id = vr.vehicleId

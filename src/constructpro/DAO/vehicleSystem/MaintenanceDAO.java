@@ -3,6 +3,7 @@ package constructpro.DAO.vehicleSystem;
 import constructpro.DTO.vehicleSystem.Maintainance;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,5 +103,23 @@ public class MaintenanceDAO {
             }
         }
         return 0.0;
+    }
+
+    public ResultSet getMaintenanceReport(int siteId, LocalDate start, LocalDate end) throws SQLException {
+        String sql = """
+                SELECT
+                    mt.repaireDate,
+                    v.name as vehicleName,
+                    mt.cost
+                FROM maintenanceTicket mt
+                INNER JOIN vehicle v ON mt.vehicleId = v.id
+                WHERE mt.assignedSiteId = ? AND mt.repaireDate BETWEEN ? AND ?
+                ORDER BY mt.repaireDate ASC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setDate(2, Date.valueOf(start));
+        ps.setDate(3, Date.valueOf(end));
+        return ps.executeQuery();
     }
 }

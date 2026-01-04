@@ -136,4 +136,24 @@ public class PaymentCheckDAO {
         }
         return 0.0;
     }
+
+    public ResultSet getPaymentChecksSummaryReport(int siteId, LocalDate start, LocalDate end) throws SQLException {
+        String sql = """
+                SELECT
+                    CONCAT(w.firstName, ' ', w.lastName) as workerName,
+                    COUNT(pc.id) as checkCount,
+                    SUM(pc.paidAmount) as totalPaid
+                FROM paymentCheck pc
+                INNER JOIN salaryRecord sr ON pc.salaryRecordId = sr.id
+                INNER JOIN worker w ON sr.workerId = w.id
+                WHERE pc.siteId = ? AND pc.paymentDate BETWEEN ? AND ?
+                GROUP BY w.id
+                ORDER BY workerName
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setDate(2, Date.valueOf(start));
+        ps.setDate(3, Date.valueOf(end));
+        return ps.executeQuery();
+    }
 }

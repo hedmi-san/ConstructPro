@@ -92,7 +92,7 @@ public class ConstructionSiteDAO {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {    
+            if (rs.next()) {
                 ConstructionSite site = new ConstructionSite();
                 site.setId(rs.getInt("id"));
                 site.setName(rs.getString("name"));
@@ -490,7 +490,7 @@ public class ConstructionSiteDAO {
                     COALESCE((SELECT SUM(paidAmount) FROM paymentCheck WHERE siteId = ?), 0) as workers,
                     COALESCE((SELECT SUM(totalCost) FROM bills WHERE assignedSiteId = ?), 0) as bills,
                     COALESCE((SELECT SUM(cost) FROM maintenanceTicket WHERE assignedSiteId = ?), 0) as maintenance,
-                    COALESCE((SELECT SUM((dailyRate * daysWorked) + transferFee) FROM vehicleRental WHERE assignedSiteId = ?), 0) as rental
+                    COALESCE((SELECT SUM(depositeAmount) FROM vehicleRental WHERE assignedSiteId = ?), 0) as rental
                 """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, siteId);
@@ -516,7 +516,7 @@ public class ConstructionSiteDAO {
                         COALESCE((SELECT SUM(paidAmount) FROM paymentCheck WHERE siteId = s.id), 0) +
                         COALESCE((SELECT SUM(totalCost) FROM bills WHERE assignedSiteId = s.id), 0) +
                         COALESCE((SELECT SUM(cost) FROM maintenanceTicket WHERE assignedSiteId = s.id), 0) +
-                        COALESCE((SELECT SUM((dailyRate * daysWorked) + transferFee) FROM vehicleRental WHERE assignedSiteId = s.id), 0)
+                    COALESCE((SELECT SUM(depositeAmount) FROM vehicleRental WHERE assignedSiteId = s.id), 0)
                 )
                 """;
         try (Statement stmt = connection.createStatement()) {
@@ -532,7 +532,7 @@ public class ConstructionSiteDAO {
                         COALESCE((SELECT SUM(paidAmount) FROM paymentCheck WHERE siteId = ?), 0) +
                         COALESCE((SELECT SUM(totalCost) FROM bills WHERE assignedSiteId = ?), 0) +
                         COALESCE((SELECT SUM(cost) FROM maintenanceTicket WHERE assignedSiteId = ?), 0) +
-                        COALESCE((SELECT SUM((dailyRate * daysWorked) + transferFee) FROM vehicleRental WHERE assignedSiteId = ?), 0)
+                        COALESCE((SELECT SUM(depositeAmount) FROM vehicleRental WHERE assignedSiteId = ?), 0)
                 )
                 WHERE id = ?
                 """;

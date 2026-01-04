@@ -4,6 +4,7 @@ import constructpro.DTO.vehicleSystem.VehicleRental;
 
 import java.util.List;
 import java.sql.*;
+import java.time.LocalDate;
 
 public class VehicleRentalDAO {
     private Connection connection;
@@ -114,7 +115,7 @@ public class VehicleRentalDAO {
      * Cost = (daily_rate * days_worked) + transfer_fee
      */
     public double getTotalRentalCost(int vehicleId) throws SQLException {
-        String sql = "SELECT SUM((dailyRate * daysWorked) + transferFee) as total FROM vehicleRental WHERE vehicleId = ?";
+        String sql = "SELECT SUM(depositeAmount) as total FROM vehicleRental WHERE vehicleId = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, vehicleId);
@@ -163,14 +164,36 @@ public class VehicleRentalDAO {
         }
         return null;
     }
-    
-    
-    public void updatePaidAmount(double amount, int id) throws SQLException{
+
+    public void updatePaidAmount(double amount, int id) throws SQLException {
         String sql = "UPDATE vehicleRental SET depositeAmount = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, amount);
             stmt.setInt(2, id);
             stmt.executeUpdate();
         }
+    }
+
+    public ResultSet getRentalsReport(int siteId, LocalDate start, LocalDate end) throws SQLException {
+        String sql = """
+                SELECT
+                    vr.startDate,
+                    vr.endDate,
+                    v.name as vehicleName,
+                    vr.ownerCompany,
+                    vr.dailyRate,
+                    vr.depositeAmount as paidAmount
+                FROM vehicleRental vr
+                INNER JOIN vehicle v ON vr.vehicleId = v.id
+                WHERE vr.assignedSiteId = ? AND (vr.startDate BETWEEN ? AND ? OR vr.endDate BETWEEN ? AND ?)
+                ORDER BY vr.startDate ASC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setDate(2, Date.valueOf(start));
+        ps.setDate(3, Date.valueOf(end));
+        ps.setDate(4, Date.valueOf(start));
+        ps.setDate(5, Date.valueOf(end));
+        return ps.executeQuery();
     }
 }

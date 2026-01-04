@@ -159,7 +159,7 @@ public class VehicleDetailDialog extends JDialog {
         dailyRateField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
         // Create table with columns
-        String[] columns = { "Date Début", "Date Fin", "Tarif", "Jours travaillés",
+        String[] columns = { "Date Début", "Date Fin","Tarif", "Chantier", "Jours travaillés",
                 "Dépôt", "Frais de transport", "Coût", "Reste à payer" };
         rentTableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -451,25 +451,6 @@ public class VehicleDetailDialog extends JDialog {
         gbc.fill = GridBagConstraints.NONE;
     }
 
-    private void addFieldToPanel(JPanel panel, GridBagConstraints gbc, int startX, int y, String label,
-            JTextField field) {
-        gbc.gridy = y;
-
-        gbc.gridx = startX;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        panel.add(createFieldLabel(label), gbc);
-
-        gbc.gridx = startX + 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        panel.add(field, gbc);
-
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
-    }
-
     private JLabel createValueLabel() {
         JLabel label = new JLabel();
         label.setForeground(TEXT_COLOR);
@@ -588,11 +569,17 @@ public class VehicleDetailDialog extends JDialog {
                 for (VehicleRental record : records) {
                     double cost = (record.getDailyRate() * record.getDaysWorked()) + record.getTransferFee();
                     double restToPay = cost - record.getDepositAmount();
-
+                    String siteName = "N/A";
+                            if (record.getAssignedSiteId() > 0) {
+                                siteName = siteDAO.getSiteNameById(record.getAssignedSiteId());
+                            if (siteName == null)
+                                siteName = "N/A";
+                            }
                     Object[] row = {
                             record.getStartDate().toString(),
                             record.getEndDate() != null ? record.getEndDate().toString() : "En cours",
                             String.format("%.2f", record.getDailyRate()),
+                            siteName,
                             record.getDaysWorked(),
                             String.format("%.2f", record.getDepositAmount()),
                             String.format("%.2f", record.getTransferFee()),

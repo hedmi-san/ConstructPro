@@ -2,6 +2,7 @@ package constructpro.DAO;
 
 import constructpro.DTO.Bill;
 import java.sql.*;
+import java.time.LocalDate;
 
 public class BillDAO {
     private Connection connection;
@@ -203,6 +204,24 @@ public class BillDAO {
                 """;
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, siteId);
+        return ps.executeQuery();
+    }
+
+    public ResultSet getBillsReport(int siteId, LocalDate start, LocalDate end) throws SQLException {
+        String sql = """
+                SELECT
+                    b.billDate,
+                    s.supplierName,
+                    b.totalCost
+                FROM bills b
+                INNER JOIN suppliers s ON b.supplierId = s.id
+                WHERE b.assignedSiteId = ? AND b.billDate BETWEEN ? AND ?
+                ORDER BY b.billDate ASC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setDate(2, Date.valueOf(start));
+        ps.setDate(3, Date.valueOf(end));
         return ps.executeQuery();
     }
 }
