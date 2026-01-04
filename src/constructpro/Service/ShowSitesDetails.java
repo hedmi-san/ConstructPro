@@ -12,6 +12,11 @@ import java.util.Map;
 
 import java.sql.SQLException;
 import java.awt.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -39,6 +44,8 @@ public class ShowSitesDetails extends JDialog {
     private JLabel totalBillsLabel, totalBillsCostLabel;
     private JLabel totalVehiclesLabel, totalMaintenanceCostLabel, totalRentCostLabel;
     private JLabel totalCostWorkersLabel, totalCostBillsLabel, totalCostVehiclesLabel, grandTotalCostLabel;
+    private DefaultPieDataset costDataset;
+    private ChartPanel chartPanel;
     private CardLayout cardLayout;
 
     public ShowSitesDetails(JFrame parent, ConstructionSite site, Connection connection) throws SQLException {
@@ -200,32 +207,93 @@ public class ShowSitesDetails extends JDialog {
     }
 
     private JPanel createCostPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(DARK_BACKGROUND);
-        panel.setBorder(new EmptyBorder(40, 40, 40, 40));
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(DARK_BACKGROUND);
+        mainPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
+
+        // Create Dataset
+        costDataset = new DefaultPieDataset();
+
+        // Create Chart
+        JFreeChart chart = ChartFactory.createPieChart(
+                null, // title
+                costDataset,
+                true, // legend - ENABLED
+                true, // tooltips
+                false // urls
+        );
+
+        // Styling the chart
+        chart.setBackgroundPaint(DARK_BACKGROUND);
+        chart.getLegend().setBackgroundPaint(DARK_BACKGROUND);
+        chart.getLegend().setItemPaint(Color.WHITE);
+        chart.getLegend().setBorder(0, 0, 0, 0);
+
+        PiePlot plot = (PiePlot) chart.getPlot();
+        plot.setBackgroundPaint(DARK_BACKGROUND);
+        plot.setOutlineVisible(false);
+        plot.setLabelBackgroundPaint(DARK_BACKGROUND);
+        plot.setLabelOutlinePaint(null);
+        plot.setLabelShadowPaint(null);
+        plot.setLabelPaint(Color.WHITE);
+        plot.setSectionPaint("Travailleurs", new Color(0, 150, 255)); // Blue
+        plot.setSectionPaint("Factures", new Color(255, 100, 100)); // Red
+        plot.setSectionPaint("Véhicules", new Color(100, 255, 100)); // Green
+        plot.setShadowPaint(null);
+
+        chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(400, 400));
+        chartPanel.setBackground(DARK_BACKGROUND);
+
+        // Right side for labels
+        JPanel detailsPanel = new JPanel(new GridBagLayout());
+        detailsPanel.setBackground(DARK_BACKGROUND);
+        detailsPanel.setBorder(new EmptyBorder(0, 40, 0, 0));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.insets = new Insets(8, 0, 8, 0);
 
-        totalCostWorkersLabel = createDashboardLabel("Coût Travailleurs (Total Payé): 0.0");
+        totalCostWorkersLabel = createDashboardLabel("Coût Travailleurs: 0.0");
+        totalCostWorkersLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+
         totalCostBillsLabel = createDashboardLabel("Coût Factures: 0.0");
-        totalCostVehiclesLabel = createDashboardLabel("Coût Véhicules (Maint. + Loc.): 0.0");
+        totalCostBillsLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-        grandTotalCostLabel = new JLabel("COÛT TOTAL DU CHANTIER: 0.0");
+        totalCostVehiclesLabel = createDashboardLabel("Coût Véhicules: 0.0");
+        totalCostVehiclesLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+
+        grandTotalCostLabel = new JLabel("COÛT TOTAL: 0.0");
         grandTotalCostLabel.setForeground(Color.ORANGE);
-        grandTotalCostLabel.setFont(new Font("Arial", Font.BOLD, 22));
+        grandTotalCostLabel.setFont(new Font("Arial", Font.BOLD, 20));
 
-        panel.add(totalCostWorkersLabel, gbc);
-        panel.add(totalCostBillsLabel, gbc);
-        panel.add(totalCostVehiclesLabel, gbc);
+        detailsPanel.add(totalCostWorkersLabel, gbc);
+        detailsPanel.add(totalCostBillsLabel, gbc);
+        detailsPanel.add(totalCostVehiclesLabel, gbc);
 
-        gbc.insets = new Insets(30, 0, 10, 0);
-        panel.add(grandTotalCostLabel, gbc);
+        gbc.insets = new Insets(25, 0, 10, 0);
+        detailsPanel.add(grandTotalCostLabel, gbc);
 
-        return panel;
+        // Layout
+        JPanel centerPanel = new JPanel(new GridLayout(1, 2));
+        centerPanel.setBackground(DARK_BACKGROUND);
+        centerPanel.add(chartPanel);
+        centerPanel.add(detailsPanel);
+
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+
+        // Bottom right button
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(DARK_BACKGROUND);
+        JButton extraBtn = new JButton("Action Spéciale");
+        extraBtn.setForeground(Color.WHITE);
+        bottomPanel.add(extraBtn);
+
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        return mainPanel;
     }
 
     private JLabel createDashboardLabel(String text) {
@@ -420,12 +488,19 @@ public class ShowSitesDetails extends JDialog {
             // Re-fetch site to get updated totalCost
             ConstructionSite updatedSite = siteDAO.getConstructionSiteById(site.getId());
 
-            totalCostWorkersLabel.setText(
-                    String.format("Coût Travailleurs (Total Payé): %.2f", breakdown.getOrDefault("workers", 0.0)));
-            totalCostBillsLabel.setText(String.format("Coût Factures: %.2f", breakdown.getOrDefault("bills", 0.0)));
-            totalCostVehiclesLabel.setText(
-                    String.format("Coût Véhicules (Maint. + Loc.): %.2f", breakdown.getOrDefault("vehicles", 0.0)));
-            grandTotalCostLabel.setText(String.format("COÛT TOTAL DU CHANTIER: %.2f", updatedSite.getTotalCost()));
+            double workers = breakdown.getOrDefault("workers", 0.0);
+            double bills = breakdown.getOrDefault("bills", 0.0);
+            double vehicles = breakdown.getOrDefault("vehicles", 0.0);
+
+            totalCostWorkersLabel.setText(String.format("Coût Travailleurs: %.2f", workers));
+            totalCostBillsLabel.setText(String.format("Coût Factures: %.2f", bills));
+            totalCostVehiclesLabel.setText(String.format("Coût Véhicules: %.2f", vehicles));
+            grandTotalCostLabel.setText(String.format("COÛT TOTAL: %.2f", updatedSite.getTotalCost()));
+
+            // Update Pie Chart Dataset
+            costDataset.setValue("Travailleurs", workers);
+            costDataset.setValue("Factures", bills);
+            costDataset.setValue("Véhicules", vehicles);
 
         } catch (SQLException e) {
             e.printStackTrace();

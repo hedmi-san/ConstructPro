@@ -92,7 +92,7 @@ public class ConstructionSiteDAO {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
+            if (rs.next()) {    
                 ConstructionSite site = new ConstructionSite();
                 site.setId(rs.getInt("id"));
                 site.setName(rs.getString("name"));
@@ -109,6 +109,7 @@ public class ConstructionSiteDAO {
                     site.setEndDate(endDate.toLocalDate());
                 }
 
+                site.setTotalCost(rs.getDouble("totalCost"));
                 return site;
             }
         }
@@ -137,6 +138,7 @@ public class ConstructionSiteDAO {
                     site.setEndDate(endDate.toLocalDate());
                 }
 
+                site.setTotalCost(rs.getDouble("totalCost"));
                 return site;
             }
         }
