@@ -6,11 +6,7 @@ import constructpro.DAO.WorkerDAO;
 import constructpro.DTO.Worker;
 import constructpro.DAO.PaymentCheckDAO;
 import constructpro.DTO.ConstructionSite;
-import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
-
-import java.sql.SQLException;
 import java.awt.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -20,7 +16,6 @@ import org.jfree.data.general.DefaultPieDataset;
 import com.toedter.calendar.JDateChooser;
 import constructpro.DAO.vehicleSystem.MaintenanceDAO;
 import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
-
 import javax.swing.*;
 import java.awt.Desktop;
 import java.io.File;
@@ -29,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.Map;
 import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
@@ -50,7 +44,7 @@ public class ShowSitesDetails extends JDialog {
     private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel, attachmentPanel;
 
     // Tab buttons
-    private JButton workersTab, costTab, billsTab, attachmentTab, vehiclesTab, supprimerBtn, ajouterBtn;
+    private JButton workersTab, costTab, billsTab, attachmentTab, vehiclesTab;
     private JTable workersTable, vehiclesTable, billsTable;
     private JLabel totalWorkersLabel, totalPaidLabel;
     private JLabel totalBillsLabel, totalBillsCostLabel;
@@ -94,11 +88,6 @@ public class ShowSitesDetails extends JDialog {
         vehiclesTable = new JTable();
         billsTable = new JTable();
 
-        // Create Buttons
-        supprimerBtn = new JButton("Supprimer");
-        supprimerBtn.setForeground(Color.WHITE);
-        ajouterBtn = new JButton("Affecter");
-        ajouterBtn.setForeground(Color.WHITE);
         // Create tab panels
         workersPanel = createWorkersPanel();
         costPanel = createCostPanel();
@@ -119,20 +108,6 @@ public class ShowSitesDetails extends JDialog {
         billsTab.addActionListener(e -> switchTab("Factures", billsTab));
         vehiclesTab.addActionListener(e -> switchTab("Véhicules", vehiclesTab));
         attachmentTab.addActionListener(e -> switchTab("Attachment", attachmentTab));
-
-        // Add action listeners to buttons
-        supprimerBtn.addActionListener(e -> {
-            try {
-                unassignWorkers();
-            } catch (SQLException ex) {
-            }
-        });
-        ajouterBtn.addActionListener(e -> {
-            try {
-                assignWorkers();
-            } catch (SQLException ex) {
-            }
-        });
 
     }
 
@@ -165,14 +140,6 @@ public class ShowSitesDetails extends JDialog {
         }
     }
 
-    private void unassignWorkers() throws SQLException {
-        new UnAssignementPanel(parentFrame, site, conn, this);
-    }
-
-    private void assignWorkers() throws SQLException {
-        new AssignementPanel(parentFrame, site, conn, this);
-    }
-
     private JPanel createWorkersPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(DARK_BACKGROUND);
@@ -199,9 +166,6 @@ public class ShowSitesDetails extends JDialog {
         // Buttons Panel (Right)
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
         buttonsPanel.setBackground(DARK_BACKGROUND);
-        buttonsPanel.add(supprimerBtn);
-        buttonsPanel.add(ajouterBtn);
-
         bottomPanel.add(statsPanel, BorderLayout.WEST);
         bottomPanel.add(buttonsPanel, BorderLayout.EAST);
 
