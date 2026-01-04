@@ -364,6 +364,43 @@ public class WorkerDAO {
         return list;
     }
 
+    public List<Worker> getWorkersNotAtSite(int siteId) {
+        List<Worker> list = new ArrayList<>();
+        String sql = """
+                SELECT
+                    w.id,
+                    w.firstName,
+                    w.lastName,
+                    TIMESTAMPDIFF(YEAR, w.birthDate, CURDATE()) AS age,
+                    w.job,
+                    w.phoneNumber,
+                    s.name AS site_name
+                FROM worker w
+                LEFT JOIN constructionSite s ON w.siteId = s.id
+                WHERE w.siteId != ? OR w.siteId IS NULL
+                 """;
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, siteId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Worker w = new Worker();
+                    w.setId(rs.getInt("id"));
+                    w.setFirstName(rs.getString("firstName"));
+                    w.setLastName(rs.getString("lastName"));
+                    w.setAge(rs.getInt("age"));
+                    w.setRole(rs.getString("job"));
+                    w.setPhoneNumber(rs.getString("phoneNumber"));
+                    w.setSiteName(rs.getString("site_name"));
+                    list.add(w);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     public List<Worker> searchWorkersByName(String searchTerm) {
         List<Worker> list = new ArrayList<>();
         try {

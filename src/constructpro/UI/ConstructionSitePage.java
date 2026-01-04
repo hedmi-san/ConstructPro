@@ -7,13 +7,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
-
 import constructpro.Service.ShowSitesDetails;
+import constructpro.Service.AssignmentPanel;
 import constructpro.Service.SiteForm;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
-
 import javax.swing.table.DefaultTableModel;
 
 public class ConstructionSitePage extends JPanel {
@@ -21,6 +20,7 @@ public class ConstructionSitePage extends JPanel {
     private JButton deleteButton;
     private JButton editButton;
     private JButton addButton;
+    private JButton affectButton;
     private JButton refreshButton;
     private JTextField searchText;
     private JLabel jLabel1;
@@ -58,6 +58,7 @@ public class ConstructionSitePage extends JPanel {
         editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
+        affectButton = new JButton("Affecter");
         searchText = new JTextField(15);
         jLabel1 = new JLabel("Chantier");
         jLabel2 = new JLabel("Rechercher");
@@ -109,7 +110,9 @@ public class ConstructionSitePage extends JPanel {
         deleteButton.setForeground(Color.WHITE);
         editButton.setForeground(Color.WHITE);
         addButton.setForeground(Color.WHITE);
+        affectButton.setForeground(Color.white);
 
+        buttonPanel.add(affectButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
@@ -206,6 +209,33 @@ public class ConstructionSitePage extends JPanel {
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à supprimer.");
+            }
+        });
+
+        affectButton.addActionListener(e -> {
+            int selectedRow = sitesTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                try {
+                    DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
+                    int siteId = (Integer) model.getValueAt(selectedRow, 0);
+
+                    ConstructionSite site = siteDAO.getConstructionSiteById(siteId);
+                    if (site != null) {
+                        AssignmentPanel dialog = new AssignmentPanel(parentFrame, site, conn);
+                        dialog.setVisible(true);
+
+                        if (dialog.isConfirmed()) {
+                            loadDataSet();
+                        }
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this,
+                            "Erreur lors de l'ouverture du panneau d'affectation: " + ex.getMessage(), "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Veuillez sélectionner un chantier pour affecter des travailleurs.");
             }
         });
     }
