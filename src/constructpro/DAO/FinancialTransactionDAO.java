@@ -13,7 +13,7 @@ public class FinancialTransactionDAO {
     }
 
     public void insertTransaction(FinancialTransaction ft) throws SQLException {
-        String sql = "INSERT INTO financialTransaction (supplierId, paymentDate, amount, method, imagePath) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO financialTransaction (supplierId, paymentDate, amount, method) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, ft.getSupplierId());
             ps.setDate(2, Date.valueOf(ft.getPaymentDate()));
