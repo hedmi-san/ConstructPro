@@ -199,21 +199,15 @@ public class HistoireDialog extends JDialog {
 
             List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
 
-            double runningRemaining;
-            double totalRemaining = 0; // Initialize total remaining
+            double runningRemaining;// Initialize total remaining
 
             for (PaymentCheck check : checks) {
-                // For task-based payments (baseSalary = 0), remaining should be 0
-                // For daily payments, calculate actual remaining
+                // For task-based payments (baseSalary = 0), remaining should be 0g
                 if (check.getBaseSalary() == 0) {
                     runningRemaining = 0;
                 } else {
                     runningRemaining = check.getBaseSalary() - check.getPaidAmount();
                 }
-
-                // Add to total remaining
-                totalRemaining += runningRemaining;
-
                 Object[] row = {
                         check.getPaymentDay(),
                         String.format("%.0f", check.getBaseSalary()),
@@ -226,7 +220,8 @@ public class HistoireDialog extends JDialog {
             // Update the fixed totals panel using accumulated totalRemaining
             double totalEarned = salaryRecord.getTotalEarned();
             double totalPaid = salaryRecord.getAmountPaid();
-            updateTotalsPanel(totalEarned, totalPaid, totalRemaining);
+            double totalRemaining = totalPaid - totalEarned;
+            updateTotalsPanel(totalEarned, totalPaid, Math.abs(totalRemaining));
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,

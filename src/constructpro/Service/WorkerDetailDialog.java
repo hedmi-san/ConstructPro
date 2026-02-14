@@ -356,7 +356,6 @@ public class WorkerDetailDialog extends JDialog {
             List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
             
             double runningRemaining;
-            double totalRemaining = 0;
             
             for (PaymentCheck check : checks) {
                 if (check.getBaseSalary() == 0) {
@@ -364,9 +363,6 @@ public class WorkerDetailDialog extends JDialog {
                 } else {
                     runningRemaining = check.getBaseSalary() - check.getPaidAmount();
                 }
-
-                // Add to total remaining
-                totalRemaining += runningRemaining;
 
                 Object[] row = {
                         check.getPaymentDay(),
@@ -380,8 +376,8 @@ public class WorkerDetailDialog extends JDialog {
             // Update the fixed totals panel
             double totalEarned = salaryRecord.getTotalEarned();
             double totalPaid = salaryRecord.getAmountPaid();
-
-            updateTotalsPanel(totalEarned, totalPaid, totalRemaining);
+            double totalRemaining = totalPaid - totalEarned;
+            updateTotalsPanel(totalEarned, totalPaid, Math.abs(totalRemaining));
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
