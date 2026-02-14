@@ -35,8 +35,6 @@ public class Dashboard extends JFrame {
     private JButton ConstructionSiteButton;
     private JButton SuppliersButton;
     private JButton truckButton;
-    private JButton AccountButton;
-    private JButton AttachmentButton;
     private JButton ToolsButton;
     private JButton usersButton;
     private JButton logsButton;
@@ -119,14 +117,6 @@ public class Dashboard extends JFrame {
         layout.show(displayPanel, "Trucks");
     }
 
-    public void addAccountPage() {
-        layout.show(displayPanel, "Accounting office");
-    }
-
-    public void addAttachmentPage() {
-        layout.show(displayPanel, "Attachment");
-    }
-
     public void addToolPage() {
         layout.show(displayPanel, "Tools");
     }
@@ -159,8 +149,6 @@ public class Dashboard extends JFrame {
         ConstructionSiteButton = new JButton();
         SuppliersButton = new JButton();
         truckButton = new JButton();
-        AccountButton = new JButton();
-        AttachmentButton = new JButton();
         ToolsButton = new JButton();
         usersButton = new JButton();
         logsButton = new JButton();
@@ -257,24 +245,6 @@ public class Dashboard extends JFrame {
             }
         });
 
-        AccountButton.setText("Bureau");
-        AccountButton.setForeground(Color.white);
-        AccountButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AccountButtonActionPerformed(e);
-            }
-        });
-
-        AttachmentButton.setText("Attachement");
-        AttachmentButton.setForeground(Color.white);
-        AttachmentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AttachmentButtonActionPerformed(e);
-            }
-        });
-
         ToolsButton.setText("Matériel & Outils");
         ToolsButton.setForeground(Color.white);
         ToolsButton.addActionListener(new ActionListener() {
@@ -323,10 +293,6 @@ public class Dashboard extends JFrame {
                                                 GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(truckButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
                                                 Short.MAX_VALUE)
-                                        .addComponent(AccountButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
-                                                Short.MAX_VALUE)
-                                        .addComponent(AttachmentButton, GroupLayout.DEFAULT_SIZE,
-                                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(ToolsButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
                                                 Short.MAX_VALUE)
                                         .addComponent(usersButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
@@ -358,12 +324,6 @@ public class Dashboard extends JFrame {
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(truckButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(AccountButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(AttachmentButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(ToolsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
@@ -520,14 +480,6 @@ public class Dashboard extends JFrame {
 
     private void TrucksButtonActionPerformed(ActionEvent evt) {
         addTrucksPage();
-    }
-
-    private void AccountButtonActionPerformed(ActionEvent evt) {
-        addAccountPage();
-    }
-
-    private void AttachmentButtonActionPerformed(ActionEvent evt) {
-        addAttachmentPage();
     }
 
     private void ToolsButtonActionPerformed(ActionEvent evt) {

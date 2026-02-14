@@ -9,6 +9,7 @@ import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DTO.ConstructionSite;
 import constructpro.Service.ShowSitesDetails;
 import constructpro.Service.AssignmentPanel;
+import constructpro.Service.AttachmentFileForm;
 import constructpro.Service.SiteForm;
 import java.awt.*;
 import java.awt.event.*;
@@ -21,6 +22,7 @@ public class ConstructionSitePage extends JPanel {
     private JButton editButton;
     private JButton addButton;
     private JButton affectButton;
+    private JButton attachmentFileButton;
     private JButton refreshButton;
     private JTextField searchText;
     private JLabel jLabel1;
@@ -59,6 +61,7 @@ public class ConstructionSitePage extends JPanel {
         deleteButton = new JButton("Supprimer");
         refreshButton = new JButton("Actualiser");
         affectButton = new JButton("Affecter");
+        attachmentFileButton = new JButton("Fiche Attachement");
         searchText = new JTextField(15);
         jLabel1 = new JLabel("Chantier");
         jLabel2 = new JLabel("Rechercher");
@@ -110,12 +113,15 @@ public class ConstructionSitePage extends JPanel {
         deleteButton.setForeground(Color.WHITE);
         editButton.setForeground(Color.WHITE);
         addButton.setForeground(Color.WHITE);
-        affectButton.setForeground(Color.white);
-
+        affectButton.setForeground(Color.WHITE);
+        attachmentFileButton.setForeground(Color.WHITE);
+        
+        buttonPanel.add(attachmentFileButton);
         buttonPanel.add(affectButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
+        
 
         refreshButton.setFont(new Font("SansSerif", Font.BOLD, 12));
         refreshButton.addActionListener(e -> {
@@ -236,6 +242,28 @@ public class ConstructionSitePage extends JPanel {
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Veuillez sélectionner un chantier pour affecter des travailleurs.");
+            }
+        });
+        
+        attachmentFileButton.addActionListener(e -> {
+            try {
+                // Determine the parent frame
+                JComponent comp = this;
+                while (comp.getParent() != null && !(comp.getParent() instanceof JFrame)) {
+                    comp = (JComponent) comp.getParent();
+                }
+                JFrame parent = (JFrame) (comp.getParent() instanceof JFrame ? comp.getParent() : null);
+
+                AttachmentFileForm dialog = new AttachmentFileForm(parent, "Ajouter une fiche d'attachement", conn);
+                dialog.setVisible(true);
+
+                if (dialog.isConfirmed()) {
+                    // Logic after confirmation if needed
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ajout: " + ex.getMessage(), "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
     }
