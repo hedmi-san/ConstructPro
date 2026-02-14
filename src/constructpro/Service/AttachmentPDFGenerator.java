@@ -7,7 +7,6 @@ import constructpro.DTO.Worker;
 import java.awt.Color;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AttachmentPDFGenerator {
 
