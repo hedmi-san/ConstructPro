@@ -148,11 +148,11 @@ public class ShowSitesDetails extends JDialog {
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         statsPanel.setBackground(DARK_BACKGROUND);
 
-        totalWorkersLabel = new JLabel("Total Workers: 0");
+        totalWorkersLabel = new JLabel("Travailleurs totaux: 0");
         totalWorkersLabel.setForeground(Color.WHITE);
         totalWorkersLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
-        totalPaidLabel = new JLabel("Total Paid: 0.0");
+        totalPaidLabel = new JLabel("Total payé: 0.0");
         totalPaidLabel.setForeground(Color.WHITE);
         totalPaidLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
@@ -286,11 +286,11 @@ public class ShowSitesDetails extends JDialog {
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         statsPanel.setBackground(DARK_BACKGROUND);
 
-        totalBillsLabel = new JLabel("Total Bills: 0");
+        totalBillsLabel = new JLabel("Factures totales: 0");
         totalBillsLabel.setForeground(Color.WHITE);
         totalBillsLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
-        totalBillsCostLabel = new JLabel("Total Cost: 0.0");
+        totalBillsCostLabel = new JLabel("Coût total: 0.0");
         totalBillsCostLabel.setForeground(Color.WHITE);
         totalBillsCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
@@ -320,15 +320,15 @@ public class ShowSitesDetails extends JDialog {
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         statsPanel.setBackground(DARK_BACKGROUND);
 
-        totalVehiclesLabel = new JLabel("Total Vehicles: 0");
+        totalVehiclesLabel = new JLabel("Véhicules totaux: 0");
         totalVehiclesLabel.setForeground(Color.WHITE);
         totalVehiclesLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
-        totalMaintenanceCostLabel = new JLabel("Total Maintenance: 0.0");
+        totalMaintenanceCostLabel = new JLabel("Maintenance totale: 0.0");
         totalMaintenanceCostLabel.setForeground(Color.WHITE);
         totalMaintenanceCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
-        totalRentCostLabel = new JLabel("Total Rent: 0.0");
+        totalRentCostLabel = new JLabel("Loyer total: 0.0");
         totalRentCostLabel.setForeground(Color.WHITE);
         totalRentCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
 

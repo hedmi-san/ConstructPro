@@ -267,7 +267,7 @@ public class WorkerDetailDialog extends JDialog {
         // Title panel
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         titlePanel.setBackground(DARK_BACKGROUND);
-        JLabel titleLabel = new JLabel("Historique des Paiements (Lecture Seule)");
+        JLabel titleLabel = new JLabel("Historique des Paiements");
         titleLabel.setForeground(TEXT_COLOR);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         titlePanel.add(titleLabel);
@@ -354,9 +354,19 @@ public class WorkerDetailDialog extends JDialog {
             tableModel.setRowCount(0); // Clear existing data
 
             List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
-
+            
+            double runningRemaining;
+            double totalRemaining = 0;
+            
             for (PaymentCheck check : checks) {
-                double runningRemaining = check.getBaseSalary() - check.getPaidAmount();
+                if (check.getBaseSalary() == 0) {
+                    runningRemaining = 0;
+                } else {
+                    runningRemaining = check.getBaseSalary() - check.getPaidAmount();
+                }
+
+                // Add to total remaining
+                totalRemaining += runningRemaining;
 
                 Object[] row = {
                         check.getPaymentDay(),
@@ -370,7 +380,6 @@ public class WorkerDetailDialog extends JDialog {
             // Update the fixed totals panel
             double totalEarned = salaryRecord.getTotalEarned();
             double totalPaid = salaryRecord.getAmountPaid();
-            double totalRemaining = totalEarned - totalPaid;
 
             updateTotalsPanel(totalEarned, totalPaid, totalRemaining);
 
