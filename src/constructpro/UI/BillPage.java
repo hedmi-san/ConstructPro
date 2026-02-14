@@ -34,7 +34,7 @@ public class BillPage extends JPanel {
     }
 
     private void initDAO() {
-        if(billDAO == null){
+        if (billDAO == null) {
             billDAO = new BillDAO(conn);
         }
     }
@@ -87,8 +87,8 @@ public class BillPage extends JPanel {
         });
 
         // Buttons panel with white text
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 3));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(3, 10, 3, 10));
         buttonPanel.setPreferredSize(new Dimension(0, 30));
 
         // Set white foreground color for buttons
@@ -276,8 +276,8 @@ public class BillPage extends JPanel {
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner un chantier à supprimer.");
-         }
-         });
+            }
+        });
     }
 
     private void loadDataSet() {

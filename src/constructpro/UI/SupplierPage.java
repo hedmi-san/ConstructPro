@@ -88,9 +88,9 @@ public class SupplierPage extends JPanel {
         });
 
         // Buttons panel with white text
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        buttonPanel.setPreferredSize(new Dimension(0, 60));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 3));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(3, 10, 3, 10));
+        buttonPanel.setPreferredSize(new Dimension(0, 30));
 
         // Set white foreground color for buttons
         addButton.setForeground(Color.WHITE);
