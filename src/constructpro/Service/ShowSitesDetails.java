@@ -41,10 +41,10 @@ public class ShowSitesDetails extends JDialog {
 
     // Panels
     private JPanel mainPanel, headerPanel, tabPanel, contentPanel;
-    private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel, attachmentPanel;
+    private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel;
 
     // Tab buttons
-    private JButton workersTab, costTab, billsTab, attachmentTab, vehiclesTab;
+    private JButton workersTab, costTab, billsTab, vehiclesTab;
     private JTable workersTable, vehiclesTable, billsTable;
     private JLabel totalWorkersLabel, totalPaidLabel;
     private JLabel totalBillsLabel, totalBillsCostLabel;
@@ -93,21 +93,18 @@ public class ShowSitesDetails extends JDialog {
         costPanel = createCostPanel();
         billsPanel = createBillsPanel();
         vehiclesPanel = createVehiclesPanel();
-        attachmentPanel = createAttachmentPanel();
 
         // Create tab buttons
         workersTab = createTabButton("Travailleurs");
         costTab = createTabButton("Coût");
         billsTab = createTabButton("Factures");
         vehiclesTab = createTabButton("Véhicules");
-        attachmentTab = createTabButton("Attachment");
 
         // Add action listeners to tabs
         workersTab.addActionListener(e -> switchTab("Travailleurs", workersTab));
         costTab.addActionListener(e -> switchTab("Coût", costTab));
         billsTab.addActionListener(e -> switchTab("Factures", billsTab));
         vehiclesTab.addActionListener(e -> switchTab("Véhicules", vehiclesTab));
-        attachmentTab.addActionListener(e -> switchTab("Attachment", attachmentTab));
 
     }
 
@@ -129,7 +126,6 @@ public class ShowSitesDetails extends JDialog {
         costTab.setForeground(Color.GRAY);
         billsTab.setForeground(Color.GRAY);
         vehiclesTab.setForeground(Color.GRAY);
-        attachmentTab.setForeground(Color.GRAY);
 
         // Highlight selected tab
         selectedButton.setForeground(Color.ORANGE);
@@ -281,18 +277,6 @@ public class ShowSitesDetails extends JDialog {
         return label;
     }
 
-    private JPanel createAttachmentPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(DARK_BACKGROUND);
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
-
-        JLabel label = new JLabel("Attachment information will be displayed here");
-        label.setForeground(Color.WHITE);
-        panel.add(label, BorderLayout.NORTH);
-
-        return panel;
-    }
-
     private JPanel createBillsPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(DARK_BACKGROUND);
@@ -382,14 +366,12 @@ public class ShowSitesDetails extends JDialog {
         tabPanel.add(workersTab);
         tabPanel.add(billsTab);
         tabPanel.add(vehiclesTab);
-        tabPanel.add(attachmentTab);
         tabPanel.add(costTab);
 
         // Add panels to card layout
         contentPanel.add(workersPanel, "Travailleurs");
         contentPanel.add(billsPanel, "Factures");
         contentPanel.add(vehiclesPanel, "Véhicules");
-        contentPanel.add(attachmentPanel, "Attachment");
         contentPanel.add(costPanel, "Coût");
 
         // Add border to content panel
