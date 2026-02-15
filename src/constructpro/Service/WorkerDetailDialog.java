@@ -65,7 +65,11 @@ public class WorkerDetailDialog extends JDialog {
     private PaymentCheckDAO paymentCheckDAO;
     private SalaryRecord salaryRecord;
     private JPanel totalsPanel;
-
+    private JButton addPaymentBtn;
+    private JButton modifyPaymentBtn;
+    private JButton deletePaymentBtn;
+    private JButton printReceiptBtn;
+    private JFrame parentFrame;
     // Assignment History Components
     private JPanel assignmentHistoryPanel;
     private JTable assignmentsTable;
@@ -84,7 +88,7 @@ public class WorkerDetailDialog extends JDialog {
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
         this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
-        // Get or create salary record for this worker
+        
         this.salaryRecord = salaryRecordDAO.getOrCreateSalaryRecord(worker.getId());
 
         initializeComponents();
@@ -264,13 +268,64 @@ public class WorkerDetailDialog extends JDialog {
     private void setupPaymentHistoryPanel() {
         paymentHistoryPanel.removeAll();
 
-        // Title panel
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // Title panel with buttons
+        JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(DARK_BACKGROUND);
+
         JLabel titleLabel = new JLabel("Historique des Paiements");
         titleLabel.setForeground(TEXT_COLOR);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        titlePanel.add(titleLabel);
+        titlePanel.add(titleLabel, BorderLayout.WEST);
+
+        // Create buttons
+        addPaymentBtn = new JButton("Ajouter");
+        modifyPaymentBtn = new JButton("Modifier");
+        deletePaymentBtn = new JButton("Supprimer");
+        printReceiptBtn = new JButton("Reçu de paiement");
+
+        styleButton(addPaymentBtn);
+        styleButton(modifyPaymentBtn);
+        styleButton(deletePaymentBtn);
+        styleButton(printReceiptBtn);
+
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        buttonPanel.setBackground(DARK_BACKGROUND);
+        buttonPanel.add(addPaymentBtn);
+        buttonPanel.add(modifyPaymentBtn);
+        buttonPanel.add(deletePaymentBtn);
+        buttonPanel.add(printReceiptBtn);
+
+        titlePanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Add action listeners
+        addPaymentBtn.addActionListener(e -> {
+            try {
+                QuickPayDialog dialog = new QuickPayDialog(parentFrame,currentWorker,conn);
+                dialog.setVisible(true);
+
+                if (dialog.isSaved()) {
+                    // Refresh salary record and payment history
+                    salaryRecord = salaryRecordDAO.getSalaryRecordById(salaryRecord.getId());
+                    loadPaymentHistory();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors de l'ouverture du dialogue de paiement: " + ex.getMessage(),
+                        "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        modifyPaymentBtn.addActionListener(e -> modifySelectedPayment());
+        deletePaymentBtn.addActionListener(e -> deleteSelectedPayment());
+        printReceiptBtn.addActionListener(e -> {
+            // Placeholder for future implementation
+            JOptionPane.showMessageDialog(this,
+                    "Fonctionnalité à venir",
+                    "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
+        });
 
         // Center panel with table and totals
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -354,9 +409,9 @@ public class WorkerDetailDialog extends JDialog {
             tableModel.setRowCount(0); // Clear existing data
 
             List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
-            
+
             double runningRemaining;
-            
+
             for (PaymentCheck check : checks) {
                 if (check.getBaseSalary() == 0) {
                     runningRemaining = 0;
@@ -799,6 +854,107 @@ public class WorkerDetailDialog extends JDialog {
         populateDocuments(insurance.getInsuranceDocuments());
     }
 
+    private void styleButton(JButton button) {
+        button.setPreferredSize(new Dimension(120, 30));
+        button.setBackground(Color.BLACK);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(true);
+        button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
+        button.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(Color.DARK_GRAY);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(Color.BLACK);
+            }
+        });
+    }
+
+    private void deleteSelectedPayment() {
+        int selectedRow = historyTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez sélectionner un paiement à supprimer",
+                    "Aucune sélection",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Voulez-vous vraiment supprimer ce paiement?",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
+                PaymentCheck checkToDelete = checks.get(selectedRow);
+
+                // Delete the payment check from database
+                paymentCheckDAO.deletePaymentCheck(checkToDelete.getId());
+
+                // Update salary record totals
+                salaryRecordDAO.updateSalaryRecordTotals(salaryRecord.getId());
+
+                // Refresh salary record and reload table
+                salaryRecord = salaryRecordDAO.getSalaryRecordById(salaryRecord.getId());
+                loadPaymentHistory();
+
+                JOptionPane.showMessageDialog(this,
+                        "Paiement supprimé avec succès",
+                        "Succès",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors de la suppression: " + e.getMessage(),
+                        "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void modifySelectedPayment() {
+        int selectedRow = historyTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez sélectionner un paiement à modifier",
+                    "Aucune sélection",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            // Get the payment check from the selected row
+            List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
+            PaymentCheck selectedPaymentCheck = checks.get(selectedRow);
+
+            ModifyPaymentCheck dialog = new ModifyPaymentCheck(
+                    this,
+                    selectedPaymentCheck,
+                    conn);
+            dialog.setVisible(true);
+
+            if (dialog.isSaved()) {
+                // Refresh the salary record from database
+                salaryRecord = salaryRecordDAO.getSalaryRecordById(salaryRecord.getId());
+                // Refresh table
+                loadPaymentHistory();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors de la modification: " + e.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void populateData() throws SQLException {
         nameLabel.setText(currentWorker.getFirstName() + " " + currentWorker.getLastName());
         fatherNameValue.setText(currentWorker.getFatherName() != null ? currentWorker.getFatherName() : "N/A");
@@ -823,5 +979,9 @@ public class WorkerDetailDialog extends JDialog {
                 siteName = "N/A";
         }
         chantierValue.setText(siteName);
+    }
+    
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 }
