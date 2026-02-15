@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.awt.*;
 import java.awt.event.*;
 
-public class UserLogPage extends JPanel{
+public class UserLogPage extends JPanel {
 
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -23,7 +23,7 @@ public class UserLogPage extends JPanel{
     }
 
     @SuppressWarnings("unchecked")
-    private void initComponents(){
+    private void initComponents() {
         jLabel1 = new JLabel();
         jSeparator1 = new JSeparator();
         jScrollPane1 = new JScrollPane();
@@ -36,19 +36,18 @@ public class UserLogPage extends JPanel{
         jLabel1.setText("Logs");
 
         logTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+                new Object[][] {
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null }
+                },
+                new String[] {
+                        "Title 1", "Title 2", "Title 3", "Title 4"
+                }));
         jScrollPane1.setViewportView(logTable);
 
-        refreshButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); 
+        refreshButton.setFont(new java.awt.Font("Segoe UI", 1, 12));
         refreshButton.setText("REFRESH");
         refreshButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -67,38 +66,43 @@ public class UserLogPage extends JPanel{
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1,GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1,GroupLayout.PREFERRED_SIZE, 129,GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED,GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel2,GroupLayout.PREFERRED_SIZE, 48,GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(searchText,GroupLayout.PREFERRED_SIZE, 153,GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(refreshButton,GroupLayout.PREFERRED_SIZE, 89,GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(jSeparator1)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel1, GroupLayout.PREFERRED_SIZE, 129,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED,
+                                                        GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jLabel2, GroupLayout.PREFERRED_SIZE, 48,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(searchText, GroupLayout.PREFERRED_SIZE, 153,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(refreshButton, GroupLayout.PREFERRED_SIZE, 89,
+                                                        GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap()));
         layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(refreshButton)
-                        .addComponent(searchText,GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel2))
-                    .addComponent(jLabel1,GroupLayout.PREFERRED_SIZE, 40,GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1,GroupLayout.PREFERRED_SIZE, 10,GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1,GroupLayout.PREFERRED_SIZE, 407,GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(26, Short.MAX_VALUE))
-        );
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                .addComponent(refreshButton)
+                                                .addComponent(searchText, GroupLayout.PREFERRED_SIZE,
+                                                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel2))
+                                        .addComponent(jLabel1, GroupLayout.PREFERRED_SIZE, 40,
+                                                GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator1, GroupLayout.PREFERRED_SIZE, 10, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 407, GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(26, Short.MAX_VALUE)));
     }
 
     private void searchTextKeyReleased(KeyEvent evt) {
@@ -108,12 +112,53 @@ public class UserLogPage extends JPanel{
         loadDataSet();
     }
 
-    public void loadDataSet(){
+    public void loadDataSet() {
         try {
             UserDAO userDAO = new UserDAO();
             logTable.setModel(userDAO.buildTableModel(userDAO.getUserLogsDAO()));
+
+            // Apply custom renderer for IN_TIME (column 2) and OUT_TIME (column 3)
+            if (logTable.getColumnCount() >= 4) {
+                DateRenderer dateRenderer = new DateRenderer();
+                logTable.getColumnModel().getColumn(2).setCellRenderer(dateRenderer);
+                logTable.getColumnModel().getColumn(3).setCellRenderer(dateRenderer);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    // Custom renderer for formatting timestamps
+    static class DateRenderer extends javax.swing.table.DefaultTableCellRenderer {
+        java.text.SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd - HH:mm");
+        java.time.format.DateTimeFormatter inputFormatter = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        java.time.format.DateTimeFormatter outputFormatter = java.time.format.DateTimeFormatter
+                .ofPattern("yyyy/MM/dd - HH:mm");
+
+        public DateRenderer() {
+            super();
+        }
+
+        @Override
+        public void setValue(Object value) {
+
+            if (value instanceof java.util.Date) {
+                value = simpleDateFormat.format(value);
+            } else if (value instanceof String) {
+                try {
+                    // Try parsing ISO format (e.g. 2023-10-27T10:15:30.123)
+                    String stringValue = (String) value;
+                    if (stringValue != null && !stringValue.isEmpty()) {
+                        java.time.LocalDateTime dateTime = java.time.LocalDateTime.parse(stringValue, inputFormatter);
+                        value = dateTime.format(outputFormatter);
+                    }
+                } catch (Exception e) {
+                    // If parsing fails, we'll just display the original value
+                    // This handles cases where value might not be in ISO format
+                }
+            }
+
+            super.setValue(value);
         }
     }
 }

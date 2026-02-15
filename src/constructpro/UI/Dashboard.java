@@ -440,7 +440,7 @@ public class Dashboard extends JFrame {
         if (opt == JOptionPane.YES_OPTION) {
             outTime = LocalDateTime.now();
             userDTO.setOutTime(String.valueOf(outTime));
-            userDTO.setFullName(username);
+            userDTO.setUserName(username);
             new UserDAO().addUserLogin(userDTO);
             dispose();
             LoginPage logPage = new LoginPage();
