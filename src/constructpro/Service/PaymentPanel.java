@@ -5,9 +5,7 @@ import java.sql.*;
 import constructpro.DTO.SalaryRecord;
 import constructpro.DAO.PaymentCheckDAO;
 import constructpro.DAO.SalaryRecordDAO;
-
 import constructpro.DTO.Worker;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

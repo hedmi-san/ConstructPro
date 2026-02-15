@@ -55,6 +55,16 @@ public class SalaryOption extends JDialog {
                 Logger.getLogger(SalaryOption.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+
+        restBtn.addActionListener(e -> {
+            dispose();
+            try {
+                // Open Rest Salaire Payment window
+                new RestSalairePayment(parentFrame, worker, conn).setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(SalaryOption.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
     private void styleButton(JButton button) {
