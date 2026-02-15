@@ -88,7 +88,7 @@ public class WorkerDetailDialog extends JDialog {
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
         this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
-        
+
         this.salaryRecord = salaryRecordDAO.getOrCreateSalaryRecord(worker.getId());
 
         initializeComponents();
@@ -301,7 +301,7 @@ public class WorkerDetailDialog extends JDialog {
         // Add action listeners
         addPaymentBtn.addActionListener(e -> {
             try {
-                QuickPayDialog dialog = new QuickPayDialog(parentFrame,currentWorker,conn);
+                QuickPayDialog dialog = new QuickPayDialog(parentFrame, currentWorker, conn);
                 dialog.setVisible(true);
 
                 if (dialog.isSaved()) {
@@ -320,11 +320,32 @@ public class WorkerDetailDialog extends JDialog {
         modifyPaymentBtn.addActionListener(e -> modifySelectedPayment());
         deletePaymentBtn.addActionListener(e -> deleteSelectedPayment());
         printReceiptBtn.addActionListener(e -> {
-            // Placeholder for future implementation
-            JOptionPane.showMessageDialog(this,
-                    "Fonctionnalité à venir",
-                    "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
+            int selectedRow = historyTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this,
+                        "Veuillez sélectionner un paiement pour générer un reçu",
+                        "Aucune sélection",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            try {
+                // Get the payment check from the selected row
+                List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
+                PaymentCheck selectedPaymentCheck = checks.get(selectedRow);
+
+                PaymentReceiptForm dialog = new PaymentReceiptForm(parentFrame,
+                        currentWorker,
+                        selectedPaymentCheck,
+                        conn);
+                dialog.setVisible(true);
+
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur lors de l'ouverture du formulaire de reçu: " + ex.getMessage(),
+                        "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         // Center panel with table and totals
@@ -980,7 +1001,7 @@ public class WorkerDetailDialog extends JDialog {
         }
         chantierValue.setText(siteName);
     }
-    
+
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }
