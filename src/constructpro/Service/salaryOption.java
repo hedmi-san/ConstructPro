@@ -7,33 +7,35 @@ import constructpro.DTO.Worker;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SalaryOption extends JDialog{
+public class SalaryOption extends JDialog {
     private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
     private Connection conn;
     private Worker worker;
     private JButton histoireBtn;
     private JButton salaireBtn;
+    private JButton restBtn;
     private JFrame parentFrame;
-    
+
     public SalaryOption(JFrame parent, Worker worker, Connection connection) throws SQLException {
         super(parent, "Choisissez une action", true);
         this.worker = worker;
         initializeComponents();
         setupLayout();
-        setSize(455, 200);
+        setSize(600, 200);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.conn = connection;
     }
-    
-    private void initializeComponents(){
+
+    private void initializeComponents() {
         histoireBtn = new JButton("Histoire");
         salaireBtn = new JButton("Salaire");
-        
+        restBtn = new JButton("Payer le reste");
+
         // Style buttons to match the image
         styleButton(histoireBtn);
         styleButton(salaireBtn);
-        
+        styleButton(restBtn);
         // Add action listeners
         histoireBtn.addActionListener(e -> {
             dispose();
@@ -43,7 +45,7 @@ public class SalaryOption extends JDialog{
                 Logger.getLogger(SalaryOption.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        
+
         salaireBtn.addActionListener(e -> {
             dispose();
             try {
@@ -54,7 +56,7 @@ public class SalaryOption extends JDialog{
             }
         });
     }
-    
+
     private void styleButton(JButton button) {
         button.setPreferredSize(new Dimension(120, 40));
         button.setBackground(DARK_BACKGROUND);
@@ -63,19 +65,20 @@ public class SalaryOption extends JDialog{
         button.setBorderPainted(true);
         button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
         button.setFont(new Font("Segeo UI", Font.PLAIN, 14));
-        
+
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.DARK_GRAY);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(DARK_BACKGROUND);
             }
         });
     }
-    
-    private void setupLayout(){
+
+    private void setupLayout() {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         // Title label
@@ -84,24 +87,30 @@ public class SalaryOption extends JDialog{
         titleLabel.setFont(new Font("Segeo UI", Font.PLAIN, 18));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         gbc.insets = new Insets(20, 0, 30, 0);
         add(titleLabel, gbc);
-        
+
         // Histoire button
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 1;
-        gbc.insets = new Insets(0, 20, 20, 30);
+        gbc.insets = new Insets(0, 20, 20, 10);
         add(histoireBtn, gbc);
-        
+
         // Salaire button
         gbc.gridx = 1;
         gbc.gridy = 1;
-        gbc.insets = new Insets(0, 30, 20, 20);
+        gbc.insets = new Insets(0, 10, 20, 10);
         add(salaireBtn, gbc);
+
+        // Payer le reste button
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 10, 20, 20);
+        add(restBtn, gbc);
     }
-    
+
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }
