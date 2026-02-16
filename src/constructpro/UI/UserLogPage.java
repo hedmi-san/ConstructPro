@@ -34,6 +34,12 @@ public class UserLogPage extends JPanel {
 
         jLabel1.setFont(new Font("SansSerif", Font.BOLD, 22));
         jLabel1.setText("Logs");
+        
+        logTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        logTable.setDefaultEditor(Object.class, null);
+        logTable.setShowVerticalLines(true);
+        logTable.setGridColor(Color.WHITE);
+        logTable.getTableHeader().setReorderingAllowed(false);
 
         logTable.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][] {

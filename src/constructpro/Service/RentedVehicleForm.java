@@ -222,7 +222,7 @@ public class RentedVehicleForm extends JDialog {
                     try {
                         vehicleDAO.insertVehicle(newVehicle);
                         int vehicleId = vehicleDAO.getVehicleId(newVehicle);
-                        VehicleRental rented = createRentedVehicle(vehicleId);
+                        VehicleRental rented = createRentedVehicle(vehicleId, newVehicle.getSiteID());
                         vehicleRentalDAO.insertNewRentedVehicle(rented);
                     } catch (SQLException ex) {
                         Logger.getLogger(OwnedVehicleForm.class.getName()).log(Level.SEVERE, null, ex);
@@ -287,9 +287,10 @@ public class RentedVehicleForm extends JDialog {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
-    private VehicleRental createRentedVehicle(int vehicleId) {
+    private VehicleRental createRentedVehicle(int vehicleId, int assignedSiteId) {
         VehicleRental rented = new VehicleRental();
         rented.setVehicle_id(vehicleId);
+        rented.setAssignedSiteId(assignedSiteId);
         rented.setOwnerName(ownerNameField.getText().trim());
         rented.setOwnerPhone(ownerPhoneField.getText().trim());
         rented.setDailyRate(Double.parseDouble(dailyRateField.getText().trim()));
@@ -299,7 +300,6 @@ public class RentedVehicleForm extends JDialog {
                         : null);
         rented.setDepositAmount(Double.parseDouble(depositAmountFielf.getText().trim()));
         rented.setTransferFee(Double.parseDouble(TransferFeeField.getText().trim()));
-
         return rented;
     }
 }
