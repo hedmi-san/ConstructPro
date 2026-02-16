@@ -13,31 +13,33 @@ public class SupplierDAO {
     }
 
     public void insertSupplier(Supplier supplier) throws SQLException {
-        String sql = "INSERT INTO suppliers (supplierName, phone, address,totalSpent,totalPaid) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO suppliers (supplierName, supplierType, phone, address, totalSpent, totalPaid) VALUES (?,?,?,?,?,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
-            stmt.setString(2, supplier.getPhone());
-            stmt.setString(3, supplier.getAddress());
-            stmt.setDouble(4, supplier.getTotalSpent());
-            stmt.setDouble(5, supplier.getTotalPaid());
+            stmt.setString(2, supplier.getType());
+            stmt.setString(3, supplier.getPhone());
+            stmt.setString(4, supplier.getAddress());
+            stmt.setDouble(5, supplier.getTotalSpent());
+            stmt.setDouble(6, supplier.getTotalPaid());
             stmt.executeUpdate();
         }
     }
 
     public void updateSupplier(Supplier supplier) throws SQLException {
-        String sql = "UPDATE suppliers SET supplierName = ?, phone = ?, address = ?,totalSpent = ?,totalPaid = ? WHERE  id = ?";
+        String sql = "UPDATE suppliers SET supplierName = ?, supplierType = ?, phone = ?, address = ?,totalSpent = ?,totalPaid = ? WHERE  id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, supplier.getName());
-            stmt.setString(2, supplier.getPhone());
-            stmt.setString(3, supplier.getAddress());
-            stmt.setDouble(4, supplier.getTotalSpent());
-            stmt.setDouble(5, supplier.getTotalPaid());
-            stmt.setInt(6, supplier.getId());
+            stmt.setString(2, supplier.getType());
+            stmt.setString(3, supplier.getPhone());
+            stmt.setString(4, supplier.getAddress());
+            stmt.setDouble(5, supplier.getTotalSpent());
+            stmt.setDouble(6, supplier.getTotalPaid());
+            stmt.setInt(7, supplier.getId());
             stmt.executeUpdate();
         }
     }
 
-    public void deleteWorker(int id) throws SQLException {
+    public void deleteSupplier(int id) throws SQLException {
         String sql = "DELETE FROM suppliers WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -113,6 +115,7 @@ public class SupplierDAO {
                 Supplier supplier = new Supplier();
                 supplier.setId(rs.getInt("id"));
                 supplier.setName(rs.getString("supplierName"));
+                supplier.setType(rs.getString("supplierType"));
                 supplier.setPhone(rs.getString("phone"));
                 supplier.setAddress(rs.getString("address"));
                 supplier.setTotalSpent(rs.getDouble("totalSpent"));

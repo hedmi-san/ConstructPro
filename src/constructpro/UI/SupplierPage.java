@@ -183,7 +183,7 @@ public class SupplierPage extends JPanel {
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         int supplierId = (Integer) model.getValueAt(selectedRow, 0); // Assuming ID is in first column
-                        supplierDAO.deleteWorker(supplierId);
+                        supplierDAO.deleteSupplier(supplierId);
                         loadDataSet();
                         JOptionPane.showMessageDialog(this, "Ouvrier supprimé avec succès!");
                     } catch (HeadlessException | SQLException ex) {

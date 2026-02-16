@@ -4,6 +4,7 @@ package constructpro.DTO;
 public class Supplier {
     private int Id;
     private String name;
+    private String type;
     private String address;
     private String phone;
     private double totalSpent;
@@ -23,6 +24,14 @@ public class Supplier {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getAddress() {

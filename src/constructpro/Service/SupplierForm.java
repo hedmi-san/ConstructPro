@@ -15,6 +15,7 @@ import javax.swing.*;
 public class SupplierForm extends JDialog {
     
     private JTextField supplierNameField,supplierPhoneNumberField,supplierAddress,totalSpentField,totalPaidField;
+    private JComboBox<String> supplierTypeComboBox;
     private JButton saveButton, cancelButton;
     private boolean confirmed = false;
     
@@ -35,6 +36,9 @@ public class SupplierForm extends JDialog {
     
     private void initComponents(){
         supplierNameField = new JTextField(20);
+        supplierTypeComboBox = new JComboBox<>(new String[]{
+            "Sélectionner un Type","Matériaux de construction", "Électricité", "Plomberie"
+        });
         supplierPhoneNumberField = new JTextField(20);
         supplierAddress = new JTextField(20);
         totalSpentField = new JTextField(20);
@@ -58,6 +62,15 @@ public class SupplierForm extends JDialog {
         formPanel.add(new JLabel("Nom du Fournisseur :"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(supplierNameField, gbc);
+        
+        row++;
+        
+        //Supplier Type
+        //Supplier Name
+        gbc.gridx = 0; gbc.gridy = row; gbc.anchor = GridBagConstraints.WEST;
+        formPanel.add(new JLabel("Type du Fournisseur :"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(supplierTypeComboBox, gbc);
         
         row++;
         
@@ -101,6 +114,7 @@ public class SupplierForm extends JDialog {
     }
     private void populateFields(Supplier supplier){
         supplierNameField.setText(supplier.getName());
+        supplierTypeComboBox.setSelectedItem(supplier.getType());
         supplierPhoneNumberField.setText(supplier.getPhone());
         supplierAddress.setText(supplier.getAddress());
         totalSpentField.setText(String.valueOf(supplier.getTotalSpent()));
@@ -124,6 +138,11 @@ public class SupplierForm extends JDialog {
         if(Double.parseDouble(totalSpentField.getText().trim()) < Double.parseDouble(totalPaidField.getText().trim()) ){
             JOptionPane.showMessageDialog(this, "Le total des dépenses ne doit pas dépasser le total des paiements.");
             totalSpentField.requestFocus();
+            return false;
+        }
+        
+        if (supplierTypeComboBox.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Veuillez sélectionner le type de fournisseur !");
             return false;
         }
         
@@ -154,6 +173,7 @@ public class SupplierForm extends JDialog {
         Supplier supplier = new Supplier();
         //TODO: setting data from text fields.
         supplier.setName(supplierNameField.getText().trim());
+        supplier.setType((String) supplierTypeComboBox.getSelectedItem());
         supplier.setPhone(supplierPhoneNumberField.getText().trim());
         supplier.setAddress(supplierAddress.getText().trim());
         supplier.setTotalSpent(Double.parseDouble(totalSpentField.getText().trim()));
