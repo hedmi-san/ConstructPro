@@ -13,7 +13,6 @@ public class SalaryOption extends JDialog {
     private Worker worker;
     private JButton histoireBtn;
     private JButton salaireBtn;
-    private JButton restBtn;
     private JFrame parentFrame;
 
     public SalaryOption(JFrame parent, Worker worker, Connection connection) throws SQLException {
@@ -21,7 +20,7 @@ public class SalaryOption extends JDialog {
         this.worker = worker;
         initializeComponents();
         setupLayout();
-        setSize(600, 200);
+        setSize(455, 200);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.conn = connection;
@@ -30,12 +29,10 @@ public class SalaryOption extends JDialog {
     private void initializeComponents() {
         histoireBtn = new JButton("Histoire");
         salaireBtn = new JButton("Salaire");
-        restBtn = new JButton("Payer le reste");
 
         // Style buttons to match the image
         styleButton(histoireBtn);
         styleButton(salaireBtn);
-        styleButton(restBtn);
         // Add action listeners
         histoireBtn.addActionListener(e -> {
             dispose();
@@ -56,15 +53,6 @@ public class SalaryOption extends JDialog {
             }
         });
 
-        restBtn.addActionListener(e -> {
-            dispose();
-            try {
-                // Open Rest Salaire Payment window
-                new RestSalairePayment(parentFrame, worker, conn).setVisible(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(SalaryOption.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
     }
 
     private void styleButton(JButton button) {
@@ -114,11 +102,6 @@ public class SalaryOption extends JDialog {
         gbc.insets = new Insets(0, 10, 20, 10);
         add(salaireBtn, gbc);
 
-        // Payer le reste button
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 10, 20, 20);
-        add(restBtn, gbc);
     }
 
     public void setParentFrame(JFrame parent) {
