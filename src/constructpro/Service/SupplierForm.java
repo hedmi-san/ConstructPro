@@ -171,7 +171,6 @@ public class SupplierForm extends JDialog {
     
     public Supplier getSupplierFromForm(){
         Supplier supplier = new Supplier();
-        //TODO: setting data from text fields.
         supplier.setName(supplierNameField.getText().trim());
         supplier.setType((String) supplierTypeComboBox.getSelectedItem());
         supplier.setPhone(supplierPhoneNumberField.getText().trim());

@@ -243,5 +243,33 @@ public class BillDAO {
         ps.setInt(1, siteId);
         ps.setString(2, supplierType);
         return ps.executeQuery();
+
+    }
+
+    public ResultSet getBillDetailsBySupplierTypeReport(int siteId, String supplierType, LocalDate start, LocalDate end)
+            throws SQLException {
+        String sql = """
+                SELECT
+                    b.factureNumber,
+                    b.billDate,
+                    b.totalCost,
+                    bi.itemName,
+                    bi.quantity,
+                    bi.unitPrice,
+                    (bi.quantity * bi.unitPrice) as itemTotal
+                FROM bills b
+                JOIN suppliers s ON b.supplierId = s.id
+                LEFT JOIN billItems bi ON b.id = bi.billId
+                WHERE b.assignedSiteId = ?
+                  AND s.supplierType = ?
+                  AND b.billDate BETWEEN ? AND ?
+                ORDER BY b.billDate, b.factureNumber
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setString(2, supplierType);
+        ps.setDate(3, Date.valueOf(start));
+        ps.setDate(4, Date.valueOf(end));
+        return ps.executeQuery();
     }
 }

@@ -110,6 +110,7 @@ public class MaintenanceDAO {
                 SELECT
                     mt.repaireDate,
                     v.name as vehicleName,
+                    mt.maintenanceType,
                     mt.cost
                 FROM maintenanceTicket mt
                 INNER JOIN vehicle v ON mt.vehicleId = v.id

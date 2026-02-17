@@ -182,6 +182,7 @@ public class VehicleRentalDAO {
                     v.name as vehicleName,
                     vr.ownerCompany,
                     vr.dailyRate,
+                    vr.daysWorked,
                     vr.depositeAmount as paidAmount
                 FROM vehicleRental vr
                 INNER JOIN vehicle v ON vr.vehicleId = v.id
