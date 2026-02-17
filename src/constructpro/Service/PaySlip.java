@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.PaymentCheckDAO;
-
 import constructpro.DTO.ConstructionSite;
 import java.awt.FlowLayout;
 import java.awt.Font;

@@ -31,6 +31,7 @@ public class Dashboard extends JFrame {
     private JButton menuButton;
     private JButton WorkersButton;
     private JButton SalaryButton;
+    private JButton LaCasseButton;
     private JButton BillButton;
     private JButton ConstructionSiteButton;
     private JButton SuppliersButton;
@@ -64,6 +65,7 @@ public class Dashboard extends JFrame {
         displayPanel.add("Home", new HomePage(username));
         displayPanel.add("Workers", new WorkersPage(connection));
         displayPanel.add("Salaire", new SalaryPage(connection));
+        displayPanel.add("La Casse", new LaCassePage(connection));
         displayPanel.add("Facture", new BillPage(connection));
         displayPanel.add("Construction Sites", new ConstructionSitePage(connection));
         displayPanel.add("Suppliers", new SupplierPage(connection));
@@ -97,6 +99,10 @@ public class Dashboard extends JFrame {
 
     public void addSalairePage() {
         layout.show(displayPanel, "Salaire");
+    }
+    
+    public void addCassePage(){
+        layout.show(displayPanel, "La Casse");
     }
 
     public void addBillPage() {
@@ -143,6 +149,7 @@ public class Dashboard extends JFrame {
         menuButton = new JButton();
         WorkersButton = new JButton();
         SalaryButton = new JButton();
+        LaCasseButton = new JButton();
         BillButton = new JButton();
         ConstructionSiteButton = new JButton();
         SuppliersButton = new JButton();
@@ -204,6 +211,15 @@ public class Dashboard extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SalaireButtonActionPerformed(e);
+            }
+        });
+        
+        LaCasseButton.setText("La Casse");
+        LaCasseButton.setForeground(Color.white);
+        LaCasseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CasseButtonActionPerformed(e);
             }
         });
 
@@ -283,6 +299,8 @@ public class Dashboard extends JFrame {
                                                 Short.MAX_VALUE)
                                         .addComponent(SalaryButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
                                                 Short.MAX_VALUE)
+                                        .addComponent(LaCasseButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE)
                                         .addComponent(BillButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
                                                 Short.MAX_VALUE)
                                         .addComponent(ConstructionSiteButton, GroupLayout.DEFAULT_SIZE,
@@ -312,6 +330,9 @@ public class Dashboard extends JFrame {
                                 .addComponent(SalaryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
+                                .addComponent(LaCasseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
                                 .addComponent(BillButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -337,12 +358,13 @@ public class Dashboard extends JFrame {
 
         nameLabel.setFont(new Font("Segoe UI Black", 0, 12));
         nameLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/constructpro/UI/Icons/user_icon.png")));
-        nameLabel.setText("User: ");
+        nameLabel.setText("Utilisateur: ");
         nameLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         logoutButton
                 .setIcon(new javax.swing.ImageIcon(getClass().getResource("/constructpro/UI/Icons/log-out_icon.png")));
-        logoutButton.setText("Sign out");
+        logoutButton.setText("Déconnecter");
+        logoutButton.setForeground(Color.WHITE);
         logoutButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         logoutButton.addActionListener(new ActionListener() {
             @Override
@@ -410,10 +432,10 @@ public class Dashboard extends JFrame {
                                                 Short.MAX_VALUE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
-        jMenu1.setText("File");
+        jMenu1.setText("Fichier");
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("Modifier");
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -434,7 +456,7 @@ public class Dashboard extends JFrame {
     private void logoutButtonActionPerformed(ActionEvent evt) {// GEN-FIRST:event_logoutButtonActionPerformed
         int opt = JOptionPane.showConfirmDialog(
                 null,
-                "<html>Are you sure you want to logout?<br>You will have to login again.<html>",
+                "<html>Êtes-vous sûr de vouloir vous déconnecter ?<br>Vous devrez vous reconnecter.<html>",
                 "Confirmation",
                 JOptionPane.YES_NO_OPTION);
         if (opt == JOptionPane.YES_OPTION) {
@@ -462,6 +484,10 @@ public class Dashboard extends JFrame {
 
     private void SalaireButtonActionPerformed(ActionEvent evt) {
         addSalairePage();
+    }
+    
+    private void CasseButtonActionPerformed(ActionEvent evt){
+        addCassePage();
     }
 
     private void BillButtonActionPerformed(ActionEvent evt) {

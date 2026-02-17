@@ -95,4 +95,54 @@ public class BiLLItemDAO {
         return ps.executeQuery();
     }
 
+    public ResultSet getBillItemsBySiteId(int siteId) throws SQLException {
+        String sql = """
+                SELECT
+                    bi.itemId,
+                    bi.itemName AS name,
+                    bi.quantity,
+                    bi.itemType,
+                    bi.unitPrice,
+                    cs.name AS site_name,
+                    b.billDate
+                FROM billItems bi
+                JOIN bills b       ON bi.billId = b.id
+                JOIN constructionSite cs ON b.assignedSiteId = cs.id
+                WHERE b.assignedSiteId = ?
+                ORDER BY b.billDate DESC;
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        return ps.executeQuery();
+    }
+
+    public ResultSet searchBillItemsBySiteId(int siteId, String searchTerm) throws SQLException {
+        String sql = """
+                    SELECT
+                        bi.itemId,
+                        bi.itemName AS name,
+                        bi.quantity,
+                        bi.itemType,
+                        bi.unitPrice,
+                        cs.name AS site_name,
+                        b.billDate
+                    FROM billItems bi
+                    JOIN bills b ON bi.billId = b.id
+                    JOIN constructionSite cs ON b.assignedSiteId = cs.id
+                    WHERE b.assignedSiteId = ? AND bi.itemName LIKE ?
+                    ORDER BY b.billDate DESC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setString(2, "%" + searchTerm + "%");
+        return ps.executeQuery();
+    }
+
+    public void deleteBillItem(int itemId) throws SQLException {
+        String sql = "DELETE FROM billItems WHERE itemId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            ps.executeUpdate();
+        }
+    }
 }
