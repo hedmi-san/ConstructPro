@@ -41,13 +41,16 @@ public class ShowSitesDetails extends JDialog {
 
     // Panels
     private JPanel mainPanel, headerPanel, tabPanel, contentPanel;
-    private JPanel workersPanel, costPanel, billsPanel, vehiclesPanel;
+    private JPanel workersPanel, costPanel, materialPanel, electricPanel, plomberiePanle, vehiclesPanel;
 
     // Tab buttons
-    private JButton workersTab, costTab, billsTab, vehiclesTab;
-    private JTable workersTable, vehiclesTable, billsTable;
+    private JButton workersTab, costTab, materialTab, electricTab, plomberieTab, vehiclesTab;
+    private JTable workersTable, vehiclesTable, materialBillsTable, electricBillsTable, plomberieBillsTable;
     private JLabel totalWorkersLabel, totalPaidLabel;
-    private JLabel totalBillsLabel, totalBillsCostLabel;
+
+    private JLabel totalMaterialBillsLabel, totalMaterialBillsCostLabel;
+    private JLabel totalElectricBillsLabel, totalElectricBillsCostLabel;
+    private JLabel totalPlomberieBillsLabel, totalPlomberieBillsCostLabel;
     private JLabel totalVehiclesLabel, totalMaintenanceCostLabel, totalRentCostLabel;
     private JLabel totalCostWorkersLabel, totalCostBillsLabel, totalCostVehiclesLabel, grandTotalCostLabel;
     private DefaultPieDataset costDataset;
@@ -65,7 +68,10 @@ public class ShowSitesDetails extends JDialog {
         setupLayout();
         setupStyling();
         populateWorkersData();
-        populateBillsData();
+        setupLayout();
+        setupStyling();
+        populateWorkersData();
+        populateAllSpecificBillsData();
         populateVehiclesData();
         populateCostData();
         setSize(800, 600);
@@ -86,26 +92,35 @@ public class ShowSitesDetails extends JDialog {
         // Initialize the tables
         workersTable = new JTable();
         vehiclesTable = new JTable();
-        billsTable = new JTable();
+        materialBillsTable = new JTable();
+        electricBillsTable = new JTable();
+        plomberieBillsTable = new JTable();
 
         // Create tab panels
         workersPanel = createWorkersPanel();
         costPanel = createCostPanel();
-        billsPanel = createBillsPanel();
+        materialPanel = createMaterialPanel();
+        electricPanel = createElectricPanel();
+        plomberiePanle = createPlomberiePanel();
         vehiclesPanel = createVehiclesPanel();
 
         // Create tab buttons
+        // Create tab buttons
         workersTab = createTabButton("Travailleurs");
         costTab = createTabButton("Coût");
-        billsTab = createTabButton("Factures");
+        materialTab = createTabButton("Matériaux");
+        electricTab = createTabButton("Électricité");
+        plomberieTab = createTabButton("Plomberie");
         vehiclesTab = createTabButton("Véhicules");
 
         // Add action listeners to tabs
+        // Add action listeners to tabs
         workersTab.addActionListener(e -> switchTab("Travailleurs", workersTab));
         costTab.addActionListener(e -> switchTab("Coût", costTab));
-        billsTab.addActionListener(e -> switchTab("Factures", billsTab));
         vehiclesTab.addActionListener(e -> switchTab("Véhicules", vehiclesTab));
-
+        materialTab.addActionListener(e -> switchTab("Matériaux", materialTab));
+        electricTab.addActionListener(e -> switchTab("Électricité", electricTab));
+        plomberieTab.addActionListener(e -> switchTab("Plomberie", plomberieTab));
     }
 
     private JButton createTabButton(String text) {
@@ -122,11 +137,13 @@ public class ShowSitesDetails extends JDialog {
         cardLayout.show(contentPanel, tabName);
 
         // Reset all tab button styles
+        // Reset all tab button styles
         workersTab.setForeground(Color.GRAY);
         costTab.setForeground(Color.GRAY);
-        billsTab.setForeground(Color.GRAY);
         vehiclesTab.setForeground(Color.GRAY);
-
+        materialTab.setForeground(Color.GRAY);
+        electricTab.setForeground(Color.GRAY);
+        plomberieTab.setForeground(Color.GRAY);
         // Highlight selected tab
         selectedButton.setForeground(Color.ORANGE);
 
@@ -277,7 +294,43 @@ public class ShowSitesDetails extends JDialog {
         return label;
     }
 
-    private JPanel createBillsPanel() {
+    private JPanel createMaterialPanel() {
+        totalMaterialBillsLabel = new JLabel("Factures totales: 0");
+        totalMaterialBillsLabel.setForeground(Color.WHITE);
+        totalMaterialBillsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        totalMaterialBillsCostLabel = new JLabel("Coût total: 0.0");
+        totalMaterialBillsCostLabel.setForeground(Color.WHITE);
+        totalMaterialBillsCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        return createGenericBillPanel(materialBillsTable, totalMaterialBillsLabel, totalMaterialBillsCostLabel);
+    }
+
+    private JPanel createElectricPanel() {
+        totalElectricBillsLabel = new JLabel("Factures totales: 0");
+        totalElectricBillsLabel.setForeground(Color.WHITE);
+        totalElectricBillsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        totalElectricBillsCostLabel = new JLabel("Coût total: 0.0");
+        totalElectricBillsCostLabel.setForeground(Color.WHITE);
+        totalElectricBillsCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        return createGenericBillPanel(electricBillsTable, totalElectricBillsLabel, totalElectricBillsCostLabel);
+    }
+
+    private JPanel createPlomberiePanel() {
+        totalPlomberieBillsLabel = new JLabel("Factures totales: 0");
+        totalPlomberieBillsLabel.setForeground(Color.WHITE);
+        totalPlomberieBillsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        totalPlomberieBillsCostLabel = new JLabel("Coût total: 0.0");
+        totalPlomberieBillsCostLabel.setForeground(Color.WHITE);
+        totalPlomberieBillsCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        return createGenericBillPanel(plomberieBillsTable, totalPlomberieBillsLabel, totalPlomberieBillsCostLabel);
+    }
+
+    private JPanel createGenericBillPanel(JTable table, JLabel countLabel, JLabel costLabel) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -286,29 +339,73 @@ public class ShowSitesDetails extends JDialog {
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         statsPanel.setBackground(DARK_BACKGROUND);
 
-        totalBillsLabel = new JLabel("Factures totales: 0");
-        totalBillsLabel.setForeground(Color.WHITE);
-        totalBillsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        statsPanel.add(countLabel);
+        statsPanel.add(costLabel);
 
-        totalBillsCostLabel = new JLabel("Coût total: 0.0");
-        totalBillsCostLabel.setForeground(Color.WHITE);
-        totalBillsCostLabel.setFont(new Font("Arial", Font.BOLD, 14));
-
-        statsPanel.add(totalBillsLabel);
-        statsPanel.add(totalBillsCostLabel);
-
-        billsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        billsTable.setDefaultEditor(Object.class, null);
-        billsTable.setShowVerticalLines(true);
-        billsTable.setGridColor(Color.WHITE);
-        billsTable.getTableHeader().setReorderingAllowed(false);
-        JScrollPane scrollPane = new JScrollPane(billsTable);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setDefaultEditor(Object.class, null);
+        table.setShowVerticalLines(true);
+        table.setGridColor(Color.WHITE);
+        table.getTableHeader().setReorderingAllowed(false);
+        JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBackground(DARK_BACKGROUND);
 
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(statsPanel, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    private void populateAllSpecificBillsData() {
+        populateSpecificBillsData(materialBillsTable, totalMaterialBillsLabel, totalMaterialBillsCostLabel,
+                "Matériaux de construction");
+        populateSpecificBillsData(electricBillsTable, totalElectricBillsLabel, totalElectricBillsCostLabel,
+                "Électricité");
+        populateSpecificBillsData(plomberieBillsTable, totalPlomberieBillsLabel, totalPlomberieBillsCostLabel,
+                "Plomberie");
+    }
+
+    private void populateSpecificBillsData(JTable table, JLabel countLabel, JLabel costLabel, String supplierType) {
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[] { "ID", "Numéro de facture", "Fournisseur", "Date", "Coût Total" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        BillDAO billDAO = new BillDAO(conn);
+        double totalCost = 0;
+        int billCount = 0;
+
+        try (java.sql.ResultSet rs = billDAO.getBillsBySiteAndSupplierType(site.getId(), supplierType)) {
+            while (rs.next()) {
+                double cost = rs.getDouble("totalCost");
+                totalCost += cost;
+                billCount++;
+
+                model.addRow(new Object[] {
+                        rs.getInt("id"),
+                        rs.getString("factureNumber"),
+                        rs.getString("supplierName"),
+                        rs.getDate("billDate"),
+                        cost
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        table.setModel(model);
+
+        // Hide ID column
+        table.getColumnModel().getColumn(0).setMinWidth(0);
+        table.getColumnModel().getColumn(0).setMaxWidth(0);
+        table.getColumnModel().getColumn(0).setWidth(0);
+
+        // Update totals
+        countLabel.setText("Factures totales: " + billCount);
+        costLabel.setText(String.format("Coût total: %.2f", totalCost));
     }
 
     private JPanel createVehiclesPanel() {
@@ -364,13 +461,17 @@ public class ShowSitesDetails extends JDialog {
         tabPanel.setBackground(DARK_BACKGROUND);
         tabPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
         tabPanel.add(workersTab);
-        tabPanel.add(billsTab);
+        tabPanel.add(materialTab);
+        tabPanel.add(electricTab);
+        tabPanel.add(plomberieTab);
         tabPanel.add(vehiclesTab);
         tabPanel.add(costTab);
 
         // Add panels to card layout
         contentPanel.add(workersPanel, "Travailleurs");
-        contentPanel.add(billsPanel, "Factures");
+        contentPanel.add(materialPanel, "Matériaux");
+        contentPanel.add(electricPanel, "Électricité");
+        contentPanel.add(plomberiePanle, "Plomberie");
         contentPanel.add(vehiclesPanel, "Véhicules");
         contentPanel.add(costPanel, "Coût");
 
@@ -394,7 +495,9 @@ public class ShowSitesDetails extends JDialog {
         // Set default selected tab
         workersTab.setForeground(Color.WHITE);
         costTab.setForeground(Color.GRAY);
-        billsTab.setForeground(Color.GRAY);
+        materialTab.setForeground(Color.GRAY);
+        electricTab.setForeground(Color.GRAY);
+        plomberieTab.setForeground(Color.GRAY);
 
         // Set background
         getContentPane().setBackground(Color.BLACK);
@@ -465,49 +568,6 @@ public class ShowSitesDetails extends JDialog {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private void populateBillsData() {
-        DefaultTableModel model = new DefaultTableModel(
-                new Object[] { "ID", "Numéro de facture", "Fournisseur", "Date", "Coût Total" }, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-
-        BillDAO billDAO = new BillDAO(conn);
-        double totalCost = 0;
-        int billCount = 0;
-
-        try (java.sql.ResultSet rs = billDAO.getBillsBySiteId(site.getId())) {
-            while (rs.next()) {
-                double cost = rs.getDouble("totalCost");
-                totalCost += cost;
-                billCount++;
-
-                model.addRow(new Object[] {
-                        rs.getInt("id"),
-                        rs.getString("factureNumber"),
-                        rs.getString("supplierName"),
-                        rs.getDate("billDate"),
-                        cost
-                });
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        billsTable.setModel(model);
-
-        // Hide ID column
-        billsTable.getColumnModel().getColumn(0).setMinWidth(0);
-        billsTable.getColumnModel().getColumn(0).setMaxWidth(0);
-        billsTable.getColumnModel().getColumn(0).setWidth(0);
-
-        // Update totals
-        totalBillsLabel.setText("Total Bills: " + billCount);
-        totalBillsCostLabel.setText(String.format("Total Cost: %.2f", totalCost));
     }
 
     private void updateWorkerStats() {

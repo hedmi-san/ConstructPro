@@ -201,7 +201,7 @@ public class SupplierPage extends JPanel {
         try {
             ResultSet rs = supplierDAO.getSuppliersInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
+                    new Object[] { "ID", "Nom", "Type", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Make table non-editable
@@ -213,6 +213,7 @@ public class SupplierPage extends JPanel {
                 model.addRow(new Object[] {
                         rs.getInt("id"),
                         rs.getString("supplierName"),
+                        rs.getString("supplierType"),
                         rs.getString("phone"),
                         rs.getString("address"),
                         df.format(rs.getDouble("totalSpent")),
@@ -236,7 +237,7 @@ public class SupplierPage extends JPanel {
         try {
             ResultSet rs = supplierDAO.searchSupplierByName(searchterm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "ID", "Nom", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
+                    new Object[] { "ID", "Nom", "Type", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
@@ -248,6 +249,7 @@ public class SupplierPage extends JPanel {
                 model.addRow(new Object[] {
                         rs.getInt("id"),
                         rs.getString("supplierName"),
+                        rs.getString("supplierType"),
                         rs.getString("phone"),
                         rs.getString("address"),
                         df.format(rs.getDouble("totalSpent")),

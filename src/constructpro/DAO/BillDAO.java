@@ -224,4 +224,24 @@ public class BillDAO {
         ps.setDate(3, Date.valueOf(end));
         return ps.executeQuery();
     }
+
+    public ResultSet getBillsBySiteAndSupplierType(int siteId, String supplierType) throws SQLException {
+        updateAllBillTotals();
+        String sql = """
+                SELECT
+                    b.id,
+                    b.factureNumber,
+                    s.supplierName,
+                    b.billDate,
+                    b.totalCost
+                FROM bills b
+                JOIN suppliers s ON b.supplierId = s.id
+                WHERE b.assignedSiteId = ? AND s.supplierType = ?
+                ORDER BY b.billDate DESC
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, siteId);
+        ps.setString(2, supplierType);
+        return ps.executeQuery();
+    }
 }
