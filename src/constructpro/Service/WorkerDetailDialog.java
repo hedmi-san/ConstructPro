@@ -571,6 +571,22 @@ public class WorkerDetailDialog extends JDialog {
         editInsuranceBtn.setForeground(Color.BLACK);
 
         addInsuranceBtn.addActionListener(e -> {
+            try {
+                if (insuranceDAO.workerHasInsurance(currentWorker.getId())) {
+                    JOptionPane.showMessageDialog(insurancePanel,
+                            "Une assurance existe déjà pour ce travailleur. Veuillez utiliser le bouton Modifier.",
+                            "Assurance existante",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(insurancePanel,
+                        "Erreur lors de la vérification de l'assurance : " + ex.getMessage(),
+                        "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             InsuranceFormDialog dialog = new InsuranceFormDialog(
                     SwingUtilities.getWindowAncestor(insurancePanel),
                     null, // no existing insurance
@@ -583,6 +599,10 @@ public class WorkerDetailDialog extends JDialog {
                 try {
                     insuranceDAO.addInsurance(newInsurance);
                 } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(insurancePanel,
+                            "Erreur lors de l'ajout de l'assurance : " + ex.getMessage(),
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
             populateInsuranceData(newInsurance);
