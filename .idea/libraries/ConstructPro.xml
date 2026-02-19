@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ConstructPro">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/ConstructPro.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
