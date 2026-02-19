@@ -140,7 +140,7 @@ public class WorkerDetailDialog extends JDialog {
 
     private void initializePaymentHistoryComponents() {
         // Create table with columns
-        String[] columns = { "Date de Paiement", "Montant du Paiement", "Le montant payé", "Le montant restant" };
+        String[] columns = { "Date", "Salaire", "Payé", "Reste" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -186,18 +186,31 @@ public class WorkerDetailDialog extends JDialog {
         return panel;
     }
 
-    private void updateTotalsPanel(double totalEarned, double totalPaid, double totalRemaining) {
+    private void updateTotalsPanel(double totalEarned, double totalPaid) {
         totalsPanel.removeAll();
+
+        double balance = totalEarned - totalPaid;
 
         JLabel totalLabel = createTotalLabel("Total");
         JLabel earnedLabel = createTotalLabel(String.format("%.0f", totalEarned));
         JLabel paidLabel = createTotalLabel(String.format("%.0f", totalPaid));
-        JLabel remainingLabel = createTotalLabel(String.format("%.0f", totalRemaining));
+
+        JLabel balanceValueLabel;
+        if (balance > 0) {
+            balanceValueLabel = createTotalLabel("Dû: " + String.format("%.0f", balance));
+            balanceValueLabel.setForeground(new Color(100, 255, 100)); // Green
+        } else if (balance < 0) {
+            balanceValueLabel = createTotalLabel("Avance: " + String.format("%.0f", Math.abs(balance)));
+            balanceValueLabel.setForeground(new Color(255, 100, 100)); // Red
+        } else {
+            balanceValueLabel = createTotalLabel("Solde: 0");
+            balanceValueLabel.setForeground(Color.WHITE);
+        }
 
         totalsPanel.add(totalLabel);
         totalsPanel.add(earnedLabel);
         totalsPanel.add(paidLabel);
-        totalsPanel.add(remainingLabel);
+        totalsPanel.add(balanceValueLabel);
 
         totalsPanel.revalidate();
         totalsPanel.repaint();
@@ -431,29 +444,20 @@ public class WorkerDetailDialog extends JDialog {
 
             List<PaymentCheck> checks = paymentCheckDAO.getAllWorkerPaymentChecks(salaryRecord.getId());
 
-            double runningRemaining;
-
             for (PaymentCheck check : checks) {
-                if (check.getBaseSalary() == 0) {
-                    runningRemaining = 0;
-                } else {
-                    runningRemaining = check.getBaseSalary() - check.getPaidAmount();
-                }
+                double rowRest = check.getBaseSalary() - check.getPaidAmount();
 
                 Object[] row = {
                         check.getPaymentDay(),
                         String.format("%.0f", check.getBaseSalary()),
                         String.format("%.0f", check.getPaidAmount()),
-                        String.format("%.0f", Math.abs(runningRemaining))
+                        String.format("%.0f", rowRest)
                 };
                 tableModel.addRow(row);
             }
 
             // Update the fixed totals panel
-            double totalEarned = salaryRecord.getTotalEarned();
-            double totalPaid = salaryRecord.getAmountPaid();
-            double totalRemaining = totalPaid - totalEarned;
-            updateTotalsPanel(totalEarned, totalPaid, Math.abs(totalRemaining));
+            updateTotalsPanel(salaryRecord.getTotalEarned(), salaryRecord.getAmountPaid());
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,

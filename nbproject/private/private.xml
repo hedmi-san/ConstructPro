@@ -20,10 +20,12 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/SupplierPage.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/Service/SupplierForm.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/Service/ShowSitesDetails.java</file>
-            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/DAO/SupplierDAO.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/LaCassePage.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/LoginPage.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/Service/RestSalairePayment.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/Service/SalaryOption.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/Dashboard.java</file>
+            <file>file:/C:/Users/LAPTOP%20SPIRIT/Documents/Learning/Java/ConstructPro/src/constructpro/UI/SalaryPage.java</file>
         </group>
     </open-files>
 </project-private>

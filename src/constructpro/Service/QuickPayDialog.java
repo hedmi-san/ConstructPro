@@ -15,7 +15,8 @@ public class QuickPayDialog extends JDialog {
     private SalaryRecordDAO salaryRecordDAO;
     private Worker worker;
     private JLabel titleLabel;
-    private JTextField paidAmountField;
+    private JTextField paidAmountField, baseSalaryField;
+    private JLabel balanceLabel;
     private JButton saveButton;
     private boolean saved = false;
 
@@ -29,7 +30,7 @@ public class QuickPayDialog extends JDialog {
         setupLayout();
         setupActions(worker.getId());
         pack();
-        setSize(500, 250);
+        setSize(500, 300);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -40,11 +41,53 @@ public class QuickPayDialog extends JDialog {
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);
 
+        // Balance Label
+        balanceLabel = new JLabel("", SwingConstants.CENTER);
+        balanceLabel.setFont(new Font("SansSerif", Font.ITALIC, 14));
+        updateBalanceDisplay();
+
         // Text field
+        baseSalaryField = createTextField();
         paidAmountField = createTextField();
+
+        // Auto-calculate baseSalary to match pending debt if any
+        try {
+            SalaryRecord record = salaryRecordDAO.getSalaryRecordByWorkerId(worker.getId());
+            if (record != null) {
+                double balance = record.getTotalEarned() - record.getAmountPaid();
+                if (balance > 0) {
+                    baseSalaryField.setText(String.format("%.0f", balance));
+                } else {
+                    baseSalaryField.setText("0");
+                }
+            }
+        } catch (SQLException e) {
+            baseSalaryField.setText("0");
+        }
 
         // Button
         saveButton = createButton("Enregistrer");
+    }
+
+    private void updateBalanceDisplay() {
+        try {
+            SalaryRecord record = salaryRecordDAO.getSalaryRecordByWorkerId(worker.getId());
+            if (record != null) {
+                double balance = record.getTotalEarned() - record.getAmountPaid();
+                if (balance > 0) {
+                    balanceLabel.setText("Dû au travailleur: " + String.format("%.0f", balance));
+                    balanceLabel.setForeground(new Color(100, 255, 100)); // Green
+                } else if (balance < 0) {
+                    balanceLabel.setText("Avance / Dette: " + String.format("%.0f", Math.abs(balance)));
+                    balanceLabel.setForeground(new Color(255, 100, 100)); // Red
+                } else {
+                    balanceLabel.setText("Solde: 0");
+                    balanceLabel.setForeground(Color.WHITE);
+                }
+            }
+        } catch (SQLException e) {
+            balanceLabel.setText("Erreur solde");
+        }
     }
 
     private JTextField createTextField() {
@@ -93,10 +136,26 @@ public class QuickPayDialog extends JDialog {
         gbc.gridwidth = 1;
         row++;
 
-        // Amount field
+        // Balance
         gbc.gridx = 0;
         gbc.gridy = row;
-        formPanel.add(createLabel("Montant à payer"), gbc);
+        gbc.gridwidth = 2;
+        formPanel.add(balanceLabel, gbc);
+        gbc.gridwidth = 1;
+        row++;
+
+        // Base Salary (Work value)
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(createLabel("Salaire (Valeur travail)"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(baseSalaryField, gbc);
+        row++;
+
+        // Paid Amount
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(createLabel("Montant Versé (Cash)"), gbc);
         gbc.gridx = 1;
         formPanel.add(paidAmountField, gbc);
         row++;
@@ -113,33 +172,38 @@ public class QuickPayDialog extends JDialog {
     private void setupActions(int workerId) {
         saveButton.addActionListener(e -> {
             try {
-                // Validate that paid amount field is not empty
-                if (paidAmountField.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Veuillez saisir le montant à payer !");
+                // Validate that fields are not empty
+                if (paidAmountField.getText().trim().isEmpty() || baseSalaryField.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs !");
                     return;
                 }
 
-                // Parse the paid amount
+                // Parse amounts
                 double paidAmt = Double.parseDouble(paidAmountField.getText().trim());
+                double baseSalary = Double.parseDouble(baseSalaryField.getText().trim());
 
-                // Validate that amount is positive
-                if (paidAmt <= 0) {
-                    JOptionPane.showMessageDialog(this, "Le montant doit être supérieur à zéro !");
+                // Validate that amounts are not negative
+                if (paidAmt < 0 || baseSalary < 0) {
+                    JOptionPane.showMessageDialog(this, "Les montants ne peuvent pas être négatifs !");
+                    return;
+                }
+
+                if (paidAmt == 0 && baseSalary == 0) {
+                    JOptionPane.showMessageDialog(this, "Veuillez saisir un montant !");
                     return;
                 }
 
                 // Get or create salary record
                 SalaryRecord record = salaryRecordDAO.getOrCreateSalaryRecord(workerId);
 
-                // Create payment check with baseSalary = paidAmount
+                // Create payment check
                 LocalDate paymentDate = LocalDate.now();
                 paymentCheckDAO.insertPaymentCheck(
                         record.getId(),
                         worker.getAssignedSiteID(),
                         paymentDate,
-                        paidAmt, // baseSalary = paidAmount
-                        paidAmt // paidAmount
-                );
+                        baseSalary,
+                        paidAmt);
 
                 // Update salary record totals
                 salaryRecordDAO.updateSalaryRecordTotals(record.getId());
