@@ -2,12 +2,12 @@ package constructpro.Service;
 
 import java.awt.*;
 import constructpro.DTO.Supplier;
-import constructpro.DAO.SupplierDAO;
 import constructpro.DAO.BillDAO;
 import constructpro.DTO.FinancialTransaction;
 import constructpro.DAO.FinancialTransactionDAO;
 import javax.swing.*;
 import java.sql.*;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,10 +20,8 @@ public class SupplierDetailDialog extends JDialog {
     private static final Color DARKER_BACKGROUND = new Color(35, 35, 35);
     private static final Color ACCENT_COLOR = new Color(0, 120, 215);
     private static final Color TEXT_COLOR = new Color(220, 220, 220);
-    private static final Color LABEL_COLOR = new Color(180, 180, 180);
 
     private Supplier currentSupplier;
-    private SupplierDAO supplierDAO;
     private BillDAO billDAO;
     private FinancialTransactionDAO transactionDAO;
 
@@ -39,7 +37,8 @@ public class SupplierDetailDialog extends JDialog {
     // Tab 2 Components
     private JTable financeOperationTable;
     private DefaultTableModel tableModel2;
-    private JButton addTransactionButton, deleteTransactionButton;
+    private JButton addTransactionButton, deleteTransactionButton, printTransactionReceiptButton,
+            printHistoryRecordButton;
     private JFrame parentFrame;
 
     private Connection conn;
@@ -48,7 +47,6 @@ public class SupplierDetailDialog extends JDialog {
         super(parent, "Détails de Fournisseur", true);
         this.conn = connection;
         this.currentSupplier = supplier;
-        this.supplierDAO = new SupplierDAO(connection);
         this.billDAO = new BillDAO(connection);
         this.transactionDAO = new FinancialTransactionDAO(connection);
 
@@ -58,7 +56,7 @@ public class SupplierDetailDialog extends JDialog {
         populateData();
         populateTransactions();
 
-        setSize(1000, 700);
+        setSize(900, 650);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -81,7 +79,7 @@ public class SupplierDetailDialog extends JDialog {
         totalSpentLabel = new JLabel("Total Dépensé: 0.00");
         totalPaidLabel = new JLabel("Total Payé: 0.00");
         debtLabel = new JLabel("Dette (Reste): 0.00");
-
+        printHistoryRecordButton = new JButton("Historique PDF");
         // --- Finance/Operations Panel Components ---
         financeOperationPanel = new JPanel(new BorderLayout());
 
@@ -92,10 +90,16 @@ public class SupplierDetailDialog extends JDialog {
                 return false;
             }
         };
-        financeOperationTable = new JTable(tableModel2);
 
+        financeOperationTable = new JTable(tableModel2);
+        financeOperationTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        financeOperationTable.setDefaultEditor(Object.class, null);
+        financeOperationTable.getTableHeader().setReorderingAllowed(false);
+        financeOperationTable.setShowVerticalLines(true);
+        financeOperationTable.setGridColor(Color.WHITE);
         addTransactionButton = new JButton("Ajouter Transaction");
         deleteTransactionButton = new JButton("Supprimer Transaction");
+        printTransactionReceiptButton = new JButton("Reçu de Paiement");
     }
 
     private void setupLayout() {
@@ -113,6 +117,7 @@ public class SupplierDetailDialog extends JDialog {
         totalsPanel.add(totalSpentLabel);
         totalsPanel.add(totalPaidLabel);
         totalsPanel.add(debtLabel);
+        totalsPanel.add(printHistoryRecordButton);
 
         infoPanel.add(tableScroll, BorderLayout.CENTER);
         infoPanel.add(totalsPanel, BorderLayout.SOUTH);
@@ -126,6 +131,7 @@ public class SupplierDetailDialog extends JDialog {
         transactionButtonsPanel.setBackground(DARK_BACKGROUND);
         transactionButtonsPanel.add(addTransactionButton);
         transactionButtonsPanel.add(deleteTransactionButton);
+        transactionButtonsPanel.add(printTransactionReceiptButton);
 
         financeOperationPanel.add(transactionScroll, BorderLayout.CENTER);
         financeOperationPanel.add(transactionButtonsPanel, BorderLayout.SOUTH);
@@ -186,6 +192,60 @@ public class SupplierDetailDialog extends JDialog {
                 JOptionPane.showMessageDialog(this, "Veuillez sélectionner une transaction.");
             }
         });
+
+        printTransactionReceiptButton.addActionListener(e -> {
+            int selectedRow = financeOperationTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                try {
+                    int transactionId = (int) tableModel2.getValueAt(selectedRow, 0);
+                    FinancialTransaction ft = transactionDAO.getTransactionById(transactionId);
+
+                    if (ft != null) {
+                        JFileChooser fileChooser = new JFileChooser();
+                        fileChooser.setDialogTitle("Enregistrer le reçu de paiement");
+                        fileChooser.setSelectedFile(new File(
+                                "Recu_Paiement_" + currentSupplier.getName() + "_" + ft.getId() + ".pdf"));
+
+                        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                            String path = fileChooser.getSelectedFile().getAbsolutePath();
+                            if (!path.toLowerCase().endsWith(".pdf"))
+                                path += ".pdf";
+
+                            SupplierTransactionReceiptPDFGenerator.generatePDF(currentSupplier, ft, path);
+                            JOptionPane.showMessageDialog(this, "Reçu généré avec succès !");
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Erreur lors de la génération du PDF: " + ex.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une transaction.");
+            }
+        });
+
+        printHistoryRecordButton.addActionListener(e -> {
+            try {
+                ResultSet rs = billDAO.getBillsBySupplierId(currentSupplier.getId());
+
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Enregistrer l'historique des factures");
+                fileChooser
+                        .setSelectedFile(new File("Historique_Factures_" + currentSupplier.getName() + ".pdf"));
+
+                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                    String path = fileChooser.getSelectedFile().getAbsolutePath();
+                    if (!path.toLowerCase().endsWith(".pdf"))
+                        path += ".pdf";
+
+                    SupplierBillHistoryPDFGenerator.generatePDF(conn, currentSupplier, rs, path);
+                    JOptionPane.showMessageDialog(this, "Historique généré avec succès !");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erreur lors de la génération du PDF: " + ex.getMessage());
+            }
+        });
     }
 
     private void uploadImage() {
@@ -196,10 +256,12 @@ public class SupplierDetailDialog extends JDialog {
                 int transactionId = (Integer) model.getValueAt(selectedRow, 0); // Get worker ID from hidden column
                 FinancialTransaction transaction = transactionDAO.getTransactionById(transactionId);
                 if (transaction != null) {
-                    FinanceTransactionDetail detailDialog = new FinanceTransactionDetail(parentFrame, transaction, conn);
+                    FinanceTransactionDetail detailDialog = new FinanceTransactionDetail(parentFrame, transaction,
+                            conn);
                     detailDialog.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Transaction non trouvé !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Transaction non trouvé !", "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } catch (HeadlessException | SQLException ex) {
                 JOptionPane.showMessageDialog(this,
@@ -234,6 +296,8 @@ public class SupplierDetailDialog extends JDialog {
         // Buttons
         styleButton(addTransactionButton, ACCENT_COLOR);
         styleButton(deleteTransactionButton, new Color(200, 50, 50));
+        styleButton(printHistoryRecordButton, ACCENT_COLOR);
+        styleButton(printTransactionReceiptButton, new Color(47, 230, 41));
     }
 
     private void styleButton(JButton btn, Color bgColor) {
@@ -330,7 +394,7 @@ public class SupplierDetailDialog extends JDialog {
             e.printStackTrace();
         }
     }
-    
+
     public void setParentFrame(JFrame parent) {
         this.parentFrame = parent;
     }
