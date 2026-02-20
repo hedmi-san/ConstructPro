@@ -32,6 +32,9 @@ public class VehicleDetailDialog extends JDialog {
     private static final Color ACCENT_COLOR = new Color(0, 120, 215);
     private static final Color TEXT_COLOR = new Color(220, 220, 220);
     private static final Color LABEL_COLOR = new Color(180, 180, 180);
+    private static final Color STATUS_ACTIVE = new Color(76, 175, 80);
+    private static final Color STATUS_INACTIVE = new Color(244, 67, 54);
+    private static final Color STATUS_PENDING = new Color(255, 152, 0);
 
     // Components
     private JTabbedPane tabbedPane;
@@ -39,7 +42,7 @@ public class VehicleDetailDialog extends JDialog {
 
     // Info Panel
     private JPanel infoPanel;
-    private JLabel nameValue, plateNumberValue, assignedSiteValue, driverNameValue;
+    private JLabel nameValue, plateNumberValue, assignedSiteValue, driverNameValue, ownershipValue;
     private JButton editVehicleButton;
 
     // Maintenance Panel
@@ -76,7 +79,7 @@ public class VehicleDetailDialog extends JDialog {
         setupStyling();
         populateData();
 
-        setSize(900, 650);
+        setSize(900, 710);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -100,6 +103,7 @@ public class VehicleDetailDialog extends JDialog {
         plateNumberValue = createValueLabel();
         assignedSiteValue = createValueLabel();
         driverNameValue = createValueLabel();
+        ownershipValue = createValueLabel();
 
         // Initialize maintenance components
         initializeMaintenanceComponents();
@@ -159,7 +163,7 @@ public class VehicleDetailDialog extends JDialog {
         dailyRateField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
         // Create table with columns
-        String[] columns = { "Date Début", "Date Fin","Tarif", "Chantier", "Jours travaillés",
+        String[] columns = { "Date Début", "Date Fin", "Tarif", "Chantier", "Jours travaillés",
                 "Dépôt", "Frais de transport", "Coût", "Reste à payer" };
         rentTableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -304,26 +308,71 @@ public class VehicleDetailDialog extends JDialog {
 
     private void setupInfoPanel() {
         infoPanel.setBackground(DARK_BACKGROUND);
+        infoPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(12, 20, 12, 20);
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 20, 10, 20);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.gridx = 0;
 
         int row = 0;
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Nom du véhicule:", nameValue);
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Numéro de plaque:", plateNumberValue);
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Chantier attribué :", assignedSiteValue);
-        addFieldToPanel(infoPanel, gbc, 0, row++, "Nom du chauffeur:", driverNameValue);
 
-        // Add edit button
+        // IDENTIFICATION SECTION
+        gbc.gridy = row++;
+        infoPanel.add(createSectionHeader("IDENTIFICATION DU VÉHICULE"), gbc);
+
+        JPanel identityPanel = new JPanel(new GridLayout(0, 2, 20, 15));
+        identityPanel.setOpaque(false);
+        identityPanel.add(createInfoBlock("NOM DU VÉHICULE", nameValue));
+        identityPanel.add(createInfoBlock("NUMÉRO DE PLAQUE", plateNumberValue));
+
+        gbc.gridy = row++;
+        infoPanel.add(identityPanel, gbc);
+
+        // USAGE SECTION
+        gbc.gridy = row++;
+        gbc.insets = new Insets(20, 20, 10, 20);
+        infoPanel.add(createSectionHeader("USAGE & AFFECTATION"), gbc);
+
+        JPanel usagePanel = new JPanel(new GridLayout(0, 2, 20, 15));
+        usagePanel.setOpaque(false);
+        usagePanel.add(createInfoBlock("CHANTIER ATTRIBUÉ", assignedSiteValue));
+        usagePanel.add(createInfoBlock("NOM DU CHAUFFEUR", driverNameValue));
+
+        gbc.gridy = row++;
+        gbc.insets = new Insets(10, 20, 10, 20);
+        infoPanel.add(usagePanel, gbc);
+
+        // OWNERSHIP SECTION
+        gbc.gridy = row++;
+        gbc.insets = new Insets(20, 20, 10, 20);
+        infoPanel.add(createSectionHeader("STATUT & PROPRIÉTÉ"), gbc);
+
+        JPanel statusPanel = new JPanel(new GridLayout(0, 2, 20, 15));
+        statusPanel.setOpaque(false);
+        statusPanel.add(createInfoBlock("TYPE DE PROPRIÉTÉ", ownershipValue));
+
+        gbc.gridy = row++;
+        gbc.insets = new Insets(10, 20, 10, 20);
+        infoPanel.add(statusPanel, gbc);
+
+        // Actions section (Buttons)
+        gbc.gridy = row++;
+        gbc.insets = new Insets(30, 20, 10, 20);
+        JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        actionsPanel.setOpaque(false);
+
         editVehicleButton = createStyledButton("Modifier", new Color(255, 193, 7));
+        editVehicleButton.setForeground(Color.BLACK);
         editVehicleButton.addActionListener(e -> editVehicle());
+        actionsPanel.add(editVehicleButton);
 
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(20, 20, 12, 20);
-        infoPanel.add(editVehicleButton, gbc);
+        infoPanel.add(actionsPanel, gbc);
+
+        // Spacer
+        gbc.gridy = row++;
+        gbc.weighty = 1.0;
+        infoPanel.add(Box.createVerticalGlue(), gbc);
     }
 
     private void setupMaintenancePanel() {
@@ -465,6 +514,37 @@ public class VehicleDetailDialog extends JDialog {
         return label;
     }
 
+    private JPanel createSectionHeader(String title) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        JLabel label = new JLabel(title);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        label.setForeground(ACCENT_COLOR);
+        panel.add(label, BorderLayout.WEST);
+
+        JSeparator sep = new JSeparator();
+        sep.setForeground(new Color(70, 70, 70));
+        panel.add(sep, BorderLayout.SOUTH);
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        return panel;
+    }
+
+    private JPanel createInfoBlock(String labelStr, JLabel valueLabel) {
+        JPanel panel = new JPanel(new BorderLayout(0, 4));
+        panel.setOpaque(false);
+
+        JLabel l = new JLabel(labelStr);
+        l.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        l.setForeground(LABEL_COLOR);
+
+        valueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        valueLabel.setForeground(TEXT_COLOR);
+
+        panel.add(l, BorderLayout.NORTH);
+        panel.add(valueLabel, BorderLayout.CENTER);
+        return panel;
+    }
+
     private void setupStyling() {
         getContentPane().setBackground(DARK_BACKGROUND);
 
@@ -506,6 +586,9 @@ public class VehicleDetailDialog extends JDialog {
                 driverName = "N/A";
         }
         driverNameValue.setText(driverName);
+
+        // Populate ownership
+        ownershipValue.setText(currentVehicle.getOwnershipType() != null ? currentVehicle.getOwnershipType() : "N/A");
 
         // Setup rent panel after vehicle data is loaded
         setupRentPanel();
@@ -570,11 +653,11 @@ public class VehicleDetailDialog extends JDialog {
                     double cost = (record.getDailyRate() * record.getDaysWorked()) + record.getTransferFee();
                     double restToPay = cost - record.getDepositAmount();
                     String siteName = "N/A";
-                            if (record.getAssignedSiteId() > 0) {
-                                siteName = siteDAO.getSiteNameById(record.getAssignedSiteId());
-                            if (siteName == null)
-                                siteName = "N/A";
-                            }
+                    if (record.getAssignedSiteId() > 0) {
+                        siteName = siteDAO.getSiteNameById(record.getAssignedSiteId());
+                        if (siteName == null)
+                            siteName = "N/A";
+                    }
                     Object[] row = {
                             record.getStartDate().toString(),
                             record.getEndDate() != null ? record.getEndDate().toString() : "En cours",

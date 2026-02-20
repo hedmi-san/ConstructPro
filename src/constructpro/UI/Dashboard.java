@@ -38,6 +38,17 @@ public class Dashboard extends JFrame {
     private JButton ToolsButton;
     private JButton usersButton;
     private JButton logsButton;
+    private HomePage homePage;
+    private WorkersPage workersPage;
+    private SalaryPage salaryPage;
+    private BillPage billPage;
+    private ConstructionSitePage constructionSitePage;
+    private SupplierPage supplierPage;
+    private VehiclesPage vehiclesPage;
+    private ToolAndMaterialPage toolAndMaterialPage;
+    private UsersPage usersPage;
+    private UserLogPage userLogPage;
+
     Connection connection;
     CardLayout layout;
     String username;
@@ -61,16 +72,37 @@ public class Dashboard extends JFrame {
 
         // Panel Layout set to Card Layout to allow switching between different sections
         displayPanel.setLayout(layout);
-        displayPanel.add("Home", new HomePage(con, username));
-        displayPanel.add("Workers", new WorkersPage(connection));
-        displayPanel.add("Salaire", new SalaryPage(connection));
-        displayPanel.add("Facture", new BillPage(connection));
-        displayPanel.add("Construction Sites", new ConstructionSitePage(connection));
-        displayPanel.add("Suppliers", new SupplierPage(connection));
-        displayPanel.add("Trucks", new VehiclesPage(connection));
-        displayPanel.add("Tools", new ToolAndMaterialPage(connection));
-        displayPanel.add("Users", new UsersPage(connection));
-        displayPanel.add("Logs", new UserLogPage(connection));
+
+        homePage = new HomePage(con, username);
+        workersPage = new WorkersPage(connection);
+        salaryPage = new SalaryPage(connection);
+        billPage = new BillPage(connection);
+        constructionSitePage = new ConstructionSitePage(connection);
+        supplierPage = new SupplierPage(connection);
+        vehiclesPage = new VehiclesPage(connection);
+        toolAndMaterialPage = new ToolAndMaterialPage(connection);
+        usersPage = new UsersPage(connection);
+        userLogPage = new UserLogPage(connection);
+
+        // Share parent frame with pages that need it
+        workersPage.setParentFrame(this);
+        salaryPage.setParentFrame(this);
+        billPage.setParentFrame(this);
+        constructionSitePage.setParentFrame(this);
+        supplierPage.setParentFrame(this);
+        vehiclesPage.setParentFrame(this);
+        toolAndMaterialPage.setParentFrame(this);
+
+        displayPanel.add("Home", homePage);
+        displayPanel.add("Workers", workersPage);
+        displayPanel.add("Salaire", salaryPage);
+        displayPanel.add("Facture", billPage);
+        displayPanel.add("Construction Sites", constructionSitePage);
+        displayPanel.add("Suppliers", supplierPage);
+        displayPanel.add("Trucks", vehiclesPage);
+        displayPanel.add("Tools", toolAndMaterialPage);
+        displayPanel.add("Users", usersPage);
+        displayPanel.add("Logs", userLogPage);
 
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -88,42 +120,52 @@ public class Dashboard extends JFrame {
 
     // Methods to display different sections in the mainframe
     public void addHomePage() {
+        homePage.loadData();
         layout.show(displayPanel, "Home");
     }
 
     public void addWorkersPage() {
+        workersPage.loadDataSet();
         layout.show(displayPanel, "Workers");
     }
 
     public void addSalairePage() {
+        salaryPage.loadDataSet();
         layout.show(displayPanel, "Salaire");
     }
 
     public void addBillPage() {
+        billPage.loadDataSet();
         layout.show(displayPanel, "Facture");
     }
 
     public void addSitesPage() {
+        constructionSitePage.loadDataSet();
         layout.show(displayPanel, "Construction Sites");
     }
 
     public void addSuppPage() {
+        supplierPage.loadDataSet();
         layout.show(displayPanel, "Suppliers");
     }
 
     public void addTrucksPage() {
+        vehiclesPage.loadDataSet();
         layout.show(displayPanel, "Trucks");
     }
 
     public void addToolPage() {
+        toolAndMaterialPage.loadDataSet();
         layout.show(displayPanel, "Tools");
     }
 
     public void addUsersPage() {
+        usersPage.loadDataSet();
         layout.show(displayPanel, "Users");
     }
 
     public void addLogsPage() {
+        userLogPage.loadDataSet();
         layout.show(displayPanel, "Logs");
     }
 

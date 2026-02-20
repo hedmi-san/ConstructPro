@@ -115,13 +115,12 @@ public class ConstructionSitePage extends JPanel {
         addButton.setForeground(Color.WHITE);
         affectButton.setForeground(Color.WHITE);
         attachmentFileButton.setForeground(Color.WHITE);
-        
+
         buttonPanel.add(attachmentFileButton);
         buttonPanel.add(affectButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
-        
 
         refreshButton.setFont(new Font("SansSerif", Font.BOLD, 12));
         refreshButton.addActionListener(e -> {
@@ -244,7 +243,7 @@ public class ConstructionSitePage extends JPanel {
                         "Veuillez sélectionner un chantier pour affecter des travailleurs.");
             }
         });
-        
+
         attachmentFileButton.addActionListener(e -> {
             try {
                 // Determine the parent frame
@@ -323,7 +322,7 @@ public class ConstructionSitePage extends JPanel {
         }
     }
 
-    private void loadDataSet() {
+    public void loadDataSet() {
         try {
             siteDAO.syncAllSitesTotalCosts();
         } catch (SQLException e) {
@@ -356,6 +355,10 @@ public class ConstructionSitePage extends JPanel {
         sitesTable.getColumnModel().getColumn(0).setMinWidth(0);
         sitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
         sitesTable.getColumnModel().getColumn(0).setWidth(0);
+    }
+
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 
 }

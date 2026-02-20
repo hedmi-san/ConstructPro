@@ -18,8 +18,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
-public class ToolAndMaterialPage extends JPanel{
-    
+public class ToolAndMaterialPage extends JPanel {
+
     private JButton refreshButton;
     private JTextField searchText;
     private JLabel jLabel1;
@@ -29,22 +29,23 @@ public class ToolAndMaterialPage extends JPanel{
     private ConstructionSiteDAO siteDAO;
     public Connection conn;
     private JFrame parentFrame;
+
     public ToolAndMaterialPage(Connection connection) {
         this.conn = connection;
         initDAO();
         initComponents();
         loadDataSet();
     }
-    
-    private void initDAO(){
+
+    private void initDAO() {
         try {
             siteDAO = new ConstructionSiteDAO(conn);
         } catch (SQLException ex) {
             Logger.getLogger(ToolAndMaterialPage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void initComponents(){
+
+    private void initComponents() {
         refreshButton = new JButton("Actualiser");
         searchText = new JTextField(15);
         jLabel1 = new JLabel("Matériel & Outil");
@@ -106,24 +107,23 @@ public class ToolAndMaterialPage extends JPanel{
         add(jScrollPane1, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
-    
-    private void loadDataSet(){
+
+    public void loadDataSet() {
         List<ConstructionSite> sites = siteDAO.getConstructionSiteInfo();
         DefaultTableModel model = new DefaultTableModel(
-                new Object[]{"ID", "Nom", "Date de début", "Date de fin", "Lieu"}, 0
-        ) {
+                new Object[] { "ID", "Nom", "Date de début", "Date de fin", "Lieu" }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Make table non-editable
             }
         };
-        for(ConstructionSite site : sites) {
-            model.addRow(new Object[]{
-                site.getId(),
-                site.getName(),
-                site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
-                site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
-                site.getLocation()
+        for (ConstructionSite site : sites) {
+            model.addRow(new Object[] {
+                    site.getId(),
+                    site.getName(),
+                    site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
+                    site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
+                    site.getLocation()
             });
         }
         sitesTable.setModel(model);
@@ -131,13 +131,13 @@ public class ToolAndMaterialPage extends JPanel{
         sitesTable.getColumnModel().getColumn(0).setMinWidth(0);
         sitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
         sitesTable.getColumnModel().getColumn(0).setWidth(0);
-        
+
     }
 
     private void loadSearchResults(String searchTerm) {
         List<ConstructionSite> sites = siteDAO.searchsitesByName(searchTerm);
         DefaultTableModel model = new DefaultTableModel(
-                new Object[] {"ID", "Nom", "Date de début", "Date de fin", "Lieu"}, 0) {
+                new Object[] { "ID", "Nom", "Date de début", "Date de fin", "Lieu" }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -145,11 +145,11 @@ public class ToolAndMaterialPage extends JPanel{
         };
         for (ConstructionSite site : sites) {
             model.addRow(new Object[] {
-                site.getId(),
-                site.getName(),
-                site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
-                site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
-                site.getLocation()
+                    site.getId(),
+                    site.getName(),
+                    site.getStartDate() != null ? java.sql.Date.valueOf(site.getStartDate()) : null,
+                    site.getEndDate() != null ? java.sql.Date.valueOf(site.getEndDate()) : null,
+                    site.getLocation()
             });
         }
         sitesTable.setModel(model);
@@ -157,9 +157,9 @@ public class ToolAndMaterialPage extends JPanel{
         sitesTable.getColumnModel().getColumn(0).setMaxWidth(0);
         sitesTable.getColumnModel().getColumn(0).setWidth(0);
     }
-    
-    private void showBillsItemsDetails(){
-         int selectedRow = sitesTable.getSelectedRow();
+
+    private void showBillsItemsDetails() {
+        int selectedRow = sitesTable.getSelectedRow();
         if (selectedRow >= 0) {
             try {
                 DefaultTableModel model = (DefaultTableModel) sitesTable.getModel();
@@ -178,8 +178,8 @@ public class ToolAndMaterialPage extends JPanel{
             }
         }
     }
-    
+
     public void setParentFrame(JFrame parent) {
-            this.parentFrame = parent;
-        }
+        this.parentFrame = parent;
+    }
 }

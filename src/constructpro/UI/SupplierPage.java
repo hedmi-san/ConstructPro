@@ -197,11 +197,13 @@ public class SupplierPage extends JPanel {
         });
     }
 
-    private void loadDataSet() {
+    public void loadDataSet() {
         try {
             ResultSet rs = supplierDAO.getSuppliersInfo();
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "ID", "Nom", "Type", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
+                    new Object[] { "ID", "Nom", "Type", "Numéro de téléphone", "Adresse", "Total dépensé",
+                            "Total payé" },
+                    0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false; // Make table non-editable
@@ -237,7 +239,9 @@ public class SupplierPage extends JPanel {
         try {
             ResultSet rs = supplierDAO.searchSupplierByName(searchterm);
             DefaultTableModel model = new DefaultTableModel(
-                    new Object[] { "ID", "Nom", "Type", "Numéro de téléphone", "Adresse", "Total dépensé", "Total payé" }, 0) {
+                    new Object[] { "ID", "Nom", "Type", "Numéro de téléphone", "Adresse", "Total dépensé",
+                            "Total payé" },
+                    0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;

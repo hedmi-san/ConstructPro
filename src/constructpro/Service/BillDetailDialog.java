@@ -2,13 +2,16 @@ package constructpro.Service;
 
 import constructpro.DTO.Bill;
 import constructpro.DTO.BiLLItem;
+import constructpro.DAO.SupplierDAO;
+import constructpro.DAO.ConstructionSiteDAO;
 import constructpro.DAO.BillDAO;
 import constructpro.DAO.BiLLItemDAO;
 import java.sql.*;
+import java.io.File;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer; 
 import java.awt.*;
 
 public class BillDetailDialog extends JDialog {
@@ -27,6 +30,7 @@ public class BillDetailDialog extends JDialog {
     private JTable billItemsTable;
     private DefaultTableModel tableModel;
     private JPanel totalsPanel;
+    private JButton printBillButton;
     private BillDAO billDAO;
     private BiLLItemDAO itemDAO;
 
@@ -74,7 +78,17 @@ public class BillDetailDialog extends JDialog {
         styleBillItemsTable();
 
         // Initialize totals panel
+        printBillButton = new JButton("Imprimer PDF");
+        styleButton(printBillButton, ACCENT_COLOR);
         totalsPanel = createTotalsPanel();
+    }
+
+    private void styleButton(JButton btn, Color bgColor) {
+        btn.setBackground(bgColor);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
     }
 
     private void styleBillItemsTable() {
@@ -104,7 +118,7 @@ public class BillDetailDialog extends JDialog {
     }
 
     private JPanel createTotalsPanel() {
-        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel panel = new JPanel(new BorderLayout(20, 0));
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE),
@@ -117,21 +131,71 @@ public class BillDetailDialog extends JDialog {
     private void updateTotalsPanel(double transferFee, double billTotal) {
         totalsPanel.removeAll();
 
-        // Transfer Fee row
+        JPanel labelsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        labelsPanel.setBackground(DARK_BACKGROUND);
+
         JLabel transferFeeLabel = createTotalLabel("Frais de transfert:", true);
         JLabel transferFeeValue = createTotalLabel(String.format("%.2f DA", transferFee), false);
-
-        // Bill Total row
         JLabel billTotalLabel = createTotalLabel("Total de la facture:", true);
         JLabel billTotalValue = createTotalLabel(String.format("%.2f DA", billTotal), false);
 
-        totalsPanel.add(transferFeeLabel);
-        totalsPanel.add(transferFeeValue);
-        totalsPanel.add(billTotalLabel);
-        totalsPanel.add(billTotalValue);
+        labelsPanel.add(transferFeeLabel);
+        labelsPanel.add(transferFeeValue);
+        labelsPanel.add(new JLabel("  |  ") {
+            {
+                setForeground(Color.GRAY);
+            }
+        });
+        labelsPanel.add(billTotalLabel);
+        labelsPanel.add(billTotalValue);
+
+        totalsPanel.add(labelsPanel, BorderLayout.WEST);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        buttonPanel.setBackground(DARK_BACKGROUND);
+        buttonPanel.add(printBillButton);
+        totalsPanel.add(buttonPanel, BorderLayout.EAST);
+
+        setupPDFAction();
 
         totalsPanel.revalidate();
         totalsPanel.repaint();
+    }
+
+    private void setupPDFAction() {
+        // Remove existing listeners to avoid multiple calls
+        for (java.awt.event.ActionListener al : printBillButton.getActionListeners()) {
+            printBillButton.removeActionListener(al);
+        }
+
+        printBillButton.addActionListener(e -> {
+            try {
+                // Fetch extra info needed for PDF
+                SupplierDAO sDAO = new SupplierDAO(conn);
+                ConstructionSiteDAO csDAO = new ConstructionSiteDAO(conn);
+
+                String sName = sDAO.getSupplierById(currentBill.getSupplierID()).getName();
+                String csName = csDAO.getConstructionSiteById(currentBill.getSiteID()).getName();
+                List<BiLLItem> items = itemDAO.getBillItems(currentBill.getId());
+
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Enregistrer la facture PDF");
+                fileChooser
+                        .setSelectedFile(new File("Facture_" + currentBill.getFactureNumber() + "_" + sName + ".pdf"));
+
+                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                    String path = fileChooser.getSelectedFile().getAbsolutePath();
+                    if (!path.toLowerCase().endsWith(".pdf"))
+                        path += ".pdf";
+
+                    SingleBillPDFGenerator.generatePDF(currentBill, items, sName, csName, path);
+                    JOptionPane.showMessageDialog(this, "Facture générée avec succès !");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erreur lors de la génération du PDF: " + ex.getMessage());
+            }
+        });
     }
 
     private JLabel createTotalLabel(String text, boolean isLabel) {

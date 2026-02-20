@@ -83,7 +83,7 @@ public class HomePage extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
-    private void loadData() {
+    public void loadData() {
         cardsPanel.removeAll();
 
         // Fetching counts from DB with filters

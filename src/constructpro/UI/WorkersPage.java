@@ -233,7 +233,7 @@ public class WorkersPage extends JPanel {
         });
     }
 
-    private void loadDataSet() {
+    public void loadDataSet() {
         List<Worker> workers = workerDAO.getWorkersInfo();
         DefaultTableModel model = new DefaultTableModel(
                 new Object[] { "ID", "Prénom", "Nom", "Âge", "Fonction", "Téléphone", "Chantier" }, 0) {

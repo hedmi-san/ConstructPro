@@ -143,7 +143,7 @@ public class SalaryPage extends JPanel {
 
     }
 
-    private void loadDataSet() {
+    public void loadDataSet() {
         List<ConstructionSite> sites = siteDAO.getActiveConstructionSiteInfo();
         DefaultTableModel model = new DefaultTableModel(
                 new Object[] { "ID", "Nom", "Lieu", "Date de début", "Date de fin" }, 0) {
@@ -216,6 +216,10 @@ public class SalaryPage extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 
 }

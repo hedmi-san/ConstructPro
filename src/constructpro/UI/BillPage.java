@@ -280,7 +280,7 @@ public class BillPage extends JPanel {
         });
     }
 
-    private void loadDataSet() {
+    public void loadDataSet() {
         try {
             ResultSet rs = billDAO.getBillsInfo();
             DefaultTableModel model = new DefaultTableModel(
@@ -315,5 +315,9 @@ public class BillPage extends JPanel {
             JOptionPane.showMessageDialog(this, "Erreur lors du chargement des données: " + e.getMessage(), "Erreur",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public void setParentFrame(JFrame parent) {
+        this.parentFrame = parent;
     }
 }
