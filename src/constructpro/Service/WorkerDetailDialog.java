@@ -99,7 +99,7 @@ public class WorkerDetailDialog extends JDialog {
         loadPaymentHistory(); // Load payment history data
         loadAssignmentHistory(); // Load assignment history data
 
-        setSize(900, 650);
+        setSize(900, 710);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -677,6 +677,7 @@ public class WorkerDetailDialog extends JDialog {
         // Header panel with name and close button
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(DARKER_BACKGROUND);
+        headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(70, 70, 70)));
         headerPanel.add(nameLabel, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
@@ -793,66 +794,96 @@ public class WorkerDetailDialog extends JDialog {
 
     private void setupProfilePanel() {
         profilePanel.setBackground(DARK_BACKGROUND);
+        profilePanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(12, 20, 12, 20);
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 20, 10, 20);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.gridx = 0;
 
         int row = 0;
 
-        // Two-column layout
-        addFieldToPanel(gbc, 0, row, "Nom du père:", fatherNameValue, "Chantier :", chantierValue);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Nom du mère:", motherNameValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Date de Naissance:", birthDateValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Lieux de Naissance:", birthPlaceValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Date de Début:", startDateValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Situation familiale:", familySituationValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Numéro de carte d'identité:", identityCardNumberValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Date de la carte d'identité:", idCardDateValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Numéro de téléphone:", phoneNumberValue, "", null);
-        row++;
-        addFieldToPanel(gbc, 0, row, "Poste:", roleValue, "", null);
+        // IDENTITY SECTION
+        gbc.gridy = row++;
+        profilePanel.add(createSectionHeader("INFORMATIONS PERSONNELLES"), gbc);
+
+        JPanel identityPanel = new JPanel(new GridLayout(0, 2, 20, 15));
+        identityPanel.setOpaque(false);
+        identityPanel.add(createInfoBlock("NOM DU PÈRE", fatherNameValue));
+        identityPanel.add(createInfoBlock("NOM DU MÈRE", motherNameValue));
+        identityPanel.add(createInfoBlock("DATE DE NAISSANCE", birthDateValue));
+        identityPanel.add(createInfoBlock("LIEU DE NAISSANCE", birthPlaceValue));
+        identityPanel.add(createInfoBlock("SITUATION FAMILIALE", familySituationValue));
+
+        gbc.gridy = row++;
+        profilePanel.add(identityPanel, gbc);
+
+        // PROFESSIONAL SECTION
+        gbc.gridy = row++;
+        gbc.insets = new Insets(20, 20, 10, 20);
+        profilePanel.add(createSectionHeader("DÉTAILS PROFESSIONNELS"), gbc);
+
+        JPanel profPanel = new JPanel(new GridLayout(0, 2, 20, 15));
+        profPanel.setOpaque(false);
+        profPanel.add(createInfoBlock("POSTE / RÔLE", roleValue));
+        profPanel.add(createInfoBlock("CHANTIER INFÉODÉ", chantierValue));
+        profPanel.add(createInfoBlock("DATE DE DÉBUT", startDateValue));
+
+        gbc.gridy = row++;
+        gbc.insets = new Insets(10, 20, 10, 20);
+        profilePanel.add(profPanel, gbc);
+
+        // CONTACT & FINANCE SECTION
+        gbc.gridy = row++;
+        gbc.insets = new Insets(20, 20, 10, 20);
+        profilePanel.add(createSectionHeader("COORDONNÉES & ADMINISTRATIF"), gbc);
+
+        JPanel financePanel = new JPanel(new GridLayout(0, 2, 20, 15));
+        financePanel.setOpaque(false);
+        financePanel.add(createInfoBlock("NUMÉRO DE TÉLÉPHONE", phoneNumberValue));
+        financePanel.add(createInfoBlock("COMPTE BANCAIRE / CCP", accountNumberValue));
+        financePanel.add(createInfoBlock("N° CARTE D'IDENTITÉ", identityCardNumberValue));
+        financePanel.add(createInfoBlock("DATE D'EXPIRATION CNI", idCardDateValue));
+
+        gbc.gridy = row++;
+        gbc.insets = new Insets(10, 20, 10, 20);
+        profilePanel.add(financePanel, gbc);
+
+        // Spacer to push everything up
+        gbc.gridy = row++;
+        gbc.weighty = 1.0;
+        profilePanel.add(Box.createVerticalGlue(), gbc);
     }
 
-    private void addFieldToPanel(GridBagConstraints gbc, int startX, int y, String label1, JLabel value1, String label2,
-            JLabel value2) {
-        gbc.gridy = y;
+    private JPanel createSectionHeader(String title) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        JLabel label = new JLabel(title);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        label.setForeground(ACCENT_COLOR);
+        panel.add(label, BorderLayout.WEST);
 
-        // Left side
-        gbc.gridx = startX;
-        gbc.gridwidth = 1;
-        profilePanel.add(createFieldLabel(label1), gbc);
+        JSeparator sep = new JSeparator();
+        sep.setForeground(new Color(70, 70, 70));
+        panel.add(sep, BorderLayout.SOUTH);
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        return panel;
+    }
 
-        gbc.gridx = startX + 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        profilePanel.add(value1, gbc);
+    private JPanel createInfoBlock(String labelStr, JLabel valueLabel) {
+        JPanel panel = new JPanel(new BorderLayout(0, 4));
+        panel.setOpaque(false);
 
-        // Right side (if provided)
-        if (!label2.isEmpty() && value2 != null) {
-            gbc.gridx = startX + 2;
-            gbc.weightx = 0;
-            gbc.fill = GridBagConstraints.NONE;
-            gbc.insets = new Insets(12, 40, 12, 20);
-            profilePanel.add(createFieldLabel(label2), gbc);
+        JLabel l = new JLabel(labelStr);
+        l.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        l.setForeground(LABEL_COLOR);
 
-            gbc.gridx = startX + 3;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.weightx = 1.0;
-            gbc.insets = new Insets(12, 20, 12, 20);
-            profilePanel.add(value2, gbc);
-        }
+        valueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        valueLabel.setForeground(TEXT_COLOR);
 
-        gbc.insets = new Insets(12, 20, 12, 20); // Reset insets
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
+        panel.add(l, BorderLayout.NORTH);
+        panel.add(valueLabel, BorderLayout.CENTER);
+        return panel;
     }
 
     private void setupStyling() {

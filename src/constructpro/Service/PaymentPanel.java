@@ -36,7 +36,7 @@ public class PaymentPanel extends JDialog {
         setupLayout();
         setupActions(worker.getId());
         pack();
-        setSize(600, 600);
+        setSize(550, 450);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
