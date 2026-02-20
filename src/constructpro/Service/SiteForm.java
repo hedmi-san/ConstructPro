@@ -76,7 +76,7 @@ public class SiteForm extends JDialog {
         // Name
         gbc.gridx = 0;
         gbc.gridy = row;
-        formPanel.add(new JLabel("Site Name:"), gbc);
+        formPanel.add(new JLabel("Nom de Chantier:"), gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(nameField, gbc);
@@ -96,7 +96,7 @@ public class SiteForm extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.fill = GridBagConstraints.NONE;
-        formPanel.add(new JLabel("Status:"), gbc);
+        formPanel.add(new JLabel("Statut:"), gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(statusComboBox, gbc);
@@ -105,7 +105,7 @@ public class SiteForm extends JDialog {
         // Start Date
         gbc.gridx = 0;
         gbc.gridy = row;
-        formPanel.add(new JLabel("Start Date:"), gbc);
+        formPanel.add(new JLabel("Date de début:"), gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(startDateChooser, gbc);
@@ -114,7 +114,7 @@ public class SiteForm extends JDialog {
         // End Date
         gbc.gridx = 0;
         gbc.gridy = row;
-        formPanel.add(new JLabel("End Date:"), gbc);
+        formPanel.add(new JLabel("Date de fin:"), gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(endDateChooser, gbc);
@@ -144,24 +144,24 @@ public class SiteForm extends JDialog {
 
     private boolean validateFields() {
         if (nameField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Site name is required!");
+            JOptionPane.showMessageDialog(this, "Le nom du chantier est obligatoire !");
             return false;
         }
 
         if (locationField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Location is required!");
+            JOptionPane.showMessageDialog(this, "Location est obligatoire !");
             return false;
         }
 
         if (startDateChooser.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Start date is required!");
+            JOptionPane.showMessageDialog(this, "La date de début est obligatoire !");
             return false;
         }
 
         // End date is optional (for ongoing sites)
         // Only validate date order if end date is provided
         if (endDateChooser.getDate() != null && endDateChooser.getDate().before(startDateChooser.getDate())) {
-            JOptionPane.showMessageDialog(this, "End date cannot be before start date!");
+            JOptionPane.showMessageDialog(this, "La date de fin ne peut pas être antérieure à la date de début !");
             return false;
         }
 
@@ -171,7 +171,7 @@ public class SiteForm extends JDialog {
     private void populateFields(ConstructionSite site) {
         nameField.setText(site.getName());
         locationField.setText(site.getLocation());
-        statusComboBox.setSelectedItem(site.getStatus() != null ? site.getStatus() : "Not Started");
+        statusComboBox.setSelectedItem(site.getStatus() != null ? site.getStatus() : "Non Spécifié");
 
         if (site.getStartDate() != null)
             startDateChooser.setDate(Date.from(site.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));

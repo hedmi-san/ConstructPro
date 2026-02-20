@@ -2,7 +2,6 @@ package constructpro.DAO;
 
 import constructpro.DTO.User;
 import constructpro.Database.ConnectionEstablish;
-import constructpro.UI.UsersPage;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -90,7 +89,6 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        new UsersPage(conn).loadDataSet();
     }
 
     public ResultSet getQueryResult() {
@@ -115,6 +113,20 @@ public class UserDAO {
         return resultSet;
     }
 
+    public ResultSet searchUsers(String searchTerm) {
+        try {
+            String query = "SELECT * FROM users WHERE fullName LIKE ? OR username LIKE ?";
+            prepStatement = conn.prepareStatement(query);
+            String term = "%" + searchTerm + "%";
+            prepStatement.setString(1, term);
+            prepStatement.setString(2, term);
+            resultSet = prepStatement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return resultSet;
+    }
+
     public void getFullName(User userDTO, String username) {
         try {
             String query = "SELECT fullName FROM users WHERE username=? LIMIT 1";
@@ -132,9 +144,10 @@ public class UserDAO {
     public ResultSet getUserLogsDAO() {
         try {
             String query = "SELECT users.fullName, userlogs.username, in_time, out_time " +
-                           "FROM userLogs INNER JOIN users ON userLogs.username = users.username";
+                    "FROM userLogs INNER JOIN users ON userLogs.username = users.username";
             resultSet = statement.executeQuery(query);
-        } catch (SQLException e) {}
+        } catch (SQLException e) {
+        }
         return resultSet;
     }
 
@@ -146,7 +159,8 @@ public class UserDAO {
             prepStatement.setString(2, userDTO.getInTime());
             prepStatement.setString(3, userDTO.getOutTime());
             prepStatement.executeUpdate();
-        } catch (SQLException e) {}
+        } catch (SQLException e) {
+        }
     }
 
     public ResultSet getPassDAO(String username, String password) {
@@ -156,7 +170,8 @@ public class UserDAO {
             prepStatement.setString(1, username);
             prepStatement.setString(2, password);
             resultSet = prepStatement.executeQuery();
-        } catch (SQLException ex) {}
+        } catch (SQLException ex) {
+        }
         return resultSet;
     }
 
@@ -168,7 +183,8 @@ public class UserDAO {
             prepStatement.setString(2, username);
             prepStatement.executeUpdate();
             JOptionPane.showMessageDialog(null, "Password has been changed.");
-        } catch (SQLException ex) {}
+        } catch (SQLException ex) {
+        }
     }
 
     public DefaultTableModel buildTableModel(ResultSet resultSet) throws SQLException {

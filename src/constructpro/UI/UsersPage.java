@@ -1,251 +1,289 @@
 package constructpro.UI;
 
-import javax.swing.*;
 import constructpro.DAO.UserDAO;
 import constructpro.DTO.User;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.sql.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class UsersPage extends JPanel {
-    private JButton addButton;
-    private JButton clearButton;
-    private JButton deleteButton;
-    private JPanel entryPanel;
-    private JLabel jLabel1;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
-    private JLabel jLabel5;
-    private JLabel jLabel6;
-    private JScrollPane jScrollPane1;
-    private JSeparator jSeparator1;
-    private JTextField locationText;
-    private JTextField nameText;
-    private JPasswordField passText;
-    private JTextField phoneText;
+
     private JTable userTable;
-    private JComboBox<String> userTypeCombo;
-    private JTextField usernameText;
-    String userType;;
+    private JTextField searchField;
+    private JTextField nameField, locationField, phoneField, usernameField;
+    private JPasswordField passField;
+    private JComboBox<String> typeCombo;
+    private JButton addButton, updateButton, deleteButton, clearButton;
 
     public UsersPage(Connection connection) {
         initComponents();
         loadDataSet();
     }
 
-    @SuppressWarnings("unchecked")
     private void initComponents() {
-        // --- Components ---
-        jLabel1 = new JLabel("Users");
-        jSeparator1 = new JSeparator();
-        entryPanel = new JPanel(new GridBagLayout());
-        jLabel2 = new JLabel("Full Name:");
-        jLabel3 = new JLabel("Location:");
-        jLabel4 = new JLabel("Contact:");
-        jLabel5 = new JLabel("Username:");
-        jLabel6 = new JLabel("Password:");
-        nameText = new JTextField(15);
-        locationText = new JTextField(15);
-        phoneText = new JTextField(15);
-        usernameText = new JTextField(15);
-        passText = new JPasswordField(15);
-        userTypeCombo = new JComboBox<>(new String[] { "Admin", "Employee" });
-        addButton = new JButton("Add");
-        deleteButton = new JButton("Delete");
-        clearButton = new JButton("Clear");
-        jScrollPane1 = new JScrollPane();
+        setLayout(new BorderLayout(20, 20));
+        setBorder(new EmptyBorder(25, 25, 25, 25));
+        setOpaque(false);
+
+        // --- Left Section: Table & Search ---
+        JPanel tableContainer = new JPanel(new BorderLayout(0, 15));
+        tableContainer.setOpaque(false);
+
+        // Header & Search
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+
+        JLabel titleLabel = new JLabel("Gestion des Utilisateurs");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titleLabel.setForeground(Color.WHITE);
+        topPanel.add(titleLabel, BorderLayout.WEST);
+
+        searchField = new JTextField();
+        searchField.putClientProperty("JTextField.placeholderText", "Rechercher des utilisateurs par nom ou nom d'utilisateur...");
+        searchField.setPreferredSize(new Dimension(300, 35));
+        searchField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                searchUsers();
+            }
+        });
+
+        JPanel searchWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        searchWrapper.setOpaque(false);
+        searchWrapper.add(searchField);
+        topPanel.add(searchWrapper, BorderLayout.EAST);
+
+        tableContainer.add(topPanel, BorderLayout.NORTH);
+
+        // Table
         userTable = new JTable();
-
-        // --- Header label ---
-        jLabel1.setFont(new Font("SansSerif", Font.BOLD, 22));
-
-        // --- Entry Panel (form) ---
-        entryPanel.setBorder(BorderFactory.createTitledBorder("Enter User Details"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Row 0 - Full Name
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        entryPanel.add(jLabel2, gbc);
-        gbc.gridx = 1;
-        entryPanel.add(nameText, gbc);
-
-        // Row 1 - Location
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        entryPanel.add(jLabel3, gbc);
-        gbc.gridx = 1;
-        entryPanel.add(locationText, gbc);
-
-        // Row 2 - Contact
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        entryPanel.add(jLabel4, gbc);
-        gbc.gridx = 1;
-        entryPanel.add(phoneText, gbc);
-
-        // Row 3 - Username
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        entryPanel.add(jLabel5, gbc);
-        gbc.gridx = 1;
-        entryPanel.add(usernameText, gbc);
-
-        // Row 4 - Password
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        entryPanel.add(jLabel6, gbc);
-        gbc.gridx = 1;
-        entryPanel.add(passText, gbc);
-
-        // Row 5 - Combo
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        entryPanel.add(userTypeCombo, gbc);
-
-        // Row 6 - Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        buttonPanel.add(addButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(clearButton);
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.gridwidth = 2;
-        entryPanel.add(buttonPanel, gbc);
-
-        // Add Listeners
-        addButton.addActionListener(e -> addButtonActionPerformed(e));
-        deleteButton.addActionListener(e -> deleteButtonActionPerformed(e));
-        clearButton.addActionListener(e -> clearButtonActionPerformed(e));
-
-        // --- Table ---
-        userTable.setBorder(BorderFactory.createEtchedBorder());
-        userTable.setForeground(new Color(102, 102, 102));
+        userTable.setRowHeight(35);
+        userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         userTable.setDefaultEditor(Object.class, null);
-        userTable.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {
-                        { null, null, null, null },
-                        { null, null, null, null },
-                        { null, null, null, null },
-                        { null, null, null, null }
-                },
-                new String[] { "Title 1", "Title 2", "Title 3", "Title 4" }) {
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
-        userTable.setShowGrid(true);
-        userTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                userTableMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(userTable);
+        userTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        userTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        userTable.setShowGrid(false);
+        userTable.setIntercellSpacing(new Dimension(0, 0));
+        
 
-        // --- Main Layout (GridBag for whole panel) ---
-        this.setLayout(new GridBagLayout());
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
+        // Selection handling
+        userTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleTableSelection();
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(userTable);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60)));
+        scrollPane.putClientProperty("FlatLaf.style", "arc: 12");
+        tableContainer.add(scrollPane, BorderLayout.CENTER);
+
+        add(tableContainer, BorderLayout.CENTER);
+
+        // --- Right Section: Management Form ---
+        JPanel formCard = new JPanel(new GridBagLayout());
+        formCard.setBackground(new Color(45, 45, 45));
+        formCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(70, 70, 70), 1),
+                new EmptyBorder(25, 25, 25, 25)));
+        formCard.setPreferredSize(new Dimension(350, 0));
+        formCard.putClientProperty("FlatLaf.style", "arc: 15");
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 15, 0);
         gbc.weightx = 1;
-        gbc.weighty = 0;
-
-        // Row 0 - Header
         gbc.gridx = 0;
+
+        JLabel formTitle = new JLabel("Détails de l'utilisateur");
+        formTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        formTitle.setForeground(new Color(200, 200, 200));
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        this.add(jLabel1, gbc);
+        formCard.add(formTitle, gbc);
 
-        // Row 1 - Separator
+        // Fields
+        nameField = createStyledField("Nom complet");
         gbc.gridy = 1;
-        this.add(jSeparator1, gbc);
+        formCard.add(createLabeledPanel("NOM COMPLET", nameField), gbc);
 
-        // Row 2 - Table + EntryPanel side by side
+        locationField = createStyledField("Location");
         gbc.gridy = 2;
-        gbc.gridwidth = 1;
+        formCard.add(createLabeledPanel("LOCATION", locationField), gbc);
+
+        phoneField = createStyledField("Numéro de téléphone");
+        gbc.gridy = 3;
+        formCard.add(createLabeledPanel("NUMÉRO DE TÉLÉPHONE", phoneField), gbc);
+
+        usernameField = createStyledField("Username");
+        gbc.gridy = 4;
+        formCard.add(createLabeledPanel("USERNAME", usernameField), gbc);
+
+        passField = new JPasswordField();
+        passField.setPreferredSize(new Dimension(0, 35));
+        passField.putClientProperty("FlatLaf.style", "arc: 8");
+        gbc.gridy = 5;
+        formCard.add(createLabeledPanel("MOT DE PASSE", passField), gbc);
+
+        typeCombo = new JComboBox<>(new String[] { "Admin", "Employee" });
+        typeCombo.setPreferredSize(new Dimension(0, 35));
+        typeCombo.putClientProperty("FlatLaf.style", "arc: 8");
+        gbc.gridy = 6;
+        formCard.add(createLabeledPanel("USER TYPE", typeCombo), gbc);
+
+        // Buttons
+        JPanel buttonGrid = new JPanel(new GridLayout(2, 2, 10, 10));
+        buttonGrid.setOpaque(false);
+
+        addButton = new JButton("Ajouter un Utilisateur");
+        addButton.putClientProperty("FlatLaf.style", "background: #27ae60; foreground: #ffffff; arc: 8");
+        addButton.addActionListener(e -> addUser());
+
+        updateButton = new JButton("Mettre à jour");
+        updateButton.putClientProperty("FlatLaf.style", "background: #2980b9; foreground: #ffffff; arc: 8");
+        updateButton.addActionListener(e -> updateUser());
+
+        deleteButton = new JButton("Supprimer");
+        deleteButton.putClientProperty("FlatLaf.style", "background: #c0392b; foreground: #ffffff; arc: 8");
+        deleteButton.addActionListener(e -> deleteUser());
+
+        clearButton = new JButton("Clair");
+        clearButton.addActionListener(e -> clearForm());
+
+        buttonGrid.add(addButton);
+        buttonGrid.add(updateButton);
+        buttonGrid.add(deleteButton);
+        buttonGrid.add(clearButton);
+
+        gbc.gridy = 7;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        formCard.add(buttonGrid, gbc);
+
+        // Spacer
+        gbc.gridy = 8;
         gbc.weighty = 1;
+        formCard.add(Box.createVerticalGlue(), gbc);
 
-        gbc.gridx = 0;
-        gbc.weightx = 0.6;
-        this.add(jScrollPane1, gbc);
+        add(formCard, BorderLayout.EAST);
+    }
 
-        gbc.gridx = 1;
-        gbc.weightx = 0.4;
-        this.add(entryPanel, gbc);
+    private JTextField createStyledField(String placeholder) {
+        JTextField field = new JTextField();
+        field.setPreferredSize(new Dimension(0, 35));
+        field.putClientProperty("JTextField.placeholderText", placeholder);
+        field.putClientProperty("FlatLaf.style", "arc: 8");
+        return field;
+    }
+
+    private JPanel createLabeledPanel(String labelText, JComponent component) {
+        JPanel p = new JPanel(new BorderLayout(0, 5));
+        p.setOpaque(false);
+        JLabel l = new JLabel(labelText);
+        l.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        l.setForeground(new Color(120, 120, 120));
+        p.add(l, BorderLayout.NORTH);
+        p.add(component, BorderLayout.CENTER);
+        return p;
     }
 
     public void loadDataSet() {
         try {
-            UserDAO userDAO = new UserDAO();
-            userTable.setModel(userDAO.buildTableModel(userDAO.getQueryResult()));
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+            UserDAO dao = new UserDAO();
+            userTable.setModel(dao.buildTableModel(dao.getQueryResult()));
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    private void userTableMouseClicked(MouseEvent evt) {
+    private void searchUsers() {
+        String term = searchField.getText();
+        try {
+            UserDAO dao = new UserDAO();
+            userTable.setModel(dao.buildTableModel(dao.searchUsers(term)));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleTableSelection() {
         int row = userTable.getSelectedRow();
-        int col = userTable.getColumnCount();
-        Object[] val = new Object[col];
-
-        for (int i = 0; i < col; i++) {
-            val[i] = userTable.getValueAt(row, i);
-        }
-        nameText.setText(val[1].toString());
-        locationText.setText(val[2].toString());
-        phoneText.setText(val[3].toString());
-        usernameText.setText(val[4].toString());
-        userTypeCombo.setSelectedItem(val[6].toString());
-    }
-
-    private void deleteButtonActionPerformed(ActionEvent evt) {
-        if (userTable.getSelectedRow() < 0)
-            JOptionPane.showMessageDialog(null, "Please select an entry from the table");
-        else {
-            int opt = JOptionPane.showConfirmDialog(
-                    null,
-                    "Are you sure you want to delete this user?",
-                    "Confirmation",
-                    JOptionPane.YES_NO_OPTION);
-            if (opt == JOptionPane.YES_OPTION) {
-                new UserDAO().deleteUserDAO(
-                        String.valueOf(
-                                userTable.getValueAt(userTable.getSelectedRow(), 4)));
-                loadDataSet();
-            }
+        if (row >= 0) {
+            nameField.setText(userTable.getValueAt(row, 1).toString());
+            locationField.setText(userTable.getValueAt(row, 2).toString());
+            phoneField.setText(userTable.getValueAt(row, 3).toString());
+            usernameField.setText(userTable.getValueAt(row, 4).toString());
+            usernameField.setEditable(false);
+            typeCombo.setSelectedItem(userTable.getValueAt(row, 6).toString());
         }
     }
 
-    private void addButtonActionPerformed(ActionEvent evt) {
-        User userDTO = new User();
+    private void addUser() {
+        if (validateFields()) {
+            User u = new User();
+            u.setFullName(nameField.getText());
+            u.setLocation(locationField.getText());
+            u.setPhone(phoneField.getText());
+            u.setUserName(usernameField.getText());
+            u.setPassword(new String(passField.getPassword()));
+            u.setUserType((String) typeCombo.getSelectedItem());
 
-        if (nameText.getText().equals("") || locationText.getText().equals("") || phoneText.getText().equals(""))
-            JOptionPane.showMessageDialog(null, "Please fill all the required fields.");
-        else {
-            userType = (String) userTypeCombo.getSelectedItem();
-            userDTO.setFullName(nameText.getText());
-            userDTO.setLocation(locationText.getText());
-            userDTO.setPhone(phoneText.getText());
-            userDTO.setUserName(usernameText.getText());
-            userDTO.setPassword(new String(passText.getPassword()));
-            userDTO.setUserType(userType);
-            new UserDAO().addUserDAO(userDTO, userType);
+            new UserDAO().addUserDAO(u, u.getUserType());
+            loadDataSet();
+            clearForm();
+        }
+    }
+
+    private void updateUser() {
+        if (userTable.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(this, "Select a user to update.");
+            return;
+        }
+        if (validateFields()) {
+            User u = new User();
+            u.setUserName(usernameField.getText());
+            u.setFullName(nameField.getText());
+            u.setLocation(locationField.getText());
+            u.setPhone(phoneField.getText());
+            u.setUserType((String) typeCombo.getSelectedItem());
+
+            new UserDAO().editUserDAO(u);
             loadDataSet();
         }
     }
 
-    private void clearButtonActionPerformed(ActionEvent evt) {
-        nameText.setText("");
-        locationText.setText("");
-        phoneText.setText("");
-        usernameText.setText("");
-        passText.setText("");
+    private void deleteUser() {
+        int row = userTable.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Sélectionnez un utilisateur à supprimer.");
+            return;
+        }
+        int opt = JOptionPane.showConfirmDialog(this, "Supprimer l'utilisateur " + userTable.getValueAt(row, 4) + "?", "Confirm",
+                JOptionPane.YES_NO_OPTION);
+        if (opt == JOptionPane.YES_OPTION) {
+            new UserDAO().deleteUserDAO(userTable.getValueAt(row, 4).toString());
+            loadDataSet();
+            clearForm();
+        }
+    }
+
+    private void clearForm() {
+        nameField.setText("");
+        locationField.setText("");
+        phoneField.setText("");
+        usernameField.setText("");
+        usernameField.setEditable(true);
+        passField.setText("");
+        typeCombo.setSelectedIndex(0);
+        userTable.clearSelection();
+    }
+
+    private boolean validateFields() {
+        if (nameField.getText().isEmpty() || usernameField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Le nom et le nom d'utilisateur sont obligatoires.");
+            return false;
+        }
+        return true;
     }
 }
