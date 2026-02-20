@@ -61,7 +61,7 @@ public class Dashboard extends JFrame {
 
         // Panel Layout set to Card Layout to allow switching between different sections
         displayPanel.setLayout(layout);
-        displayPanel.add("Home", new HomePage(username));
+        displayPanel.add("Home", new HomePage(con, username));
         displayPanel.add("Workers", new WorkersPage(connection));
         displayPanel.add("Salaire", new SalaryPage(connection));
         displayPanel.add("Facture", new BillPage(connection));
