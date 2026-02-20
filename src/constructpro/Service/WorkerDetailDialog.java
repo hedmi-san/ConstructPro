@@ -563,12 +563,15 @@ public class WorkerDetailDialog extends JDialog {
 
         JButton addInsuranceBtn = new JButton("Ajouter");
         JButton editInsuranceBtn = new JButton("Modifier");
+        JButton deleteInsuranceBtn = new JButton("Supprimer");
 
         // Style buttons if needed
         addInsuranceBtn.setBackground(new Color(0, 123, 255));
         addInsuranceBtn.setForeground(Color.WHITE);
         editInsuranceBtn.setBackground(new Color(255, 193, 7));
         editInsuranceBtn.setForeground(Color.BLACK);
+        deleteInsuranceBtn.setForeground(Color.WHITE);
+        deleteInsuranceBtn.setBackground(new Color(183, 28, 28)); // Red for delete
 
         addInsuranceBtn.addActionListener(e -> {
             try {
@@ -640,8 +643,43 @@ public class WorkerDetailDialog extends JDialog {
             }
         });
 
+        deleteInsuranceBtn.addActionListener(e -> {
+            try {
+                if (!insuranceDAO.workerHasInsurance(currentWorker.getId())) {
+                    JOptionPane.showMessageDialog(insurancePanel,
+                            "Aucune assurance trouvée pour ce travailleur.",
+                            "Pas d'assurance",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                int confirm = JOptionPane.showConfirmDialog(insurancePanel,
+                        "Voulez-vous vraiment supprimer l'assurance de ce travailleur ?",
+                        "Confirmation de suppression",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    if (insuranceDAO.deleteInsuranceByWorkerId(currentWorker.getId())) {
+                        JOptionPane.showMessageDialog(insurancePanel,
+                                "Assurance supprimée avec succès.",
+                                "Succès",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        // Clear the UI fields by passing null or reloading
+                        populateInsuranceData(null);
+                    }
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(insurancePanel,
+                        "Erreur lors de la suppression de l'assurance : " + ex.getMessage(),
+                        "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         buttonsPanel.add(addInsuranceBtn);
         buttonsPanel.add(editInsuranceBtn);
+        buttonsPanel.add(deleteInsuranceBtn);
 
         // Add components to main panel
         mainPanel.add(infoPanel, BorderLayout.NORTH);
@@ -903,14 +941,24 @@ public class WorkerDetailDialog extends JDialog {
     }
 
     private void populateInsuranceData(Insurance insurance) {
-
-        try {
-            InsuranceDAO insuranceDAO = new InsuranceDAO(conn);
-            insurance = insuranceDAO.getInsuranceByWorkerId(currentWorker.getId());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         if (insurance == null) {
+            try {
+                InsuranceDAO dao = new InsuranceDAO(conn);
+                insurance = dao.getInsuranceByWorkerId(currentWorker.getId());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (insurance == null) {
+            // No insurance found, clear fields
+            insuranceNumberValue.setText("N/A");
+            agencyNameValue.setText("N/A");
+            statusValue.setText("Pas d'assurance");
+            statusValue.setForeground(LABEL_COLOR);
+            insuranceStartDateValue.setText("N/A");
+            endDateValue.setText("N/A");
+            populateDocuments(null);
             return;
         }
 
