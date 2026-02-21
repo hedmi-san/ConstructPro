@@ -6,7 +6,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -115,6 +114,8 @@ public class Dashboard extends JFrame {
             }
         });
         setTitle("Construct Pro");
+        setMinimumSize(new Dimension(1200, 800));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
@@ -196,7 +197,6 @@ public class Dashboard extends JFrame {
         this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle("Construct Pro");
         this.setForeground(Color.white);
-        this.setBounds(new Rectangle(400, 100, 0, 0));
 
         menuPanel.setPreferredSize(new Dimension(120, 26));
         menuButton.setFont(new Font("Segeo UI", 1, 14));
