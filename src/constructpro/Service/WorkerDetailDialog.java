@@ -35,6 +35,7 @@ public class WorkerDetailDialog extends JDialog {
     private static final Color STATUS_PENDING = new Color(255, 152, 0);
     private static final Color DOCUMENT_SUBMITTED = new Color(76, 175, 80);
     private static final Color DOCUMENT_MISSING = new Color(244, 67, 54);
+    
     // Components
     // Profile
     private JLabel nameLabel;
@@ -75,7 +76,6 @@ public class WorkerDetailDialog extends JDialog {
     private JTable assignmentsTable;
     private DefaultTableModel tableModel2;
     private WorkerAssignmentDAO workerAssignmentDAO;
-
     private Connection conn;
 
     public WorkerDetailDialog(JFrame parent, Worker worker, Connection connection) throws SQLException {
@@ -88,7 +88,6 @@ public class WorkerDetailDialog extends JDialog {
         this.salaryRecordDAO = new SalaryRecordDAO(connection);
         this.paymentCheckDAO = new PaymentCheckDAO(connection);
         this.workerAssignmentDAO = new WorkerAssignmentDAO(connection);
-
         this.salaryRecord = salaryRecordDAO.getOrCreateSalaryRecord(worker.getId());
 
         initializeComponents();

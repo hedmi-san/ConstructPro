@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import javax.swing.*;
 import java.sql.*;
 import constructpro.DAO.PaymentCheckDAO;
@@ -83,7 +85,6 @@ public class ModifyPaymentCheck extends JDialog {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-
         // Date
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -152,14 +153,11 @@ public class ModifyPaymentCheck extends JDialog {
             double baseSalary = Double.parseDouble(baseSalaryField.getText().trim());
             double paidAmount = Double.parseDouble(paidAmountField.getText().trim());
 
-
             // Update payment check
             check.setPaymentDay(paymentDate);
             check.setBaseSalary(baseSalary);
             check.setPaidAmount(paidAmount);
             checkDAO.updatePaymentCheck(check);
-
-           
 
             saved = true;
             JOptionPane.showMessageDialog(this,
@@ -206,10 +204,8 @@ public class ModifyPaymentCheck extends JDialog {
     }
 
     private void styleDateChooser(JDateChooser chooser) {
-        chooser.setBackground(Color.WHITE);
-        chooser.setForeground(Color.BLACK);
+        DateChooserConfigurator.configure(chooser);
         chooser.setFont(new Font("Arial", Font.PLAIN, 14));
-        chooser.getJCalendar().setBackground(Color.WHITE);
     }
 
     private void styleButton(JButton button) {
@@ -233,6 +229,5 @@ public class ModifyPaymentCheck extends JDialog {
             }
         });
     }
-
 
 }

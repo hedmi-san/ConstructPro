@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import constructpro.DTO.Insurance;
 import com.toedter.calendar.JDateChooser;
 
@@ -24,13 +26,13 @@ public class InsuranceFormDialog extends JDialog {
     private boolean saved = false;
     private int workerId;
     private static final String[] DOCUMENT_OPTIONS = {
-        "Acte de Naissance",
-        "Fiche familiale de l'état civil",
-        "Photocopie de la carte identité",
-        "Photocopie de chèque"
+            "Acte de Naissance",
+            "Fiche familiale de l'état civil",
+            "Photocopie de la carte identité",
+            "Photocopie de chèque"
     };
 
-     public InsuranceFormDialog(Window owner, Insurance insurance, int workerId) {
+    public InsuranceFormDialog(Window owner, Insurance insurance, int workerId) {
         super(owner, "Formulaire d'assurance", ModalityType.APPLICATION_MODAL);
         this.insurance = insurance;
         this.workerId = workerId;
@@ -57,14 +59,16 @@ public class InsuranceFormDialog extends JDialog {
 
         insuranceNumberField = new JTextField();
         agencyNameField = new JTextField();
-        statusComboBox = new JComboBox<>(new String[]{"Active", "Non Active", "Bureau"});
+        statusComboBox = new JComboBox<>(new String[] { "Active", "Non Active", "Bureau" });
         startDateChooser = new JDateChooser();
         endDateChooser = new JDateChooser();
+        DateChooserConfigurator.configure(startDateChooser);
+        DateChooserConfigurator.configure(endDateChooser);
 
         int row = 0;
         addField(fieldsPanel, gbc, row++, "Numéro d'assurance:", insuranceNumberField);
         addField(fieldsPanel, gbc, row++, "Nom de l'agence:", agencyNameField);
-            addField(fieldsPanel, gbc, row++, "Statut:", statusComboBox);
+        addField(fieldsPanel, gbc, row++, "Statut:", statusComboBox);
         addField(fieldsPanel, gbc, row++, "Date de début:", startDateChooser);
         addField(fieldsPanel, gbc, row++, "Date de fin:", endDateChooser);
 
@@ -87,9 +91,9 @@ public class InsuranceFormDialog extends JDialog {
                 documentListModel.addElement(selectedDoc);
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "Document déjà ajouté ou non sélectionné",
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
+                        "Document déjà ajouté ou non sélectionné",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
             }
         });
 
@@ -169,19 +173,19 @@ public class InsuranceFormDialog extends JDialog {
         }
     }
 
-//    private void addDocument() {
-//        String docName = JOptionPane.showInputDialog(this, "Enter document name:");
-//        if (docName != null && !docName.trim().isEmpty()) {
-//            documentListModel.addElement(docName.trim());
-//        }
-//    }
-//
-//    private void removeSelectedDocument() {
-//        int selectedIndex = documentList.getSelectedIndex();
-//        if (selectedIndex != -1) {
-//            documentListModel.remove(selectedIndex);
-//        }
-//    }
+    // private void addDocument() {
+    // String docName = JOptionPane.showInputDialog(this, "Enter document name:");
+    // if (docName != null && !docName.trim().isEmpty()) {
+    // documentListModel.addElement(docName.trim());
+    // }
+    // }
+    //
+    // private void removeSelectedDocument() {
+    // int selectedIndex = documentList.getSelectedIndex();
+    // if (selectedIndex != -1) {
+    // documentListModel.remove(selectedIndex);
+    // }
+    // }
 
     private void saveInsurance(ActionEvent e) {
         if (insurance == null) {

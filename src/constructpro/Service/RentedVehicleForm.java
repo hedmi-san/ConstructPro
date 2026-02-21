@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import constructpro.DAO.ConstructionSiteDAO;
 
 import constructpro.DAO.VehicleDAO;
@@ -68,6 +70,8 @@ public class RentedVehicleForm extends JDialog {
         TransferFeeField = new JTextField(20);
         startDateChooser = new JDateChooser();
         endDateChooser = new JDateChooser();
+        DateChooserConfigurator.configure(startDateChooser);
+        DateChooserConfigurator.configure(endDateChooser);
     }
 
     private void setupLayout() {

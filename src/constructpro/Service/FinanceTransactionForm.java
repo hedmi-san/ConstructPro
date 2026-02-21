@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import com.toedter.calendar.JDateChooser;
 import constructpro.DTO.FinancialTransaction;
 import javax.swing.*;
@@ -29,6 +31,7 @@ public class FinanceTransactionForm extends JDialog {
 
     private void initComponents() {
         dateChooser = new JDateChooser(new Date());
+        DateChooserConfigurator.configure(dateChooser);
         dateChooser.setDateFormatString("dd/MM/yyyy");
 
         amountField = new JTextField(15);

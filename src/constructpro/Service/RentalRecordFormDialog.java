@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import constructpro.DTO.vehicleSystem.VehicleRental;
 import constructpro.DAO.vehicleSystem.VehicleRentalDAO;
 import constructpro.DAO.ConstructionSiteDAO;
@@ -122,8 +124,7 @@ public class RentalRecordFormDialog extends JDialog {
     }
 
     private void styleDateChooser(JDateChooser dateChooser) {
-        dateChooser.setBackground(DARKER_BACKGROUND);
-        dateChooser.setForeground(TEXT_COLOR);
+        DateChooserConfigurator.configure(dateChooser);
         dateChooser.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         dateChooser.setDateFormatString("yyyy-MM-dd");
 

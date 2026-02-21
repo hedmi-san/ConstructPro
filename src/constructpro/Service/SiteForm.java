@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import constructpro.DTO.ConstructionSite;
 import constructpro.DAO.ConstructionSiteDAO;
 import com.toedter.calendar.JDateChooser;
@@ -51,6 +53,8 @@ public class SiteForm extends JDialog {
         // Date choosers
         startDateChooser = new JDateChooser();
         endDateChooser = new JDateChooser();
+        DateChooserConfigurator.configure(startDateChooser);
+        DateChooserConfigurator.configure(endDateChooser);
 
         startDateChooser.setDateFormatString("dd/MM/yyyy");
         endDateChooser.setDateFormatString("dd/MM/yyyy");

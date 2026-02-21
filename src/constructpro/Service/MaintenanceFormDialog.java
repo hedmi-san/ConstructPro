@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import constructpro.DTO.vehicleSystem.Maintainance;
 import constructpro.DAO.vehicleSystem.MaintenanceDAO;
 import constructpro.DAO.ConstructionSiteDAO;
@@ -68,9 +70,9 @@ public class MaintenanceFormDialog extends JDialog {
 
         // Date chooser
         dateChooser = new JDateChooser();
+        DateChooserConfigurator.configure(dateChooser);
         dateChooser.setDateFormatString("yyyy-MM-dd");
         dateChooser.setPreferredSize(new Dimension(200, 30));
-        dateChooser.setBackground(DARKER_BACKGROUND);
         dateChooser.setForeground(TEXT_COLOR);
         dateChooser.getCalendarButton().setBackground(ACCENT_COLOR);
         dateChooser.getCalendarButton().setForeground(Color.WHITE);

@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import javax.swing.*;
@@ -58,9 +60,9 @@ public class PaySlip extends JDialog {
         siteComboBox.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
         paymentDate = new JDateChooser();
+        DateChooserConfigurator.configure(paymentDate);
         paymentDate.setDate(new Date());
         paymentDate.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        paymentDate.setBackground(DARKER_BACKGROUND);
         paymentDate.setForeground(TEXT_COLOR);
 
         confirmButton = new JButton("Enregistrer");

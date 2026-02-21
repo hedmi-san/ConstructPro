@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import constructpro.DAO.BillDAO;
 
 import constructpro.DAO.ConstructionSiteDAO;
@@ -697,11 +699,13 @@ public class ShowSitesDetails extends JDialog {
         JLabel startLabel = new JLabel("Date début:");
         startLabel.setForeground(Color.WHITE);
         JDateChooser startChooser = new JDateChooser();
+        DateChooserConfigurator.configure(startChooser);
         startChooser.setPreferredSize(new Dimension(150, 25));
 
         JLabel endLabel = new JLabel("Date fin:");
         endLabel.setForeground(Color.WHITE);
         JDateChooser endChooser = new JDateChooser();
+        DateChooserConfigurator.configure(endChooser);
         endChooser.setPreferredSize(new Dimension(150, 25));
 
         gbc.gridx = 0;

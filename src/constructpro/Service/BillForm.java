@@ -1,5 +1,7 @@
 package constructpro.Service;
 
+import constructpro.Utils.DateChooserConfigurator;
+
 import constructpro.DTO.Bill;
 import constructpro.DTO.BiLLItem;
 
@@ -69,6 +71,7 @@ public class BillForm extends JDialog {
 
         // Initialize JDateChooser
         billDateChooser = new JDateChooser();
+        DateChooserConfigurator.configure(billDateChooser);
         billDateChooser.setDateFormatString("dd/MM/yyyy");
         billDateChooser.setPreferredSize(new Dimension(200, 25));
         billDateChooser.setDate(new Date()); // Set to current date by default
