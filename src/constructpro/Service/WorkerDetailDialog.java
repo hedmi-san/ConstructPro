@@ -35,7 +35,7 @@ public class WorkerDetailDialog extends JDialog {
     private static final Color STATUS_PENDING = new Color(255, 152, 0);
     private static final Color DOCUMENT_SUBMITTED = new Color(76, 175, 80);
     private static final Color DOCUMENT_MISSING = new Color(244, 67, 54);
-    
+
     // Components
     // Profile
     private JLabel nameLabel;
@@ -94,7 +94,7 @@ public class WorkerDetailDialog extends JDialog {
         setupLayout();
         setupStyling();
         populateData();
-        populateInsuranceData(insurance);
+        populateInsuranceData(null);
         loadPaymentHistory(); // Load payment history data
         loadAssignmentHistory(); // Load assignment history data
 
